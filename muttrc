@@ -1,0 +1,114 @@
+set hostname = "noncombatant.org"
+set realname = "Chris Palmer"
+
+set envelope_from = yes
+my_hdr From: Chris Palmer <chris@noncombatant.org>
+hdr_order From: To: Cc: Date: Subject:
+
+set folder = ~/mail
+set spoolfile = ~/mail/
+set postponed = ~/mail/postponed
+set record = ~/mail/outbox
+unset confirmappend
+unset confirmcreate
+set folder_format = "%16f  %16s  %d"
+set move = no
+set sort_browser = alpha
+set tmpdir = ~
+#set header_cache = ~/mail/.header_cache
+
+set reverse_alias
+set alias_file = ~/.aliases
+source ~/.aliases
+source ~/.lists
+set alias_format = " %-15a %r"
+
+set locale = "en_US.UTF-8"
+set charset = utf8
+unset beep
+unset mark_old
+unset auto_tag
+
+unset markers
+set status_on_top
+set menu_scroll
+set index_format = "%Z %D %-15.15n  %s"
+set sort = date-received
+set status_format = "%-31.31f   %M/%m msgs%?V? (%V)?, %u unread"
+set compose_format = "Compose (%lB)"
+set to_chars = ""
+set implicit_autoview   # default no
+ignore *
+unignore from: subject to date cc
+#color error red default
+#color message black default
+#color normal black default
+#color tilde default default
+#color body black default /*/
+#color indicator brightwhite black
+#color search white red
+#color hdrdefault black default
+#color status brightwhite black
+#color quoted black default
+color error red default
+color message red default
+color normal white default
+color tilde default default
+color body brightyellow default /*/
+color indicator brightwhite red
+color search white red
+color hdrdefault magenta default
+color status brightwhite blue
+color quoted white default
+source ~/.mutt-colors
+auto_view text/html
+alternative_order text/plain text/html
+
+set date_format = "%e %b %Y"
+
+set smart_wrap
+set pager_format = "%n: %s"
+set pager_context = 2
+set pager_index_lines = 0
+set quote_regexp = "^([ \t]*[|>:}#%])+"
+
+set autoedit
+set fast_reply
+set editor = "vim -u ~/.vimrc-mutt"
+set attribution = "%n writes:\n"
+set forward_format = "Fwd: %s"
+set signature = ~/.signature
+set sig_dashes = no
+set edit_headers
+
+set mime_forward=yes
+set mime_forward_rest=yes
+
+set sendmail = "/usr/sbin/sendmail -oi -oem"
+
+bind index <tab> next-unread
+bind pager <tab> next-unread
+bind compose f edit-from
+bind compose \ef edit-fcc
+bind pager j next-line
+bind pager k previous-line
+
+macro index x "l!~D\n*"
+macro index z "l!~D !~Q\n*"
+macro index M "mme\n"
+
+set pgp_autosign = no
+set pgp_decode_command="gpg %?p?--passphrase-fd 0? --no-verbose --quiet  --batch  --output - %f"
+set pgp_verify_command="gpg --no-verbose --quiet  --batch  --output - --verify %s %f"
+set pgp_decrypt_command="gpg --passphrase-fd 0 --no-verbose --quiet  --batch  --output - %f"
+set pgp_sign_command="gpg --no-verbose --batch --quiet --output - --passphrase-fd 0 --armor --detach-sign --textmode %?a?-u %a? %f"
+set pgp_clearsign_command="gpg --no-verbose --batch --quiet --output - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f"
+set pgp_encrypt_only_command="pgpewrap gpg --batch  --quiet  --no-verbose --output - --encrypt --textmode --armor --always-trust -- -r %r -- %f"
+set pgp_encrypt_sign_command="pgpewrap gpg  --passphrase-fd 0  --batch --quiet  --no-verbose  --textmode --output - --encrypt --sign %?a?-u %a? --armor --always-trust -- -r %r -- %f"
+set pgp_import_command="gpg --no-verbose --import -v %f"
+set pgp_export_command="gpg --no-verbose --export --armor %r"
+set pgp_verify_key_command="gpg --verbose --batch  --fingerprint --check-sigs %r"
+set pgp_list_pubring_command="gpg --no-verbose --batch --quiet --with-colons --list-keys %r" 
+set pgp_list_secring_command="gpg --no-verbose --batch --quiet --with-colons --list-secret-keys %r" 
+set pgp_good_sign="^gpg: Good signature from"
+
