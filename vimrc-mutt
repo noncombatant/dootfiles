@@ -1,0 +1,23 @@
+set nocompatible
+set backspace=indent,eol,start
+set nobackup
+set history=20
+set ruler
+set showcmd
+set incsearch
+set ignorecase
+set smartcase
+set hlsearch
+set background=light
+set tabstop=6
+set softtabstop=6
+set expandtab
+set shiftwidth=6
+set textwidth=76
+set nomodeline
+set tags=tags
+
+map Q {gq}
+
+syntax off
+
