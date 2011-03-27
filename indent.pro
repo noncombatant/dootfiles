@@ -1,0 +1,1 @@
+-bad -bap -bbb -bc -br -bs -cdb -nce -cli1 -di1 -i6 -l100 -lp -npsl 
