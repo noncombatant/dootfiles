@@ -1,0 +1,5 @@
+XTerm*background: ivory
+XTerm*foreground: black
+XTerm*cursorColor: red
+XTerm*scrollBar: true
+XTerm*rightScrollBar: true
