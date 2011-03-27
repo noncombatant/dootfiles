@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# A simple script to count "words" of code (as defined by Dan Bernstein
+# in his "Ten Years of qmail Security" paper). Useful for keeping tabs on 
+# bloat. And shouldn't your tests be at least as big as the code itself?
+
+count_words() {
+      cpp -fpreprocessed | sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' | \
+            sed 's/{//g' | sed 's/(//g' | tr -d ' \012' | wc -c
+}
+
+cat $@ | count_words
+
