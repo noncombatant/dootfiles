@@ -17,6 +17,8 @@ umask 022
 
 export PATH="${HOME}/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/games:/usr/X11R6/bin:/usr/local/mysql-5.1.51-osx10.6-x86_64/bin:/usr/local/git/bin:$HOME/Downloads/android-sdk-mac_x86/tools:$HOME/Downloads/android-sdk-mac_x86/platform-tools"
 
+export MANPATH="/usr/local/man:/usr/local/share/man:/usr/share/man:$MANPATH"
+
 export EDITOR="/usr/bin/vim"
 export VISUAL="$EDITOR"
 export PAGER="/usr/bin/less"
