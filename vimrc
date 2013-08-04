@@ -9,20 +9,19 @@ set ignorecase
 set smartcase
 set hlsearch
 set background=dark
-set tabstop=6
-set softtabstop=6
+set tabstop=4
+set softtabstop=4
 set expandtab
-set shiftwidth=6
+set shiftwidth=4
 set textwidth=76
 set nomodeline
 set tags=tags
+set number
+"set cursorline
+colorscheme chris
+set nojoinspaces
 
 map Q {gq}
 
 syntax on
-
-augroup filetype
-   au! BufRead,BufNewFile *.proto setfiletype proto
-augroup end
-
 
