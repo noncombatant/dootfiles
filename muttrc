@@ -111,4 +111,3 @@ set pgp_verify_key_command="gpg --verbose --batch  --fingerprint --check-sigs %r
 set pgp_list_pubring_command="gpg --no-verbose --batch --quiet --with-colons --list-keys %r" 
 set pgp_list_secring_command="gpg --no-verbose --batch --quiet --with-colons --list-secret-keys %r" 
 set pgp_good_sign="^gpg: Good signature from"
-
