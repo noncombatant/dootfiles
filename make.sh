@@ -1,32 +1,31 @@
 #!/bin/sh
 
-rcFiles="bashrc gitconfig Xresources indent.pro muttrc vim vimrc vimrc-mutt"
-home="$HOME"
-homeBin="$home/bin"
+rc_files="bashrc gitconfig Xresources indent.pro muttrc vim vimrc vimrc-mutt"
+home_bin="$HOME/bin"
 
 function install() {
-    mkdir -p "$homeBin"
+    mkdir -p "$home_bin"
 
-    for i in $rcFiles
+    for i in $rc_files
     do
-        cp -i -a "$i" "$home"/."$i"
+        cp -i -a "$i" "$HOME"/."$i"
     done
 
     for i in bin/*
     do
-        cp -i -a "$i" "$homeBin"/"$(basename $i)"
+        cp -i -a "$i" "$home_bin"/"$(basename $i)"
     done
 }
 
 function slurp() {
-    for i in $rcFiles
+    for i in $rc_files
     do
-        cp -f -a "$home"/."$i" "$i"
+        cp -f -a "$HOME"/."$i" "$i"
     done
 
     for i in bin/*
     do
-        cp -f -a "$homeBin"/"$(basename $i)" "$i"
+        cp -f -a "$home_bin"/"$(basename $i)" "$i"
     done
 
     git status
@@ -43,4 +42,3 @@ case "$1" in
         echo "Usage: $0 {install|slurp}"
         exit 1
 esac
-
