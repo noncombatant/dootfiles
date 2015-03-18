@@ -74,7 +74,7 @@ set quote_regexp = "^([ \t]*[|>:}#%])+"
 
 set autoedit
 set fast_reply
-set editor = "vim -u ~/.vimrc-mutt"
+set editor = "vim"
 set attribution = "%n writes:\n"
 set forward_format = "Fwd: %s"
 set signature = ~/.signature
@@ -111,4 +111,3 @@ set pgp_verify_key_command="gpg --verbose --batch  --fingerprint --check-sigs %r
 set pgp_list_pubring_command="gpg --no-verbose --batch --quiet --with-colons --list-keys %r" 
 set pgp_list_secring_command="gpg --no-verbose --batch --quiet --with-colons --list-secret-keys %r" 
 set pgp_good_sign="^gpg: Good signature from"
-
