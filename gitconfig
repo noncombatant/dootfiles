@@ -1,3 +1,5 @@
 [user]
-	name = Chris Palmer
 	email = chris@noncombatant.org
+	name = Chris Palmer
+[core]
+	editor = vim
