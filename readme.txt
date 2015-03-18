@@ -1,4 +1,0 @@
-My Unix dotfiles.
-
-Whee.
-

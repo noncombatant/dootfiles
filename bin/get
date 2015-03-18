@@ -1,0 +1,2 @@
+#!/bin/sh
+grep -Ei -A3 -B3 $@
