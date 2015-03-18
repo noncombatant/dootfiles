@@ -17,11 +17,19 @@ set textwidth=76
 set nomodeline
 set tags=tags
 set number
-"set cursorline
-colorscheme chris
 set nojoinspaces
-
-map Q {gq}
 
 syntax on
 
+map Q {gq}
+
+fun! ReadMan()
+  let s:word = expand('<cword>')
+  " Open a new window:
+  :exe ":wincmd n"
+  " Read in the manual page:
+  :exe ":r!man " . s:word . " | col -b"
+  " Goto first line:
+  :exe ":goto"
+endfun
+map K :call ReadMan()<CR>
