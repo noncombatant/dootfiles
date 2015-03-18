@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rc_files="bashrc gitconfig Xresources indent.pro muttrc vim vimrc vimrc-mutt"
+rc_files="bashrc gitconfig Xresources muttrc vimrc"
 home_bin="$HOME/bin"
 
 function install() {
