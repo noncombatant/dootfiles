@@ -1,0 +1,7 @@
+#!/bin/sh
+
+server="vault"
+destination="${server}:$(hostname)"
+rm -rf ~/.mozilla ~/.cache
+nice rsync -av --delete --ignore-errors $HOME/ $destination/
+nice rsync -av --delete --ignore-errors vault:tunes/ /Music/
