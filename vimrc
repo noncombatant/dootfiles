@@ -23,13 +23,8 @@ syntax on
 
 map Q {gq}
 
-fun! ReadMan()
+fun! Manual()
   let s:word = expand('<cword>')
-  " Open a new window:
-  :exe ":wincmd n"
-  " Read in the manual page:
-  :exe ":r!man " . s:word . " | col -b"
-  " Goto first line:
-  :exe ":goto"
+  :exe ":!tmux split-window -h 'man " . s:word . "'"
 endfun
-map K :call ReadMan()<CR>
+map K :call Manual()<CR>
