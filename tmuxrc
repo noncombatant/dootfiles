@@ -1,3 +1,0 @@
-set-option status-position top
-set-option status-style bg=white,fg=blue
-set-option status-right ""
