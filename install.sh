@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rc_files="bashrc gitconfig Xresources vimrc tmux.conf"
+rc_files="profile gitconfig Xresources vimrc tmux.conf"
 home_bin="$HOME/bin"
 
 mkdir -p "$home_bin"

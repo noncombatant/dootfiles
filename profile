@@ -5,6 +5,8 @@ export BROWSER=google-chrome
 export PATH="$HOME/bin:$PATH"
 export LC_ALL="en_US.UTF-8"
 
+umask 022
+
 alias ls="'ls'"
 alias la="ls -AF"
 alias l="ls -F"
