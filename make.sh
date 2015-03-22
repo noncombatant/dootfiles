@@ -3,7 +3,7 @@
 rc_files="bashrc gitconfig Xresources muttrc vimrc"
 home_bin="$HOME/bin"
 
-function install() {
+install() {
     mkdir -p "$home_bin"
 
     for i in $rc_files
@@ -17,7 +17,7 @@ function install() {
     done
 }
 
-function slurp() {
+slurp() {
     for i in $rc_files
     do
         cp -f -a "$HOME"/."$i" "$i"
