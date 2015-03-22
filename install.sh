@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rc_files="bashrc gitconfig Xresources muttrc vimrc"
+rc_files="bashrc gitconfig Xresources vimrc"
 home_bin="$HOME/bin"
 
 mkdir -p "$home_bin"
