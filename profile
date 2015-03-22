@@ -1,4 +1,4 @@
-export PS1="\u@\h:\w $ "
+export PS1="\u@\h:\w \$ "
 export EDITOR=vim
 export VISUAL=$EDITOR
 export BROWSER=google-chrome
