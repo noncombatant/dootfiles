@@ -7,10 +7,15 @@ mkdir -p "$home_bin"
 
 for i in $rc_files
 do
-    cp -i -a "$i" "$HOME"/."$i"
+    cp "$i" "$HOME/.$i"
+done
+
+for i in .bashrc .shrc
+do
+    ln "$HOME/.profile" "$HOME/$i"
 done
 
 for i in bin/*
 do
-    cp -i -a "$i" "$home_bin"/"$(basename $i)"
+    cp "$i" "$home_bin/$(basename $i)"
 done
