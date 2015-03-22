@@ -21,6 +21,9 @@ set nojoinspaces
 
 syntax on
 
+setlocal spell spelllang=en_us
+setlocal spell spellfile=~/.spell.add
+
 map Q {gq}
 
 fun! Manual()
