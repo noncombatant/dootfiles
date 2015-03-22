@@ -17,6 +17,7 @@ alias igrep="grep -Ei"
 alias sed="sed -r"
 alias mv="mv -i"
 alias cp="cp -i"
+alias ln="ln -i"
 
 d() {
     x="$1"
