@@ -32,3 +32,7 @@ function run {
     make "$1"
     ./$@
 }
+
+function get {
+    grep -Ei -A3 -B3 $@
+}
