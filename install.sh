@@ -12,7 +12,7 @@ done
 
 for i in .bashrc .shrc
 do
-    ln "$HOME/.profile" "$HOME/$i"
+    ln -f "$HOME/.profile" "$HOME/$i"
 done
 
 for i in bin/*
