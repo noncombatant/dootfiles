@@ -16,7 +16,7 @@ alias sed="sed -r"
 alias mv="mv -i"
 alias cp="cp -i"
 
-function d {
+d() {
     x="$1"
     if [ x"$x" = x ]; then
         x=$(pwd)
@@ -28,10 +28,10 @@ function d {
     ls -F
 }
 
-function run {
+run() {
     make "$1" && ./$@
 }
 
-function get {
+get() {
     grep -Ei -A3 -B3 $@
 }
