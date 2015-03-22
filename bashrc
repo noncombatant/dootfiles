@@ -29,8 +29,7 @@ function d {
 }
 
 function run {
-    make "$1"
-    ./$@
+    make "$1" && ./$@
 }
 
 function get {
