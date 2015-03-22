@@ -3,3 +3,5 @@
 	name = Chris Palmer
 [core]
 	editor = vim
+[push]
+	default = matching
