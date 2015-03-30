@@ -38,3 +38,7 @@ run() {
 get() {
     grep -Ei -A3 -B3 $@
 }
+
+mux() {
+    tmux $@ || screen $@
+}

@@ -1,0 +1,4 @@
+escape ^B^B
+caption always
+startup_message off
+caption string "%{rw}%n:%t%F"
