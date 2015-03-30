@@ -2,7 +2,7 @@ export PS1="\u@\h:\w \$ "
 export EDITOR=vim
 export VISUAL=$EDITOR
 export BROWSER=google-chrome
-export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/depot_tools:$HOME/bin:$PATH"
 export LC_ALL="en_US.UTF-8"
 
 umask 022
@@ -41,4 +41,12 @@ get() {
 
 mux() {
     tmux $@ || screen $@
+}
+
+function csearch {
+  search -x /out/ -n '\.(h|c|cpp|cc|m|mm)$' $@
+}
+
+function hgrep {
+  history | grep -iE "$@" | tail -n 10 | sed -E -e 's/^\s+[0-9]+\s+//'
 }
