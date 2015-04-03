@@ -12,9 +12,20 @@ alias la="ls -AF"
 alias l="ls -F"
 alias ll="ls -ltrh"
 alias dis="objdump -Mintel -d"
-alias grep="grep -E"
+
+# Make searching use POSIX extended regular expressions and be case-insensitive.
 alias igrep="grep -Ei"
-alias sed="sed -r"
+alias less="less -i"
+
+# Use POSIX regular expressions in tools.
+alias grep="grep -E"
+if echo | sed -r > /dev/null 2>&1; then
+  alias sed="sed -r"
+elif echo | sed -E > /dev/null 2>&1; then
+  alias sed="sed -E"
+fi
+
+# Don't overwrite files.
 alias mv="mv -i"
 alias cp="cp -i"
 alias ln="ln -i"
@@ -43,10 +54,14 @@ mux() {
     tmux $@ || screen $@
 }
 
-function csearch {
+csearch() {
   search -x /out/ -n '\.(h|c|cpp|cc|m|mm)$' $@
 }
 
-function hgrep {
+hgrep() {
   history | grep -iE "$@" | tail -n 10 | sed -E -e 's/^\s+[0-9]+\s+//'
+}
+
+try() {
+  "$@" || (e=$?; echo "$@" > /dev/stderr; exit $e)
 }
