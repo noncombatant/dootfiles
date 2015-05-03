@@ -5,6 +5,9 @@ export BROWSER=google-chrome
 export PATH="$HOME/depot_tools:$HOME/bin:$PATH"
 export LC_ALL="en_US.UTF-8"
 
+export CC=clang
+export CFLAGS="-Wall -Wextra -Werror -O2 -std=c99"
+
 umask 022
 
 alias ls="'ls'"
