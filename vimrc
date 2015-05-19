@@ -19,6 +19,8 @@ set tags=tags
 set number
 set nojoinspaces
 
+au FileType go setl tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab textwidth=80
+
 syntax on
 
 setlocal spell spelllang=en_us
