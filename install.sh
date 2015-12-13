@@ -1,21 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-rc_files="profile gitconfig Xresources vimrc tmux.conf"
+rc_files="gitconfig Xresources vimrc tmux.conf fvwm2rc bashrc"
 home_bin="$HOME/bin"
+here=$(dirname "$0")
 
 mkdir -p "$home_bin"
 
-for i in $rc_files
+for file in $rc_files
 do
-    cp "$i" "$HOME/.$i"
+  cp "$here/$file" "$HOME/.$file"
 done
 
-for i in .bashrc .shrc
+for file in bin/*
 do
-    ln -f "$HOME/.profile" "$HOME/$i"
-done
-
-for i in bin/*
-do
-    cp "$i" "$home_bin/$(basename $i)"
+  cp "$here/$file" "$home_bin/$(basename $i)"
 done
