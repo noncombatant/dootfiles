@@ -3,7 +3,7 @@ PixmapPath /usr/share/pixmaps
 IconPath   /usr/share/bitmaps
 
 EdgeResistance 250 10
-EdgeScroll 100 100
+EdgeScroll 0 0
 ClickTime 0
 OpaqueMoveSize 100
 
@@ -25,8 +25,8 @@ Style *           IconBox 0 -10 -280 -1
 Style *           ClickToFocus
 Style *           SmartPlacement
 Style *           Color black/#666
-Style *term* BorderWidth 1, HandleWidth 1, NoTitle
-Style *chrome* BorderWidth 1, HandleWidth 1, NoTitle
+Style *term*      NoTitle
+Style *chrome*    NoTitle
 
 Style Fvwm*       NoTitle, Sticky, WindowListSkip
 Style Fvwm*       BorderWidth 0, HandleWidth 0, CirculateSkipIcon, CirculateSkip
@@ -45,11 +45,11 @@ CursorStyle SELECT      68
 CursorStyle MENU        68
 
 Mouse 1 R  A  Menu RootMenu Nop
-Mouse 2 R  A  Menu Window-Ops Nop
+Mouse 2 R  A  Menu WindowOperationsMenu Nop
 Mouse 3 R  A  WindowList NoGeometry NoIcons Alphabetic
 
-Mouse 1 FS A  Resize-or-Raise
-Mouse 1 T  A  Move-or-Raise
+Mouse 1 FS A  ResizeOrRaise
+Mouse 1 T  A  MoveOrRaise
 Mouse 1 I  A  Iconify
 Mouse 2 I  A  Move
 
@@ -69,106 +69,56 @@ AddToFunc RestartFunction
 
 AddToMenu RootMenu
 + "Cheese Plate" Title
-+ "Terminal"                      Exec exec gnome-terminal
-+ "Chrome"                        Exec exec google-chrome-beta
-+ "Lock Screen"                   Exec exec xscreensaver-command -lock
-+ "Gimp"                          Exec exec gimp
-+ "PDF Reader"                    Exec exec evince
-+ "Text Editor"                   Exec exec gedit
-+ "System Monitor"                Exec exec gnome-system-monitor
-+ "Fvwm Window Ops"               Popup Window-Ops
-+ "Fvwm Simple Config Ops"        Popup Misc-Ops
-+ ""                              Nop
-#+ "Refresh Screen"                Refresh
-#+ "Recapture Screen"              Recapture
-+ "Restart Window Manager"        Restart fvwm
-+ ""                              Nop
-+ "Exit Window Manager"           Module FvwmForm QuitVerify
++ "Terminal" Exec gnome-terminal
++ "Chrome" Exec google-chrome-beta
++ "Pinta" Exec pinta
++ "PDF Reader" Exec evince
++ "Text Editor" Exec gedit
++ "System Monitor" Exec gnome-system-monitor
++ "Window Operations" Popup WindowOperationsMenu
++ "" Nop
++ "Lock Screen" Exec xscreensaver-command -lock
++ "" Nop
++ "Restart Window Manager" Restart fvwm
++ "" Nop
++ "Exit Window Manager" Module FvwmForm QuitVerify
 
-AddToMenu Misc-Ops
-+ "Configuration Options"         Title
-+ "Sloppy Focus"                  ChangeDefaultFocus SloppyFocus
-+ "Click To Focus"                ChangeDefaultFocus ClickToFocus
-+ "Focus Follows Mouse"           ChangeDefaultFocus FocusFollowsMouse
-+ ""                              Nop
-+ "Colormap Follows Mouse"        ColormapFocus FollowsMouse
-+ "Colormap Follows Focus"        ColormapFocus FollowsFocus
-+ ""                              Nop
-+ "Full Paging ON"                EdgeScroll 100 100
-+ "All Paging OFF"                EdgeScroll 0 0
-+ "Horizontal Paging Only"        EdgeScroll 100 0
-+ "Vertical Paging Only"          EdgeScroll 0 100
-+ "Partial Paging"                EdgeScroll 50 50
-+ "Full Paging and Edge Wrap"     EdgeScroll 100000 100000
+AddToMenu WindowOperationsMenu
++ "Window Operations" Title
++ "Move" Move
++ "Resize" Resize
++ "Raise" Raise
++ "Lower" Lower
++ "De/Iconify" Iconify
++ "Un/Stick" Stick
++ "Un/Maximize" Maximize
++ "" Nop
++ "Delete" Delete
++ "Close" Close
++ "Kill Application" Destroy
++ "" Nop
++ "Refresh Window" RefreshWindow
 
-AddToMenu Window-Ops
-+ "Window Operations"             Title
-+ "Move"                          Move
-+ "Resize"                        Resize
-+ "Raise"                         Raise
-+ "Lower"                         Lower
-+ "De/Iconify"                    Iconify
-+ "Un/Stick"                      Stick
-+ "Un/Maximize"                   Maximize
-+ ""                              Nop
-+ "Delete"                        Delete
-+ "Close"                         Close
-+ "Kill Application"              Destroy
-+ ""                              Nop
-+ "Refresh Window"                RefreshWindow
-
-AddToFunc Move-or-Raise
+AddToFunc MoveOrRaise
 + "I" Raise
 + "M" Move
 + "D" Lower
 
-AddToFunc Move-or-Raise2
-+ "M" Raise
-+ "M" Move
-+ "D" Lower
-
-AddToFunc Maximize-Func
-+ "M" Maximize    0 100
-+ "C" Maximize    0 80
-+ "D" Maximize    100 100
-
-AddToFunc Move-or-Iconify
-+ "I" Raise
-+ "M" Move
-+ "D" Iconify
-
-AddToFunc Resize-or-Raise
+AddToFunc ResizeOrRaise
 + "I" Raise
 + "M" Resize
 + "D" Lower
 
-AddToFunc Resize-or-Raise2
-+ "M" Raise
-+ "M" Resize
-+ "D" Lower
-
-AddToFunc Focus-and-Raise
+AddToFunc FocusAndRaise
 + "I" Focus
 + "I" Raise
-
-AddToFunc FocusAndWarp
-+ "I" Focus
-+ "I" WarpToWindow 2p 2p
-
-AddToFunc DeiconifyFocusAndWarp
-+ "I" Iconify -1
-+ "I" FocusAndWarp
-
-AddToFunc ChangeDefaultFocus
-+ "I" Style "*" $0
-+ "I" Recapture
 
 AddToFunc ScrollFocusRaise
 + "I" Scroll $0 $1
-+ "I" Next (CurrentPage) Focus-and-Raise
++ "I" Next (CurrentPage) FocusAndRaise
 
-Key Tab   A  M  Next (CurrentPage) Focus-and-Raise
-Key Tab   A SM  Prev (CurrentPage) Focus-and-Raise
+Key Tab   A  M  Next (CurrentPage) FocusAndRaise
+Key Tab   A SM  Prev (CurrentPage) FocusAndRaise
 
 Key Left  A  C  ScrollFocusRaise -100 0
 Key Right A  C  ScrollFocusRaise +100 +0
@@ -191,7 +141,7 @@ Key Up    A SM  CursorMove +0 -10
 Key Down  A SM  CursorMove +0 +10
 
 Key F1    A  M  Menu RootMenu
-Key F2    A  M  Menu Window-Ops
+Key F2    A  M  Menu WindowOperationsMenu
 Key F3    A  M  WindowList FvwmWinList NoGeometry NoIcons Alphabetic
 Key F4    A  M  Iconify
 Key F5    A  M  Move
