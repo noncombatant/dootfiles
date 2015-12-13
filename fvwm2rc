@@ -71,7 +71,9 @@ AddToMenu RootMenu
 + "Cheese Plate" Title
 + "Terminal" Exec gnome-terminal
 + "Chrome" Exec google-chrome-beta
++ "Firefox" Exec firefox
 + "Pinta" Exec pinta
++ "Screenshot" Exec gnome-screenshot -i
 + "PDF Reader" Exec evince
 + "Text Editor" Exec gedit
 + "System Monitor" Exec gnome-system-monitor
@@ -79,9 +81,9 @@ AddToMenu RootMenu
 + "" Nop
 + "Lock Screen" Exec xscreensaver-command -lock
 + "" Nop
-+ "Restart Window Manager" Restart fvwm
++ "Restart Desktop" Restart fvwm
 + "" Nop
-+ "Exit Window Manager" Module FvwmForm QuitVerify
++ "Exit Desktop" Module FvwmForm QuitVerify
 
 AddToMenu WindowOperationsMenu
 + "Window Operations" Title
