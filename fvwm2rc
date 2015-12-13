@@ -17,7 +17,6 @@ ColormapFocus FollowsMouse
 
 #TitleStyle -- flat
 #BorderStyle -- flat
-#Style *           BorderWidth 1, HandleWidth 1, NoTitle
 Style *           BorderWidth 6, HandleWidth 6, FirmBorder
 Style *           MwmButtons, MwmDecor, MwmBorder
 Style *           Icon unknown1.xpm
@@ -26,10 +25,12 @@ Style *           IconBox 0 -10 -280 -1
 Style *           ClickToFocus
 Style *           SmartPlacement
 Style *           Color black/#666
+Style *term* BorderWidth 1, HandleWidth 1, NoTitle
+Style *chrome* BorderWidth 1, HandleWidth 1, NoTitle
 
 Style Fvwm*       NoTitle, Sticky, WindowListSkip
 Style Fvwm*       BorderWidth 0, HandleWidth 0, CirculateSkipIcon, CirculateSkip
-Style FvwmPager   StaysOnBottom
+Style FvwmPager   StaysOnBottom, SolidSeparators
 Style xclock      NoTitle, Sticky, WindowListSkip
 Style xclock      BorderWidth 0, HandleWidth 0, CirculateSkipIcon, CirculateSkip
 Style xclock      StaysOnBottom
@@ -162,13 +163,17 @@ AddToFunc ChangeDefaultFocus
 + "I" Style "*" $0
 + "I" Recapture
 
+AddToFunc ScrollFocusRaise
++ "I" Scroll $0 $1
++ "I" Next (CurrentPage) Focus-and-Raise
+
 Key Tab   A  M  Next (CurrentPage) Focus-and-Raise
 Key Tab   A SM  Prev (CurrentPage) Focus-and-Raise
 
-Key Left  A  C  Scroll -100 0
-Key Right A  C  Scroll +100 +0
-Key Up    A  C  Scroll +0   -100
-Key Down  A  C  Scroll +0   +100
+Key Left  A  C  ScrollFocusRaise -100 0
+Key Right A  C  ScrollFocusRaise +100 +0
+Key Up    A  C  ScrollFocusRaise +0 -100
+Key Down  A  C  ScrollFocusRaise +0 +100
 
 Key Left  A  M  Scroll -10 +0
 Key Right A  M  Scroll +10 +0
