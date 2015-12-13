@@ -58,7 +58,7 @@ AddToFunc InitFunction
 + "I" exec setxkbmap -option compose:ralt
 + "I" exec setxkbmap -option ctrl:nocaps
 + "I" exec xclock -d -fg '#ccc' -bg '#78a' -geometry -0+0 -twentyfour &
-+ "I" exec xscreensaver &
++ "I" exec xscreensaver -no-splash &
 
 AddToFunc RestartFunction
 + "I" Module FvwmPager 0 0
