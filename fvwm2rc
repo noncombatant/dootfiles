@@ -72,6 +72,7 @@ AddToMenu RootMenu
 + "Terminal" Exec gnome-terminal
 + "Chrome" Exec google-chrome-beta
 + "Firefox" Exec firefox
++ "DrRacket" Exec drracket
 + "Pinta" Exec pinta
 + "Screenshot" Exec gnome-screenshot -i
 + "PDF Reader" Exec evince
