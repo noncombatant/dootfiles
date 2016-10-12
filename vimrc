@@ -8,7 +8,7 @@ set incsearch
 set ignorecase
 set smartcase
 set hlsearch
-set background=dark
+set background=light
 set tabstop=2
 set softtabstop=2
 set expandtab
@@ -16,12 +16,12 @@ set shiftwidth=2
 set textwidth=80
 set nomodeline
 set tags=tags
-set number
+set nonumber
 set nojoinspaces
 
 au FileType go setl tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab textwidth=80
 
-syntax on
+syntax off
 
 setlocal spell spelllang=en_us
 setlocal spell spellfile=~/.spell.add
