@@ -1,12 +1,14 @@
-export PS1="\u@\h:\w \$ "
+export PS1="\h:\w \$ "
 export EDITOR=vim
 export VISUAL=$EDITOR
 export BROWSER=google-chrome
-export PATH="$HOME/depot_tools:$HOME/bin:$PATH"
 export LC_ALL="en_US.UTF-8"
+export PATH="$HOME/bin:$PATH"
 
 export CC=clang
-export CFLAGS="-Wall -Wextra -Werror -O2 -std=c99"
+export CFLAGS="-Wall -Wextra -Werror -O0 -ansi -pedantic -std=c11"
+export CXX=clang++
+export CXXFLAGS="-Wall -Wextra -Werror -O0 -ansi -pedantic -std=c++11"
 export GOPATH="$HOME/gofun"
 
 umask 022
@@ -15,13 +17,15 @@ alias ls="'ls'"
 alias la="ls -AF"
 alias l="ls -F"
 alias ll="ls -ltrh"
-alias dis="objdump -Mintel -d"
+if which objdump > /dev/null; then
+  alias dis="objdump -Mintel -d"
+elif which otool > /dev/null; then
+  alias dis="otool -tV"
+fi
 
-# Make searching use POSIX extended regular expressions and be case-insensitive.
 alias igrep="grep -Ei"
 alias less="less -i"
 
-# Use POSIX regular expressions in tools.
 alias grep="grep -E"
 if echo | sed -r > /dev/null 2>&1; then
   alias sed="sed -r"
@@ -35,28 +39,32 @@ alias cp="cp -i"
 alias ln="ln -i"
 
 function d {
-    declare x="$1"
-    if test -z "$x"
-    then
-        x=$(pwd)
-    fi
+  declare x="$1"
+  if test -z "$x"
+  then
+    x=$(pwd)
+  fi
 
-    clear
-    cd "$x"
-    echo $(pwd)
-    ls -F
+  clear
+  cd "$x"
+  echo $(pwd)
+  ls -F
+}
+
+function = {
+  echo "$*" | bc -l
 }
 
 function run {
-    make "$1" && ./$@
+  make "$1" && ./$@
 }
 
 function get {
-    grep -Ei -A3 -B3 $@
+  grep -Ei -A3 -B3 $@
 }
 
 function mux {
-    tmux $@ || screen $@
+  tmux $@ || screen $@
 }
 
 function csearch {
@@ -75,11 +83,7 @@ function udate {
   date -u +'%d %b %Y %H:%M UTC'
 }
 
-function volume {
-  declare -i v="$1"
-  v=$(($v * 10))
-  if test $v -lt 0; then v=0; fi
-  if test $v -gt 100; then v=100; fi
-  pactl set-sink-volume 0 $v%
-  pactl set-sink-volume 1 $v%
-}
+function goatoc { godoc "$1" | less -p "${2-package $1}"; }
+
+PATH="/Library/Frameworks/Python.framework/Versions/3.5/bin:${PATH}"
+export PATH
