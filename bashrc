@@ -1,4 +1,6 @@
-export PS1="\h:\w \$ "
+#tput documentation: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x405.html
+
+export PS1="$(tput bold)\h:\w \$$(tput sgr0) "
 export EDITOR=vim
 export VISUAL=$EDITOR
 export BROWSER=google-chrome
@@ -17,11 +19,6 @@ alias ls="'ls'"
 alias la="ls -AF"
 alias l="ls -F"
 alias ll="ls -ltrh"
-if which objdump > /dev/null; then
-  alias dis="objdump -Mintel -d"
-elif which otool > /dev/null; then
-  alias dis="otool -tV"
-fi
 
 alias igrep="grep -Ei"
 alias less="less -i"
@@ -33,6 +30,12 @@ elif echo | sed -E > /dev/null 2>&1; then
   alias sed="sed -E"
 fi
 
+if which objdump > /dev/null; then
+  alias dis="objdump -Mintel -d"
+elif which otool > /dev/null; then
+  alias dis="otool -tV"
+fi
+
 # Don't overwrite files.
 alias mv="mv -i"
 alias cp="cp -i"
@@ -40,14 +43,13 @@ alias ln="ln -i"
 
 function d {
   declare x="$1"
-  if test -z "$x"
-  then
+  if test -z "$x"; then
     x=$(pwd)
   fi
 
   clear
   cd "$x"
-  echo $(pwd)
+  echo $(tput smso)$(pwd)$(tput rmso)
   ls -F
 }
 
@@ -83,7 +85,9 @@ function udate {
   date -u +'%d %b %Y %H:%M UTC'
 }
 
-function goatoc { godoc "$1" | less -p "${2-package $1}"; }
+function goatoc {
+  godoc "$1" | less -p "${2-package $1}";
+}
 
 PATH="/Library/Frameworks/Python.framework/Versions/3.5/bin:${PATH}"
 export PATH
