@@ -42,15 +42,12 @@ alias cp="cp -i"
 alias ln="ln -i"
 
 function d {
-  declare x="$1"
-  if test -z "$x"; then
-    x=$(pwd)
+  declare x=${1:-$(pwd)}
+  if cd "$x"; then
+    clear
+    echo $(tput smso)$(pwd)$(tput rmso)
+    ls -F
   fi
-
-  clear
-  cd "$x"
-  echo $(tput smso)$(pwd)$(tput rmso)
-  ls -F
 }
 
 function = {
@@ -58,19 +55,21 @@ function = {
 }
 
 function run {
-  make "$1" && ./$@
+  declare target="$1"
+  shift
+  make "$target" && ./"$target" "$@"
 }
 
 function get {
-  grep -Ei -A3 -B3 $@
+  grep -Ei -A3 -B3 "$@"
 }
 
 function mux {
-  tmux $@ || screen $@
+  tmux "$@" || screen "$@"
 }
 
 function csearch {
-  search -x /out/ -n '\.(h|c|cpp|cc|m|mm)$' $@
+  search -x /out/ -n '\.(h|c|cpp|cc|m|mm)$' "$@"
 }
 
 function hgrep {
