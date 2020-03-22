@@ -1,7 +1,11 @@
 [user]
-	email = chris@noncombatant.org
-	name = Chris Palmer
-[core]
-	editor = vim
+  email = chris@noncombatant.org
+  name = Chris Palmer
+[transfer] 
+  fsckobjects = true 
+[fetch] 
+  fsckobjects = true 
+[receive] 
+  fsckobjects = true 
 [push]
-	default = matching
+	default = simple
