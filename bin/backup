@@ -1,9 +1,0 @@
-#!/bin/bash
-
-destination=vault:$(hostname)
-
-if ! pidof chrome > /dev/null
-then
-  rm -rf ~/.cache
-fi
-nice rsync -avz --delete --ignore-errors $HOME/ $destination/
