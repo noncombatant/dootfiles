@@ -19,17 +19,21 @@ set tags=tags
 set nonumber
 set nojoinspaces
 
-au FileType go setl tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab textwidth=80
+syntax on
 
-syntax off
+au BufReadPost *.content set syntax=html
+au BufReadPost *.go set textwidth=0
+au BufReadPost *.go set noexpandtab
 
-setlocal spell spelllang=en_us
+setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
 
 map Q {gq}
 
 fun! Manual()
   let s:word = expand('<cword>')
-  :exe ":!tmux split-window -h 'man " . s:word . "'"
+"  :exe ":!tmux split-window -h 'man " . s:word . "'"
+  :exe ":!man " . s:word
 endfun
-map K :call Manual()<CR>
+
+map M :call Manual()<CR>
