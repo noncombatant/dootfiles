@@ -20,8 +20,8 @@ set nonumber
 set nojoinspaces
 set laststatus=2
 set statusline+=%F
-set statusline+=\ \ %l/%L:%c\ %P\ %m
-hi StatusLine ctermbg=white ctermfg=red
+set statusline+=\ \ %l/%L:%c\ \ %P\ \ %m
+highlight StatusLine ctermbg=white ctermfg=blue
 
 " this looks unsafe!
 "autocmd BufReadPost,FileReadPost,BufNewFile * call system("tmux rename-window " . expand("%"))
