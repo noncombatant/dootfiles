@@ -49,7 +49,7 @@ function d {
     dir=$(search -t d -n "$1" . | head -n1)
   fi
 
-  cd "$dir" && echo "[7m$dir[0m" && ls -F
+  cd "$dir" && echo "[1m$dir[0m" && ls -F
 }
 
 function = {
