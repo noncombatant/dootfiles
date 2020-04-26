@@ -15,7 +15,7 @@ umask 022
 
 alias ls="'ls'"
 alias la="ls -AF"
-alias l="ls -F"
+alias l="list -m | sort -bn"
 alias ll="ls -ltrh"
 
 alias igrep="grep -Ei"
