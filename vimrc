@@ -19,7 +19,7 @@ set tags=tags
 set nonumber
 set nojoinspaces
 set laststatus=2
-set statusline+=%F
+set statusline=%F
 set statusline+=\ \ %l/%L:%c\ \ %P\ \ %m
 highlight StatusLine ctermbg=white ctermfg=blue
 
@@ -28,19 +28,21 @@ highlight StatusLine ctermbg=white ctermfg=blue
 
 syntax on
 
-au BufReadPost *.content set syntax=html
-au BufReadPost *.go set textwidth=0
-au BufReadPost *.go set noexpandtab
+autocmd BufReadPost *.content set syntax=html
+autocmd BufReadPost *.go set textwidth=0
+autocmd BufReadPost *.go set noexpandtab
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
 
 map Q {gq}
 
-fun! Manual()
-  let s:word = expand('<cword>')
-"  :exe ":!tmux split-window -h 'man " . s:word . "'"
-  :exe ":!man " . s:word
+function! Manual()
+  ":exe ":!tmux split-window -h 'man " . expand('<cword>') . "'"
+  :execute ":!man " . expand('<cword>')
 endfun
-
 map M :call Manual()<CR>
+
+function! System()
+  :execute ":!" . expand('<cword>')
+endfun
