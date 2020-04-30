@@ -1,2 +1,2 @@
-export PS1="[1m\w \$[0m "
+export PS1="\w \$ "
 source ~/.profile
