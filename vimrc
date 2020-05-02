@@ -21,30 +21,23 @@ set nojoinspaces
 set laststatus=2
 set statusline=%F
 set statusline+=\ \ %l/%L:%c\ \ %P\ \ %m
-highlight StatusLine ctermbg=white ctermfg=blue
-
-" this looks unsafe!
-"autocmd BufReadPost,FileReadPost,BufNewFile * call system("tmux rename-window " . expand("%"))
+highlight StatusLine ctermbg=black ctermfg=yellow
+highlight StatusLineNC ctermbg=yellow ctermfg=black
 
 syntax on
 
 autocmd BufReadPost *.content set syntax=html
-autocmd BufReadPost *.go set textwidth=0
+autocmd BufReadPost *.go,*.js set textwidth=0
 autocmd BufReadPost *.go set noexpandtab
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
 
+" Keyboard shortcuts:
 map Q {gq}
-
-function! Manual()
-  ":exe ":!tmux split-window -h 'man " . expand('<cword>') . "'"
-  :execute ":!man " . expand('<cword>')
-endfun
-map M :call Manual()<CR>
-
-function! System()
-  :execute ":!" . expand('<cword>')
-endfun
-
 map W :execute ":!wc < " . expand("%:p")<CR>
+":execute ":!tmux split-window -h 'man " . expand('<cword>') . "'"
+autocmd FileType c map M :execute ":!man -S 2:3 " . expand('<cword>')<CR>
+autocmd FileType sh map M :execute ":!man -S 1 " . expand('<cword>')<CR>
+autocmd FileType go set iskeyword+=.
+autocmd FileType go map M :execute ":!go doc " . expand('<cword>')<CR>
