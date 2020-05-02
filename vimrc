@@ -46,3 +46,5 @@ map M :call Manual()<CR>
 function! System()
   :execute ":!" . expand('<cword>')
 endfun
+
+map W :execute ":!wc < " . expand("%:p")<CR>
