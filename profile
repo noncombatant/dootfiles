@@ -14,9 +14,9 @@ export CXXFLAGS="-Weverything -Werror -O0 -std=c++17"
 umask 022
 
 alias ls="'ls'"
-alias la="ls -AF"
-alias l="list -m | sort -bn"
-alias ll="ls -ltrh"
+function l {
+  list -m $@ | sort
+}
 
 alias igrep="grep -Ei"
 alias less="less -i"
