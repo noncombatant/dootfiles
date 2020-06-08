@@ -39,5 +39,4 @@ map W :execute ":!wc < " . expand("%:p")<CR>
 ":execute ":!tmux split-window -h 'man " . expand('<cword>') . "'"
 autocmd FileType c map M :execute ":!man -S 2:3 " . expand('<cword>')<CR>
 autocmd FileType sh map M :execute ":!man -S 1 " . expand('<cword>')<CR>
-autocmd FileType go set iskeyword+=.
 autocmd FileType go map M :execute ":!go doc " . expand('<cword>')<CR>
