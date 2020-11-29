@@ -2,7 +2,6 @@ export EDITOR=vim
 export VISUAL=$EDITOR
 export LC_ALL="en_US.UTF-8"
 export PATH="$HOME/bin:$PATH"
-export PATH="/Library/Frameworks/Python.framework/Versions/3.7/bin:${PATH}"
 export PATH="$HOME/.cargo/bin:$PATH"
 export MANWIDTH=80
 
@@ -13,10 +12,11 @@ export CXXFLAGS="-Weverything -Werror -O0 -std=c++17"
 
 umask 022
 
+alias py=python3
+
 alias ls="'ls'"
-function l {
-  list -m $@ | sort
-}
+alias l="ls -AF"
+alias ll="ls -ltrhA"
 
 alias igrep="grep -Ei"
 alias less="less -i"
