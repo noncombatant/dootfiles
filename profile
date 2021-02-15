@@ -2,8 +2,9 @@ export EDITOR=vim
 export VISUAL=$EDITOR
 export LC_ALL="en_US.UTF-8"
 export PATH="$HOME/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
 export MANWIDTH=80
+
+source "$HOME/.cargo/env"
 
 export CC=clang
 export CFLAGS="-Weverything -Werror -O0 -std=c11"
