@@ -16,7 +16,8 @@ umask 022
 alias py=python3
 
 alias ls="'ls'"
-alias l="ls -AF"
+alias l="ls -F"
+alias la="ls -AF"
 alias ll="ls -ltrhA"
 
 alias igrep="grep -Ei"
