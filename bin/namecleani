@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for i in *"$1"*
+do
+  j=${i//$1/}
+  echo -n "'$i'" → "'$j'" '[y/N]? '
+  read a
+  if [ x"$a" = xy ]
+  then
+    mv "$i" "$j"
+  fi
+done
