@@ -1,10 +1,8 @@
 #!/bin/sh
 
-self=$(basename "$0")
+here=$(dirname "$0")
 
-for file in *; do
-  if test ! -f "$file" -o "$self" = "$file"; then
-    continue
-  fi
-  cp "$file" "$HOME/.$file"
+for file in $here/doots/*; do
+  f=$(basename "$file")
+  cp "$file" "$HOME/.$f"
 done
