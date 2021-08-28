@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+"""
+A word-count program, like wc(1), that examines only text nodes in HTML and XML
+files, ignoring markup.
+"""
+
+import codecs, HTMLParser, re, sys, types
+
+wordSplitter = re.compile(r"\s+").split
+lineFinder = re.compile(r"(\r\n|\r|\n)").findall
+
+class HTMLWordCounter(HTMLParser.HTMLParser):
+    def __init__(self):
+        HTMLParser.HTMLParser.__init__(self)
+        self.lineCount = self.wordCount = self.characterCount = 0
+        self.uniqueWords = set()
+
+    def handle_data(self, data):
+        self.characterCount += len(data)
+        self.lineCount += len(lineFinder(data))
+        words = [ w for w in wordSplitter(data) if len(w) ]
+        self.wordCount += len(words)
+        self.uniqueWords.update(words)
+
+    def summary(self):
+        return self.lineCount, self.wordCount, self.characterCount, len(self.uniqueWords)
+
+def wc(input):
+    counter = HTMLWordCounter()
+    while True:
+        data = input.read(4096)
+        if not data:
+            break
+        counter.feed(data)
+    counter.close()
+    return counter.summary()
+
+if __name__ == "__main__":
+    import os
+    encoding = os.environ.get("encoding", "UTF-8")
+
+    if len(sys.argv) == 1:
+        wc(sys.stdin)
+    else:
+        totalLines = totalWords = totalCharacters = 0
+        for pathname in sys.argv[1:]:
+            try:
+                input = codecs.open(pathname, encoding=encoding)
+                lines, words, characters, uniqueWords = wc(input)
+                totalLines += lines
+                totalWords += words
+                totalCharacters += characters
+                sys.stdout.write("%6d  %6d  %6d  %s\n" % (lines, words, characters, pathname))
+                input.close()
+            except Exception, e:
+                sys.stderr.write(pathname + ": " + str(e) + "\n")
+        if len(sys.argv) > 2:
+            sys.stdout.write("%6d  %6d  %6d  total\n" % (totalLines, totalWords, totalCharacters))
