@@ -8,4 +8,4 @@
 [receive] 
   fsckobjects = true 
 [push]
-	default = simple
+  default = simple
