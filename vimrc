@@ -29,6 +29,9 @@ syntax on
 autocmd BufReadPost *.content set syntax=html
 autocmd BufReadPost *.go,*.js set textwidth=0
 autocmd BufReadPost *.go set noexpandtab
+autocmd BufReadPost *.rs set tabstop=4
+autocmd BufReadPost *.rs set softtabstop=4
+autocmd BufReadPost *.rs set shiftwidth=4
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
