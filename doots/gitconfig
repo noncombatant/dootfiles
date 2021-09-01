@@ -1,13 +1,13 @@
 [user]
-  email = chris@noncombatant.org
-  name = Chris Palmer
+	email = chris@noncombatant.org
+	name = Chris Palmer
 [transfer] 
-  fsckobjects = true 
+	fsckobjects = true
 [fetch] 
-  fsckobjects = true 
+	fsckobjects = true
 [receive] 
-  fsckobjects = true 
+	fsckobjects = true
 [push]
-  default = simple
+	default = simple
 [init]
-  defaultBranch = main
+	defaultBranch = main
