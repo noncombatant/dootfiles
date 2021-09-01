@@ -9,3 +9,5 @@
   fsckobjects = true 
 [push]
   default = simple
+[init]
+  defaultBranch = main
