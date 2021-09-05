@@ -1,2 +1,3 @@
 export PS1="\w \$ "
 source ~/.profile
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
