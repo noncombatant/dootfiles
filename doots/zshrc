@@ -1,3 +1,4 @@
 bindkey -e
 export PROMPT="[1m%~ %#[0m "
 source ~/.profile
+test -f "$HOME/.local_profile" && source "$HOME/.local_profile"
