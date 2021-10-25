@@ -1,29 +1,24 @@
 export EDITOR=vim
-export VISUAL=$EDITOR
+export VISUAL="$EDITOR"
 export LC_ALL="en_US.UTF-8"
-export PATH="$HOME/bin:$HOME/Library/Python/3.8/bin:$PATH"
 export MANWIDTH=80
-
-source "$HOME/.cargo/env"
-
-export CC=clang
-#export CFLAGS="-Weverything -Werror -O0 -std=c11"
-export CXX=clang++
-#export CXXFLAGS="-Weverything -Werror -O0 -std=c++17"
+export PATH="$HOME/bin:$PATH"
 
 umask 022
 
-alias py=python3
-
-alias ls="'ls'"
 alias l="ls -F"
 alias la="ls -AF"
 alias ll="ls -ltrh"
 
-alias igrep="grep -Ei"
 alias less="less -i"
 
+alias mv="mv -i"
+alias cp="cp -i"
+alias ln="ln -i"
+
+# Use extended regular expressions.
 alias grep="grep -E"
+alias find="find -E"
 if echo | sed -r > /dev/null 2>&1; then
   alias sed="sed -r"
 elif echo | sed -E > /dev/null 2>&1; then
@@ -36,10 +31,6 @@ elif which objdump > /dev/null; then
   alias dis="objdump -Mintel -d"
 fi
 
-alias mv="mv -i"
-alias cp="cp -i"
-alias ln="ln -i"
-
 function d {
   declare dir
   if test $# -eq 0; then
@@ -47,11 +38,10 @@ function d {
   elif test -d "$1"; then
     dir="$1"
   else
-    # find -E . -type d -not -path '*/.*' -iregex '.*'"$1"'.*'
-    dir=$(search -t d -n "$1" . | head -n1)
+    dir=$(find ~ -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
   fi
 
-  cd "$dir" && echo "[1m$dir[0m" && ls -F
+  cd "$dir" && ls
 }
 
 function = {
@@ -59,49 +49,17 @@ function = {
 }
 
 function get {
-  grep -Ei -A3 -B3 "$@"
-}
-
-function mux {
-  tmux "$@" || screen "$@"
+  grep -i -A3 -B3 "$@"
 }
 
 function searchc {
-  search -x /out/ -n '\.(h|c|cpp|cc|m|mm)$' "$@"
+  search -n '!/out/' -n '\.(h|c|cpp|cc|m|mm)$' "$@"
 }
 
 function hgrep {
-  history | grep -iE "$@" | tail -n 10
+  history | grep -i "$@" | tail -n 10
 }
 
 function udate {
   date -u +'%d %b %Y %H:%M UTC'
-}
-
-function goatoc {
-  godoc "$1" | less -p "${2-package $1}";
-}
-
-function remove-dots { 
-  for i in *.mp3; do
-    j=$(echo "$i" | sed -e 's/([0-9][0-9])\./\1/');
-    mv -i "$i" "$j";
-  done
-}
-
-function prepend-disc { 
-  for i in *.mp3; do
-    mv -i "$i" $1-"$i";
-  done
-}
-
-function prepend-artist {
-  for i in *.mp3; do
-    j=$(echo "$i" | sed -e "s/([-0-9]+)(.+)/\1 $1 -\2/")
-    mv "$i" "$j"
-  done
-}
-
-function gofmtall {
-  gofmt -s -w *.go
 }

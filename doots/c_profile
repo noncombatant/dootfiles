@@ -1,0 +1,4 @@
+export CC=clang
+export CFLAGS="-Weverything -Werror -O0 -std=c11"
+export CXX=clang++
+export CXXFLAGS="-Weverything -Werror -O0 -std=c++20"
