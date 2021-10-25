@@ -30,6 +30,7 @@ elif which objdump > /dev/null; then
   alias dis="objdump -Mintel -d"
 fi
 
+
 function 2null {
   $@ 2> /dev/null
 }
