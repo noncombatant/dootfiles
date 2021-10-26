@@ -6,7 +6,6 @@ export PATH="$HOME/bin:$PATH"
 
 umask 022
 
-alias l="ls -F"
 alias la="ls -AF"
 alias ll="ls -ltrh"
 
@@ -31,17 +30,15 @@ elif which objdump > /dev/null; then
   alias dis="objdump -Mintel -d"
 fi
 
-function d {
-  declare dir
-  if test $# -eq 0; then
-    dir=$(pwd)
-  elif test -d "$1"; then
-    dir="$1"
-  else
-    dir=$(find ~ -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
-  fi
+function 2null {
+  $@ 2> /dev/null
+}
 
-  cd "$dir" && ls
+function d {
+  if test $# -gt 0; then
+    test -d "$1" && cd "$1" || cd $(2null find ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
+  fi
+  ls -F
 }
 
 function = {
