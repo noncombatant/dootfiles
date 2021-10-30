@@ -42,6 +42,40 @@ function d {
   ls -F
 }
 
+function get_icon {
+  s=""
+  if test -d "$1"; then
+    s="📁"
+  elif test -x "$1"; then
+    s="⚡"
+  else
+    s="📄"
+  fi
+  echo "$s"
+}
+
+function tree {
+  find "$@" | while read pathname; do
+    if echo "$pathname" | grep -q '/\.'; then
+      continue
+    fi
+
+    indented=$(echo "$pathname" | sed 's,[^/]*/,  ,g')
+
+    icon=$(get_icon "$pathname")
+    if test -L "$pathname"; then
+      target=$(readlink "$pathname")
+      icon="→ $(get_icon "$target")"
+    fi
+
+    echo "$indented $icon"
+  done
+}
+
+function t {
+  test $# -gt 0 && tree "$@" || tree .
+}
+
 function = {
   echo "$*" | bc -l
 }
