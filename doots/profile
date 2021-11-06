@@ -43,15 +43,44 @@ function d {
 }
 
 function get_icon {
-  s=""
+  icon=""
   if test -d "$1"; then
-    s="📁"
+    icon="📁"
   elif test -x "$1"; then
-    s="⚡"
+    icon="⚡"
   else
-    s="📄"
+    extension="$(echo "${1##*.}" | tr A-Z a-z)"
+    case "$extension" in
+      aif|aiff|au|mp3|m4a|wav|wave)
+        icon="🎧"
+        ;;
+      gif|jpg|jpeg|png|tif|tiff)
+        icon="🖼"
+        ;;
+      pdf|ps)
+        icon="📜"
+        ;;
+      md|rtf|text|tex|txt)
+        icon="📄"
+        ;;
+      db|sql|sqlite)
+        icon="🗄"
+        ;;
+      bat|c|cc|cpp|h|hpp|go|js|lisp|lsp|py|rs|sh)
+        icon="⚙️"
+        ;;
+      json|plist|xml)
+        icon="🔩"
+        ;;
+      bz2|cab|dmg|dpkg|gz|jar|msi|pkg|rar|rpm|tar|xz|z|zip)
+        icon="📦"
+        ;;
+      *)
+        icon=""
+        ;;
+    esac
   fi
-  echo "$s"
+  echo "$icon"
 }
 
 function tree {
