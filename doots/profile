@@ -60,12 +60,13 @@ function tree {
       continue
     fi
 
-    indented=$(echo "$pathname" | sed 's,[^/]*/,  ,g')
+    indented=$(echo "$pathname" | sed 's,[^/]*/,    ,g')
 
-    icon=$(get_icon "$pathname")
     if test -L "$pathname"; then
       target=$(readlink "$pathname")
       icon="→ $(get_icon "$target")"
+    else
+      icon=$(get_icon "$pathname")
     fi
 
     echo "$indented $icon"
