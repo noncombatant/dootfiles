@@ -1,6 +1,3 @@
-[user]
-	email = chris@noncombatant.org
-	name = Chris Palmer
 [transfer] 
 	fsckobjects = true
 [fetch] 
