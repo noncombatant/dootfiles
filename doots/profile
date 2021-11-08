@@ -6,6 +6,7 @@ export PATH="$HOME/bin:$PATH"
 
 umask 022
 
+alias l="ls -F"
 alias la="ls -AF"
 alias ll="ls -ltrh"
 
@@ -29,7 +30,6 @@ if which otool > /dev/null; then
 elif which objdump > /dev/null; then
   alias dis="objdump -Mintel -d"
 fi
-
 
 function 2null {
   $@ 2> /dev/null
