@@ -37,7 +37,7 @@ function 2null {
 
 function d {
   if test $# -gt 0; then
-    test -d "$1" && cd "$1" || cd $(2null find ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
+    cd "$1" || cd $(2null find ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
   fi
   ls -F
 }
