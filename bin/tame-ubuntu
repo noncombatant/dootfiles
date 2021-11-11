@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Updates the system, removes old bad stuff, installs new good stuff,
+# configures things to require a bit less babysitting.
+#
+# This script *should* be idempotent. Hope springs eternal.
+
+blorp() {
+  echo "$@"
+  exit 1
+}
+
+# Configuration: Set these variables to what makes sense on the system. These
+# values work as of Ubuntu 21.10.
+release_upgrades="/etc/update-manager/release-upgrades"
+test -f "$release_upgrades" || blorp "$release_upgrades does not exist."
+journald_conf="/etc/systemd/journald.conf"
+test -f "$journald_conf" || blorp "$journald_conf does not exist."
+max_journal_usage="50M"
+craved_packages="vim tmux clang git zsh"
+root_crontab="/var/spool/cron/crontabs/root"
+test -f "$root_crontab" || blorp "$root_crontab does not exist."
+
+set -e
+
+echo "Upgrading all the packages."
+apt update
+apt upgrade
+apt autoremove
+
+echo "Use normal upgrades, not LTS."
+sed -i 's/Prompt=lts/Prompt=normal/' "$release_upgrades"
+do-release-upgrade
+
+#echo "Turning off syslogd."
+#systemctl mask rsyslogd
+#systemctl stop syslog.socket
+#systemctl stop rsyslog.service
+#systemctl is-active rsyslog.service 
+echo "Removing syslogd."
+apt remove rsyslog
+
+echo "Removing Postfix."
+apt remove postfix
+
+echo "Limiting journald's disk usage."
+grep -q "^SystemMaxUse=" "$journald_conf" || echo "SystemMaxUse=$max_journal_usage" >> "$journald_conf"
+
+echo "Installing the delightful packages you crave."
+apt install $craved_packages
+
+echo "Turning on auto-updates."
+grep -q "^3 3.*update" "$root_crontab" || echo "3 3 * * * apt -qy update && apt -qy upgrade && apt -qy autoremove" >> "$root_crontab"
+
+echo "And now, at last... The Rebootening."
+reboot
