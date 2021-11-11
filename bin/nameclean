@@ -1,5 +1,0 @@
-#!/bin/bash
-
-for i in *"$1"*; do
-  mv -i "$i" "${i//$1/}"
-done
