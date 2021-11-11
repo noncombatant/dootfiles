@@ -21,8 +21,6 @@ craved_packages="vim tmux clang git zsh"
 root_crontab="/var/spool/cron/crontabs/root"
 test -f "$root_crontab" || blorp "$root_crontab does not exist."
 
-set -e
-
 echo "Upgrading all the packages."
 apt update
 apt upgrade
