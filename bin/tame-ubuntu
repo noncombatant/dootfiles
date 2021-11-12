@@ -22,9 +22,9 @@ root_crontab="/var/spool/cron/crontabs/root"
 test -f "$root_crontab" || blorp "$root_crontab does not exist."
 
 echo "Upgrading all the packages."
-apt update
-apt upgrade
-apt autoremove
+apt -qy update
+apt -qy upgrade
+apt -qy autoremove
 
 echo "Use normal upgrades, not LTS."
 sed -i 's/Prompt=lts/Prompt=normal/' "$release_upgrades"
@@ -36,16 +36,16 @@ do-release-upgrade
 #systemctl stop rsyslog.service
 #systemctl is-active rsyslog.service 
 echo "Removing syslogd."
-apt remove rsyslog
+apt -qy remove rsyslog
 
 echo "Removing Postfix."
-apt remove postfix
+apt -qy remove postfix
 
 echo "Limiting journald's disk usage."
 grep -q "^SystemMaxUse=" "$journald_conf" || echo "SystemMaxUse=$max_journal_usage" >> "$journald_conf"
 
 echo "Installing the delightful packages you crave."
-apt install $craved_packages
+apt -qy install $craved_packages
 
 echo "Turning on auto-updates."
 grep -q "^3 3.*update" "$root_crontab" || echo "3 3 * * * apt -qy update && apt -qy upgrade && apt -qy autoremove" >> "$root_crontab"
