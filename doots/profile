@@ -18,6 +18,7 @@ alias ln="ln -i"
 
 # Use extended regular expressions.
 alias grep="grep -E"
+# GNU find needs: -regextype posix-extended
 alias find="find -E"
 if echo | sed -r > /dev/null 2>&1; then
   alias sed="sed -r"
