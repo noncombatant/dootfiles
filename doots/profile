@@ -124,3 +124,5 @@ function hgrep {
 }
 
 source "$HOME"/bin/lib.sh
+
+test -f "$HOME/.local_profile" && source "$HOME/.local_profile"
