@@ -16,14 +16,18 @@ alias mv="mv -i"
 alias cp="cp -i"
 alias ln="ln -i"
 
-# Use extended regular expressions.
-alias grep="grep -E"
-# GNU find needs: -regextype posix-extended
-alias find="find -E"
+# Use extended regular expressions, following the model of `egrep`.
+if find -E .  -maxdepth 0 > /dev/null 2>&1; then
+  alias efind="find -E"
+else
+  function efind {
+    find "$@" -regextype posix-extended
+  }
+fi
 if echo | sed -r > /dev/null 2>&1; then
-  alias sed="sed -r"
+  alias esed="sed -r"
 elif echo | sed -E > /dev/null 2>&1; then
-  alias sed="sed -E"
+  alias esed="sed -E"
 fi
 
 if which otool > /dev/null; then
@@ -38,7 +42,7 @@ function 2null {
 
 function d {
   if test $# -gt 0; then
-    cd "$1" || cd $(2null find ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
+    cd "$1" || cd $(2null efind ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
   fi
   ls -F
 }
