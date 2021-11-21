@@ -1,3 +1,4 @@
-export PS1="[1m\w \$[0m "
+which zsh > /dev/null 2>&1 && exec zsh
+export PS1="\w \$ "
 source ~/.profile
 test -f "$HOME/.local_profile" && source "$HOME/.local_profile"
