@@ -24,11 +24,7 @@ else
     find "$@" -regextype posix-extended
   }
 fi
-if echo | sed -r > /dev/null 2>&1; then
-  alias esed="sed -r"
-elif echo | sed -E > /dev/null 2>&1; then
-  alias esed="sed -E"
-fi
+alias esed="sed -r"
 
 if which otool > /dev/null; then
   alias dis="otool -tV"
