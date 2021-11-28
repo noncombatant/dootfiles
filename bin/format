@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+declare format="clang-format"
+declare format_options="-style=Chromium"
+
+for file in $@; do
+  declare tmp=$(mktemp ./temp.XXXXXX)
+  $format $format_options "$file" > "$tmp"
+  mv "$tmp" "$file"
+  chmod 644 "$file"
+done
