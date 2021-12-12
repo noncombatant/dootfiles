@@ -1,0 +1,35 @@
+#!/bin/sh
+
+help="Locates files by quickly searching a precomputed database of files on the
+system. Usage:
+
+To build the database:
+
+  $ locate-updatedb
+
+To search the database:
+
+  $ locate [options] string [...]
+
+The options are the same as for grep.
+
+For some fun history, see \"Finding Files Fast\" by James A. Woods
+(https://www2.eecs.berkeley.edu/Pubs/TechRpts/1983/CSD-83-148.pdf)."
+
+db_file="$HOME/.locate.db"
+
+build_database() {
+  find "$HOME" -print0 2> /dev/null | bzip2 > "$db_file"
+}
+
+search_database() {
+  test -f "$db_file" || build_database
+  bzgrep -iz "$@" "$db_file" | xargs -0 -n1 echo
+}
+
+program=$(basename "$0")
+if test "$program" = "update-locate-db"; then
+  build_database
+else
+  search_database "$@"
+fi
