@@ -2,8 +2,7 @@
 
 source "$HOME"/bin/script.sh
 
-help() {
-  echo "This simple program attempts to detect file corruption. It works by calculating
+help="This simple program attempts to detect file corruption. It works by calculating
 checksums (SHA-256) of files and storing them in a file (.sdb, for “checksum
 database”).
 
@@ -12,26 +11,24 @@ the same checksums as before.
 
 Usage:
 
-$program check old.sdb new.sdb
+  integrity check old.sdb new.sdb
 
-  Given 2 checksum database (sdb) files, prints out any mismatches, indicating
-  file corruption.
+Given 2 checksum database (sdb) files, prints out any mismatches, indicating
+file corruption.
 
-$program db pathname [...]
+  integrity db pathname [...]
 
-  For each pathname naming a directory, reads every regular file under the
-  pathname and calculates the files’ checksums. Stores the checksums and file
-  pathnames in pathname-[timestamp].sdb, a sibling of pathname.
+For each pathname naming a directory, reads every regular file under the
+pathname and calculates the files’ checksums. Stores the checksums and file
+pathnames in pathname-[timestamp].sdb, a sibling of pathname.
 
-$program sum pathname [...]
+  integrity sum pathname [...]
 
-  For each pathname naming a regular file, calculates and prints the checksum
-  and pathname." > /dev/stderr
-  exit 1
-}
+For each pathname naming a regular file, calculates and prints the checksum and
+pathname."
 
 check() {
-  test $# -eq 2 || help
+  test $# -eq 2 || usage
   old="$1"
   new="$2"
   echo "$old → $new"
@@ -39,7 +36,7 @@ check() {
 }
 
 db() {
-  test $# -gt 0 || help
+  test $# -gt 0 || usage
   cores=$(core_count)
   for pathname in "$@"; do
     output="$(get_sdb_name "$pathname")"
@@ -48,7 +45,7 @@ db() {
 }
 
 sum() {
-  test $# -gt 0 || help
+  test $# -gt 0 || usage
   for pathname in "$@"; do
     sum=$(openssl sha256 -binary "$pathname" | base64)
     echo "$sum" "$(realpath "$pathname")"
@@ -65,7 +62,7 @@ get_sdb_name () {
 }
 
 program=$(basename "$0")
-test $# -gt 0 || help
+test $# -gt 0 || usage
 subprogram="$1"
 shift
 
@@ -77,5 +74,5 @@ case $subprogram in
   sum)
     sum "$@" ;;
   *)
-    help ;;
+    usage ;;
 esac

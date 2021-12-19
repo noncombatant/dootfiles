@@ -7,8 +7,9 @@ file name in the current directory.
 
 Usage:
 
-  $0 string [replacement]"
+  mmv string [replacement]"
 
+test $# -gt 0 || usage
 for name in *"$1"*; do
   new_name=${name/$1/$2}
   echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
