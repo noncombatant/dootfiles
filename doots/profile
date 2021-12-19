@@ -40,7 +40,7 @@ function d {
   if test $# -gt 0; then
     cd "$1" || cd $(2null efind ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
   fi
-  ls -F
+  list
 }
 
 function get_icon {

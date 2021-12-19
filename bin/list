@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+source "$HOME"/bin/script.sh
+
+help="List file information. Synopsis:
+
+  list [-hmnpstu] [directory...]
+
+Options:
+
+  -h  Show this help message.
+  -m  Print last modified time in the 1st column.
+  -n  Print name in the 1st column.
+  -p  Print permissions in the 1st column.
+  -s  Print size in the 1st column.
+  -t  Print type in the 1st column."
+
+time_format="%Y-%m-%d %H:%M:%S"
+format="%Sm  %Sp  %12z  %1T %N"
+if test $# -gt 0; then
+  case "$1" in
+    -m)
+      shift ;;
+    -n)
+      format="%40N %1T %Sm  %Sp  %12z"
+      shift ;;
+    -p)
+      format="%Sp  %Sm  %12z  %1T %N"
+      shift ;;
+    -s)
+      format="%12z  %Sm  %Sp  %1T %N"
+      shift ;;
+    -t)
+      format="%1T %-40N  %Sm  %Sp  %12z"
+      shift ;;
+    -h)
+      echo "$help"
+      exit 1
+  esac
+fi
+
+status() {
+  stat -t "$time_format" -f "$format" "$@"
+}
+
+if test $# -eq 0; then
+  status *
+else
+  for p in "$@"; do
+    test -f "$p" && status "$p" || status "$p"/*
+  done
+fi
