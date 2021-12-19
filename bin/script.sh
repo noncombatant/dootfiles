@@ -19,4 +19,8 @@ usage() {
   exit 1
 }
 
+cleanup() {
+  exit $?
+}
+
 source "$HOME"/bin/lib.sh

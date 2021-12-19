@@ -2,15 +2,16 @@
 
 source "$HOME"/bin/script.sh
 
+help="Backs up files onto another volume. Usage:
+
+  backup vault
+  backup critical"
+
 hostname=$(hostname)
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
 critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/src/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
 stampfile="backup-date.txt"
-
-cleanup() {
-  exit $?
-}
 
 synchronize() {
   rsync -av --delete --ignore-errors "$@" || true
@@ -26,13 +27,13 @@ function vault {
 function critical {
   test -d "$critical_volume"
   for critical in ${critical_directories[@]}; do
-    echo "doing $critical"
     synchronize "$critical" "$critical_volume/$hostname/$critical"
   done
   udate > "$critical_volume/$stampfile"
   diskutil eject "$critical_volume"
 }
 
+test $# -gt 0 || usage
 for argument in $@; do
   case "$argument" in
     vault)
@@ -40,7 +41,6 @@ for argument in $@; do
     critical)
       critical ;;
     *)
-      echo "There is no such function $argument" > /dev/stderr
-      exit 1 ;;
+      usage ;;
   esac
 done
