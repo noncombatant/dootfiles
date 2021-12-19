@@ -5,16 +5,27 @@ source "$HOME"/bin/script.sh
 help="Counts lines (and words, and characters) of files matching a glob pattern.
 Usage:
 
-  loc directory pattern
+  loc pattern directory [...]
 
 Example:
 
   loc ~/src '*.c'"
 
-if test $# -ne 2; then
-  echo "$help"
-  exit 1
-fi
+test $# -gt 1 || usage
+
+pattern="$1"
+shift
 
 # We have to suppress `wc`'s last "total" line, to get a correct count.
-find "$1" -name "$2" -print0 | xargs -0 -P $(core_count) wc | awk '{ if ($4 != "total") { print; total += $1 } } END { print total }'
+find "$@" -name "$pattern" -print0 | xargs -0 -P $(core_count) wc | awk '
+{
+  if ($4 != "total") {
+    print
+    lines += $1
+    words += $2
+    chars += $3
+  }
+}
+END {
+  printf "  %6d  %6d  %6d\n", lines, words, chars
+}'
