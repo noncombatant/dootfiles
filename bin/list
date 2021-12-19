@@ -4,7 +4,7 @@ source "$HOME"/bin/script.sh
 
 help="List file information. Synopsis:
 
-  list [-hmnpstu] [directory...]
+  list [-hmnpst] [directory...]
 
 Options:
 
@@ -49,4 +49,4 @@ else
   for p in "$@"; do
     test -f "$p" && status "$p" || status "$p"/*
   done
-fi
+fi | sort
