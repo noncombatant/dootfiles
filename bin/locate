@@ -19,12 +19,12 @@ For some fun history, see \"Finding Files Fast\" by James A. Woods
 db_file="$HOME/.locate.db"
 
 build_database() {
-  find "$HOME" -print0 2> /dev/null | bzip2 > "$db_file"
+  find / -print0 2> /dev/null | bzip2 > "$db_file"
 }
 
 search_database() {
   test -f "$db_file" || build_database
-  bzgrep -iz "$@" "$db_file" | xargs -0 -n1 echo
+  bzgrep -z "$@" "$db_file" | xargs -0 -n1 echo
 }
 
 program=$(basename "$0")
