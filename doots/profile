@@ -123,6 +123,4 @@ function hgrep {
   history | grep -i "$@" | tail -n 10
 }
 
-function udate {
-  date -u +'%d %b %Y %H:%M UTC'
-}
+source "$HOME"/bin/lib.sh
