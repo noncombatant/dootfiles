@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+help="Prints out bugs and to-do items. Usage:
+
+  todo [directory]"
+
+source "$HOME"/bin/script.sh
+
+root=${1-.}
+find "$root" -iname '*TODO*'
+grep -ri '(TODO|BUG|XXX|FIXME)' "$root"
