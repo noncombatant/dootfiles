@@ -1,64 +1,46 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-hostname="goatbeast.local"
+source "$HOME"/bin/script.sh
+
+hostname=$(hostname)
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
-critical_directories="$HOME/bin/ $HOME/Desktop/ $HOME/critical/ $HOME/src/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/"
-
-rsync="rsync -a --delete --ignore-errors"
-
-function stamp {
-  date -u +'%d %b %Y %H:%M UTC'
-}
+critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/src/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
 stampfile="backup-date.txt"
 
-function print_indented {
-  if test -z "$1"; then
-    declare line
-    while read line; do
-      echo "    $line"
-    done
-  else
-    echo "    $@"
-  fi
+cleanup() {
+  exit $?
 }
 
-function echo_say {
-  echo "$@"
-  say -v Daniel "$@"
+synchronize() {
+  rsync -av --delete --ignore-errors "$@" || true
 }
 
 function vault {
-  if test -d "$vault_volume"; then
-    $rsync "$HOME/" "$vault_volume/$hostname" | print_indented
-    stamp > "$vault_volume/$stampfile"
-    diskutil eject "$vault_volume"
-    echo_say "$vault_volume"
-  fi
+  test -d "$vault_volume"
+  synchronize "$HOME/" "$vault_volume/$hostname"
+  udate > "$vault_volume/$stampfile"
+  diskutil eject "$vault_volume"
 }
 
 function critical {
-  if test -d "$critical_volume"; then
-    for critical in $critical_directories; do
-      $rsync "$critical" "$critical_volume/$critical" | print_indented
-    done
-    stamp > "$critical_volume/$stampfile"
-    diskutil eject "$critical_volume"
-    echo_say "$critical_volume"
-  fi
+  test -d "$critical_volume"
+  for critical in ${critical_directories[@]}; do
+    echo "doing $critical"
+    synchronize "$critical" "$critical_volume/$hostname/$critical"
+  done
+  udate > "$critical_volume/$stampfile"
+  diskutil eject "$critical_volume"
 }
 
 for argument in $@; do
   case "$argument" in
     vault)
-      vault
-      ;;
+      vault ;;
     critical)
-      critical
-      ;;
+      critical ;;
     *)
-      echo_say "There is no such function." > /dev/stderr
-      exit 1
-      ;;
+      echo "There is no such function $argument" > /dev/stderr
+      exit 1 ;;
   esac
 done
