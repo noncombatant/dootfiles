@@ -1,45 +1,18 @@
 #!/bin/bash
 
-usage() {
-  echo "Multi-move: Renames files by replacing one string with another in each
+source "$HOME"/bin/script.sh
+
+help="Multi-move: Renames files by replacing one string with another in each
 file name in the current directory.
 
 Usage:
 
-  $0 -h
-  $0 [-i] string [replacement]"
-  exit 1
-}
-
-ask=false
-
-options=$(getopt hi $* 2> /dev/null)
-if test $? -ne 0; then
-  usage
-fi
-
-set -- $options
-for o; do
-  case "$o" in
-    -i)
-      ask=true
-      shift;;
-    --)
-      shift;
-      break;;
-    *)
-      usage
-  esac
-done
+  $0 string [replacement]"
 
 for name in *"$1"*; do
   new_name=${name/$1/$2}
-  if test "$ask" = true; then
-    echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
-    read a
-    a=$(echo "$a" | tr A-Z a-z)
-  fi
-  if test "$ask" = false -o "$a" = "y"; then
-    mv -i "$name" "$new_name"
-  fi
+  echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
+  read a
+  a=$(echo "$a" | tr A-Z a-z)
+  test "$a" = "y" && mv -i "$name" "$new_name"
 done
