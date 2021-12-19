@@ -2,13 +2,15 @@
 
 source "$HOME"/bin/script.sh
 
-cleanup() {
-  rm ./temp.*
-}
+help="Formats C/C++ source code. Usage:
 
-for file in $@; do
-  declare tmp=$(mktemp ./temp.XXXXXX)
-  clang-format -style=Chromium "$file" > "$tmp"
-  mv "$tmp" "$file"
-  chmod 644 "$file"
-done
+  format-cc [files...]
+
+When given no arguments, reads from stdin and prints to stdout. When given
+arguments, formats the files in place."
+
+if test $# -eq 0; then
+  clang-format -style=Chromium
+else
+  clang-format -i -style=Chromium "$@"
+fi
