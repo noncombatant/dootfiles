@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-root=${1-.}
+source "$HOME"/bin/script.sh
+
+help="Shows a list of the largest directories. Usage:
+
+  directory-sizes pathname [...]"
+
+test $# -gt 0 || usage
 height=$(( $(tput lines) - 2 ))
-du -k "$root" | sort -bn | tail -n $height
+du -k "$@" | sort -bn | tail -n $height
