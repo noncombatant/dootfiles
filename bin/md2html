@@ -8,7 +8,7 @@ import markdown
 import sys
 
 if len(sys.argv) == 1:
-  markdown.markdownFromFile()
+    markdown.markdownFromFile()
 else:
-  for pathname in sys.argv[1:]:
-    markdown.markdownFromFile(input=pathname)
+    for pathname in sys.argv[1:]:
+        markdown.markdownFromFile(input=pathname)

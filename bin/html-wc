@@ -13,51 +13,58 @@ import re
 word_splitter = re.compile(r"\s+").split
 line_finder = re.compile(r"(\r\n|\r|\n)").findall
 
+
 class HTMLWordCounter(html.parser.HTMLParser):
-  def __init__(self):
-    html.parser.HTMLParser.__init__(self)
-    self.lines = self.words = self.characters = 0
+    def __init__(self):
+        html.parser.HTMLParser.__init__(self)
+        self.lines = self.words = self.characters = 0
 
-  def handle_data(self, data):
-    self.characters += len(data)
-    self.lines += len(line_finder(data))
-    words = [ w for w in word_splitter(data) if len(w) ]
-    self.words += len(words)
+    def handle_data(self, data):
+        self.characters += len(data)
+        self.lines += len(line_finder(data))
+        words = [w for w in word_splitter(data) if len(w)]
+        self.words += len(words)
 
-  def summary(self):
-    return self.lines, self.words, self.characters
+    def summary(self):
+        return self.lines, self.words, self.characters
+
 
 def wc(input):
-  counter = HTMLWordCounter()
-  while True:
-    data = input.read(4096)
-    if not data:
-      break
-    counter.feed(data)
-  counter.close()
-  return counter.summary()
+    counter = HTMLWordCounter()
+    while True:
+        data = input.read(4096)
+        if not data:
+            break
+        counter.feed(data)
+    counter.close()
+    return counter.summary()
+
 
 if __name__ == "__main__":
-  import codecs
-  import os
-  import sys
+    import codecs
+    import os
+    import sys
 
-  encoding = os.environ.get("encoding", "UTF-8")
+    encoding = os.environ.get("encoding", "UTF-8")
 
-  if len(sys.argv) == 1:
-    wc(sys.stdin)
-  else:
-    total_lines = total_words = total_characters = 0
-    for pathname in sys.argv[1:]:
-      try:
-        input = codecs.open(pathname, encoding=encoding)
-        lines, words, characters = wc(input)
-        total_lines += lines
-        total_words += words
-        total_characters += characters
-        sys.stdout.write("%6d  %6d  %6d  %s\n" % (lines, words, characters, pathname))
-        input.close()
-      except Exception as e:
-        sys.stderr.write(str(e) + "\n")
-    if len(sys.argv) > 2:
-      sys.stdout.write("%6d  %6d  %6d  total\n" % (total_lines, total_words, total_characters))
+    if len(sys.argv) == 1:
+        wc(sys.stdin)
+    else:
+        total_lines = total_words = total_characters = 0
+        for pathname in sys.argv[1:]:
+            try:
+                input = codecs.open(pathname, encoding=encoding)
+                lines, words, characters = wc(input)
+                total_lines += lines
+                total_words += words
+                total_characters += characters
+                sys.stdout.write(
+                    "%6d  %6d  %6d  %s\n" %
+                    (lines, words, characters, pathname))
+                input.close()
+            except Exception as e:
+                sys.stderr.write(str(e) + "\n")
+        if len(sys.argv) > 2:
+            sys.stdout.write(
+                "%6d  %6d  %6d  total\n" %
+                (total_lines, total_words, total_characters))
