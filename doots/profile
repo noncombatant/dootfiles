@@ -112,7 +112,7 @@ function = {
 }
 
 function get {
-  grep -i -A3 -B3 "$@"
+  less -i -p "$1" "$2"
 }
 
 function searchc {
