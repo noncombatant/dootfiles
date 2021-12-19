@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+source "$HOME"/bin/script.sh
+
+help() {
+  echo "This simple program attempts to detect file corruption. It works by calculating
+checksums (SHA-256) of files and storing them in a file (.sdb, for “checksum
+database”).
+
+At any later point, you can then use the program to check that the files have
+the same checksums as before.
+
+Usage:
+
+$program check old.sdb new.sdb
+
+  Given 2 checksum database (sdb) files, prints out any mismatches, indicating
+  file corruption.
+
+$program db pathname [...]
+
+  For each pathname naming a directory, reads every regular file under the
+  pathname and calculates the files’ checksums. Stores the checksums and file
+  pathnames in pathname-[timestamp].sdb, a sibling of pathname.
+
+$program sum pathname [...]
+
+  For each pathname naming a regular file, calculates and prints the checksum
+  and pathname." > /dev/stderr
+  exit 1
+}
+
+check() {
+  test $# -eq 2 || help
+  old="$1"
+  new="$2"
+  echo "$old → $new"
+  bzcat "$old" | diff - <(bzcat "$new")
+}
+
+db() {
+  test $# -gt 0 || help
+  cores=$(core_count)
+  for pathname in "$@"; do
+    output="$(get_sdb_name "$pathname")"
+    find "$pathname" -type f -print0 | xargs -0 -P "$cores" "$program" sum | sort -k 2 | bzip2 > "$output"
+  done
+}
+
+sum() {
+  test $# -gt 0 || help
+  for pathname in "$@"; do
+    sum=$(openssl sha256 -binary "$pathname" | base64)
+    echo "$sum" "$(realpath "$pathname")"
+  done
+}
+
+get_sdb_name () {
+  pathname="$1"
+  parent=$(dirname "$pathname")
+  base=$(basename "$pathname")
+  date=$(udate)
+  output="$parent"/"$base"-$date.sdb
+  echo "$output"
+}
+
+program=$(basename "$0")
+test $# -gt 0 || help
+subprogram="$1"
+shift
+
+case $subprogram in
+  check)
+    check "$@" ;;
+  db)
+    db "$@" ;;
+  sum)
+    sum "$@" ;;
+  *)
+    help ;;
+esac
