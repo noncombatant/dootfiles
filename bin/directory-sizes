@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+root=${1-.}
+height=$(( $(tput lines) - 2 ))
+du -k "$root" | sort -bn | tail -n $height
