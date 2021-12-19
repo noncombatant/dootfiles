@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+source "$HOME"/bin/script.sh
+
+help="Formats Python scripts, in-place, according to PEP 8.
+
+Usage:
+
+  $0 foo.py [...]"
+
+which autopep8 > /dev/null 2>&1 || error "Run \`pip install --upgrade --user autopep8\`."
+if test $# -eq 0; then
+  autopep8 -a -a --max-line-length 80 -
+else
+  autopep8 -a -a --max-line-length 80 --in-place "$@"
+fi
