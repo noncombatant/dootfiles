@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -e
+set -o errexit
 
 here=$(dirname "$0")
 
-for file in $here/doots/*; do
+for file in "$here"/doots/*; do
   f=$(basename "$file")
   cp "$file" "$HOME/.$f"
 done
@@ -12,7 +12,7 @@ done
 bin="$HOME/bin"
 mkdir -p "$bin"
 
-for file in $here/bin/*; do
+for file in "$here"/bin/*; do
   f=$(basename "$file")
   cp "$file" "$bin"
 done
