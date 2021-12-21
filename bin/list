@@ -15,32 +15,62 @@ Options:
   -s  Print size in the 1st column.
   -t  Print type in the 1st column."
 
-time_format="%Y-%m-%d %H:%M:%S"
-format="%Sm  %Sp  %12z  %1T %N"
-if test $# -gt 0; then
-  case "$1" in
-    -m)
-      shift ;;
-    -n)
-      format="%40N %1T %Sm  %Sp  %12z"
-      shift ;;
-    -p)
-      format="%Sp  %Sm  %12z  %1T %N"
-      shift ;;
-    -s)
-      format="%12z  %Sm  %Sp  %1T %N"
-      shift ;;
-    -t)
-      format="%1T %-40N  %Sm  %Sp  %12z"
-      shift ;;
-    -h)
-      echo "$help"
-      exit 1
-  esac
+if test $(uname) = "Linux"; then
+  time_format=""
+  format="%y  %A  %12s  %12F %N"
+  if test $# -gt 0; then
+    case "$1" in
+      -m)
+        shift ;;
+      -n)
+        format="%40N %12F %y  %A  %12s"
+        shift ;;
+      -p)
+        format="%A  %y  %12s  %12F %N"
+        shift ;;
+      -s)
+        format="%12s  %y  %A  %12F %N"
+        shift ;;
+      -t)
+        format="%12F %-40N  %y  %A  %12s"
+        shift ;;
+      -h)
+        echo "$help"
+        exit 1
+    esac
+  fi
+else
+  time_format="%Y-%m-%d %H:%M:%S"
+  format="%Sm  %Sp  %12z  %1T %N"
+  if test $# -gt 0; then
+    case "$1" in
+      -m)
+        shift ;;
+      -n)
+        format="%40N %1T %Sm  %Sp  %12z"
+        shift ;;
+      -p)
+        format="%Sp  %Sm  %12z  %1T %N"
+        shift ;;
+      -s)
+        format="%12z  %Sm  %Sp  %1T %N"
+        shift ;;
+      -t)
+        format="%1T %-40N  %Sm  %Sp  %12z"
+        shift ;;
+      -h)
+        echo "$help"
+        exit 1
+    esac
+  fi
 fi
 
 status() {
-  stat -t "$time_format" -f "$format" "$@"
+  if test $(uname) = "Linux"; then
+    stat -c "$format" "$@"
+  else
+    stat -t "$time_format" -f "$format" "$@"
+  fi
 }
 
 if test $# -eq 0; then
