@@ -15,24 +15,31 @@ Options:
   -s  Print size in the 1st column.
   -t  Print type in the 1st column."
 
+GREEN_FG=
+NORMAL=
+if test -t 1; then
+  GREEN_FG="$(tput setaf 2 || echo)"
+  NORMAL="$(tput sgr0 || echo)"
+fi
+
 if test $(uname) = "Linux"; then
   time_format=""
-  format="%y  %A  %12s  %12F %N"
+  format="$GREEN_FG%y  %A  %12s  %12F$NORMAL %N"
   if test $# -gt 0; then
     case "$1" in
       -m)
         shift ;;
       -n)
-        format="%40N %12F %y  %A  %12s"
+        format="%40N $GREEN_FG%12F %y  %A  %12s$NORMAL"
         shift ;;
       -p)
-        format="%A  %y  %12s  %12F %N"
+        format="$GREEN_FG%A  %y  %12s  %12F$NORMAL %N"
         shift ;;
       -s)
-        format="%12s  %y  %A  %12F %N"
+        format="$GREEN_FG%12s  %y  %A  %12F$NORMAL %N"
         shift ;;
       -t)
-        format="%12F %-40N  %y  %A  %12s"
+        format="$GREEN_FG%12F$NORMAL %-40N  $GREEN_FG%y  %A  %12s$NORMAL"
         shift ;;
       -h)
         echo "$help"
@@ -41,22 +48,22 @@ if test $(uname) = "Linux"; then
   fi
 else
   time_format="%Y-%m-%d %H:%M:%S"
-  format="%Sm  %Sp  %12z  %1T %N"
+  format="$GREEN_FG%Sm  %Sp  %12z  %1T$NORMAL %N"
   if test $# -gt 0; then
     case "$1" in
       -m)
         shift ;;
       -n)
-        format="%40N %1T %Sm  %Sp  %12z"
+        format="%40N $GREEN_FG%1T %Sm  %Sp  %12z$NORMAL"
         shift ;;
       -p)
-        format="%Sp  %Sm  %12z  %1T %N"
+        format="$GREEN_FG%Sp  %Sm  %12z  %1T$NORMAL %N"
         shift ;;
       -s)
-        format="%12z  %Sm  %Sp  %1T %N"
+        format="$GREEN_FG%12z  %Sm  %Sp  %1T$NORMAL %N"
         shift ;;
       -t)
-        format="%1T %-40N  %Sm  %Sp  %12z"
+        format="$GREEN_FG%1T$NORMAL %-40N  $GREEN_FG%Sm  %Sp  %12z$NORMAL"
         shift ;;
       -h)
         echo "$help"
