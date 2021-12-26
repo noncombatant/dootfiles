@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+source "$HOME"/bin/script.sh
+
+patterns="$(mktemp "$HOME"/search.XXXXXX)"
+
+cleanup() {
+  rm "$patterns"
+}
+
+for p in "$@"; do
+  if test -e "$p"; then
+    roots="${roots-}$p
+"
+  else
+    echo "$p" >> "$patterns"
+  fi
+done
+
+cores="$(core_count)"
+find ${roots-.} -type f -print0 | xargs -0 -P "$cores" -n1 grep -HEIi -f "$patterns"
+cleanup
