@@ -14,7 +14,7 @@ test -f "$release_upgrades" || error "$release_upgrades does not exist."
 journald_conf="/etc/systemd/journald.conf"
 test -f "$journald_conf" || error "$journald_conf does not exist."
 max_journal_usage="50M"
-craved_packages="vim tmux clang git zsh make clang-format"
+craved_packages="vim tmux clang git zsh make clang-format xz-utils nmap tcpdump"
 root_crontab="/var/spool/cron/crontabs/root"
 test -f "$root_crontab" || error "$root_crontab does not exist."
 
