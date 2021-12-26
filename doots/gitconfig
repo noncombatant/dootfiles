@@ -8,3 +8,5 @@
 	default = simple
 [init]
 	defaultBranch = main
+[user]
+	name = Chris Palmer
