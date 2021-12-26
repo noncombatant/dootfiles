@@ -10,8 +10,9 @@ Usage:
   mmv string [replacement]"
 
 test $# -gt 0 || usage
+replacement=${2-}
 for name in *"$1"*; do
-  new_name=${name/$1/$2}
+  new_name=${name/$1/$replacement}
   echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
   read a
   a=$(echo "$a" | tr A-Z a-z)
