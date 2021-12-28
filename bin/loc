@@ -9,7 +9,7 @@ Usage:
 
 Example:
 
-  loc ~/src '*.c'"
+  loc '*.c' ~/src"
 
 test $# -gt 1 || usage
 
