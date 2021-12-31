@@ -1,3 +1,2 @@
-which zsh > /dev/null 2>&1 && exec zsh
 export PS1="\w \$ "
 source ~/.profile
