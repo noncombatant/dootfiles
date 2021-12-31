@@ -1,5 +1,1 @@
 export PATH="$HOME/go/bin:$PATH"
-
-function gofmtall {
-  gofmt -s -w *.go
-}
