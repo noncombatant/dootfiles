@@ -3,6 +3,7 @@ export VISUAL="$EDITOR"
 export LC_ALL="en_US.UTF-8"
 export MANWIDTH=80
 export PATH="$HOME/bin:$HOME/Library/Python/3.8/bin:$PATH"
+export HISTSIZE=1000
 
 umask 022
 
