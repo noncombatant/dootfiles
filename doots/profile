@@ -26,11 +26,7 @@ else
 fi
 alias esed="sed -r"
 
-if which otool > /dev/null; then
-  alias dis="otool -tV"
-elif which objdump > /dev/null; then
-  alias dis="objdump -Mintel -d"
-fi
+alias dis="objdump -Mintel -d"
 
 function 2null {
   $@ 2> /dev/null
