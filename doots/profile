@@ -21,22 +21,22 @@ alias esed="sed -r"
 
 alias dis="objdump -Mintel -d"
 
-function d {
+d() {
   if test $# -gt 0; then
     cd "$1" || return
   fi
   list
 }
 
-function get {
+get() {
   less -i -p "$1" "$2"
 }
 
-function searchc {
+searchc() {
   search -n '!/out/' -n '\.(h|c|cpp|cc|m|mm)$' "$@"
 }
 
-function hgrep {
+hgrep() {
   history | grep -i "$@" | tail -n 10
 }
 

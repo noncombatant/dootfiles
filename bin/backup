@@ -17,14 +17,14 @@ synchronize() {
   rsync -av --delete --ignore-errors "$@" || true
 }
 
-function vault {
+vault() {
   test -d "$vault_volume"
   synchronize "$HOME/" "$vault_volume/$hostname"
   udate > "$vault_volume/$stampfile"
   diskutil eject "$vault_volume"
 }
 
-function critical {
+critical() {
   test -d "$critical_volume"
   for critical in ${critical_directories[@]}; do
     synchronize "$critical" "$critical_volume/$hostname/$critical"
