@@ -16,25 +16,13 @@ alias mv="mv -i"
 alias cp="cp -i"
 alias ln="ln -i"
 
-# Use extended regular expressions, following the model of `egrep`.
-if find -E .  -maxdepth 0 > /dev/null 2>&1; then
-  alias efind="find -E"
-else
-  function efind {
-    find "$@" -regextype posix-extended
-  }
-fi
 alias esed="sed -r"
 
 alias dis="objdump -Mintel -d"
 
-function 2null {
-  $@ 2> /dev/null
-}
-
 function d {
   if test $# -gt 0; then
-    cd "$1" || cd $(2null efind ~ -maxdepth 2 -type d -not -path '*/.*' -iregex '.*'"$1"'.*' | head -n1)
+    cd "$1" || return
   fi
   list
 }
