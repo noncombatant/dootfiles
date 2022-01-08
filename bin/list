@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="List file information. Synopsis:
 
   list [-hmnpst] [directory...]
@@ -14,6 +12,8 @@ Options:
   -p  Print permissions in the 1st column.
   -s  Print size in the 1st column.
   -t  Print type in the 1st column."
+
+source "$HOME"/bin/script.sh
 
 GREEN_FG=
 NORMAL=

@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+help="Search for files with \`find\` and \`grep\`. Usage:
+
+  search pathname-or-pattern [...]
+
+Each pathname-or-pattern will be interpreted as a pathname (if it exists) or as
+a POSIX extended regular expression (otherwise). \`search\` will traverse the
+given pathname(s) and search each file for lines matching any of the given REs."
+
 source "$HOME"/bin/script.sh
 
 patterns="$(mktemp "$HOME"/search.XXXXXX)"

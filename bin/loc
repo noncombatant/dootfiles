@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="Counts lines (and words, and characters) of files matching a glob pattern.
 Usage:
 
@@ -10,6 +8,8 @@ Usage:
 Example:
 
   loc '*.c' ~/src"
+
+source "$HOME"/bin/script.sh
 
 test $# -gt 1 || usage
 

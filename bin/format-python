@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="Formats Python scripts, in-place, according to PEP 8.
 
 Usage:
@@ -10,6 +8,8 @@ Usage:
 
 When given no arguments, reads from stdin and prints to stdout. When given
 arguments, formats the files in place."
+
+source "$HOME"/bin/script.sh
 
 which autopep8 > /dev/null 2>&1 || error "Run \`pip install --upgrade --user autopep8\`."
 if test $# -eq 0; then

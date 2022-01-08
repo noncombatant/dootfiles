@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="Formats C/C++ source code. Usage:
 
   format-cc [files...]
 
 When given no arguments, reads from stdin and prints to stdout. When given
 arguments, formats the files in place."
+
+source "$HOME"/bin/script.sh
 
 if test $# -eq 0; then
   clang-format -style=Chromium

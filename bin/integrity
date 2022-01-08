@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="This simple program attempts to detect file corruption. It works by calculating
 checksums (SHA-256) of files and storing them in a file (.sdb, for “checksum
 database”).
@@ -26,6 +24,8 @@ pathnames in pathname-[timestamp].sdb, a sibling of pathname.
 
 For each pathname naming a regular file, calculates and prints the checksum and
 pathname."
+
+source "$HOME"/bin/script.sh
 
 check() {
   test $# -eq 2 || usage

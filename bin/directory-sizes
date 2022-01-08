@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="Shows a list of the largest directories. Usage:
 
   directory-sizes pathname [...]"
+
+source "$HOME"/bin/script.sh
 
 test $# -gt 0 || usage
 height=$(( $(tput lines) - 2 ))

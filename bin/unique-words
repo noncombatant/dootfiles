@@ -6,4 +6,6 @@ help="Prints out a list of unique words and their frequency. Usage:
 
 For some fun history, see https://www.slideshare.net/bcantrill/future-stack."
 
+source "$HOME"/bin/script.sh
+
 cat "$@" | tr -cs '[:alpha:]' '\n' | tr '[:upper:]' '[:lower:]' | sort | uniq -c | sort -rn

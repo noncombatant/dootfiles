@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-source "$HOME"/bin/script.sh
-
 help="Backs up files onto another volume. Usage:
 
   backup vault
   backup critical"
+
+source "$HOME"/bin/script.sh
 
 hostname=$(hostname)
 vault_volume="/Volumes/vault/"

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-source "$HOME"/bin/script.sh
-
 help="Multi-move: Renames files by replacing one string with another in each
 file name in the current directory.
 
 Usage:
 
   mmv string [replacement]"
+
+source "$HOME"/bin/script.sh
 
 test $# -gt 0 || usage
 replacement=${2-}
