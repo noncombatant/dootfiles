@@ -10,13 +10,13 @@ source "$HOME"/bin/script.sh
 # Configuration: Set these variables to what makes sense on the system. These
 # values work as of Ubuntu 21.10.
 release_upgrades="/etc/update-manager/release-upgrades"
-test -f "$release_upgrades" || error "$release_upgrades does not exist."
+[[ -f "$release_upgrades" ]] || error "$release_upgrades does not exist."
 journald_conf="/etc/systemd/journald.conf"
-test -f "$journald_conf" || error "$journald_conf does not exist."
+[[ -f "$journald_conf" ]] || error "$journald_conf does not exist."
 max_journal_usage="50M"
 craved_packages="vim tmux clang git zsh make clang-format xz-utils nmap tcpdump"
 root_crontab="/var/spool/cron/crontabs/root"
-test -f "$root_crontab" || error "$root_crontab does not exist."
+[[ -f "$root_crontab" ]] || error "$root_crontab does not exist."
 
 echo "Upgrading all the packages."
 apt -qy update

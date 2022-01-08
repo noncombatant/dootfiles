@@ -11,7 +11,7 @@ Example:
 
 source "$HOME"/bin/script.sh
 
-test $# -gt 1 || usage
+[[ $# -gt 1 ]] || usage
 
 pattern="$1"
 shift

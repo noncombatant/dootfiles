@@ -9,7 +9,7 @@ arguments, formats the files in place."
 
 source "$HOME"/bin/script.sh
 
-if test $# -eq 0; then
+if [[ $# -eq 0 ]]; then
   clang-format -style=Chromium
 else
   clang-format -i -style=Chromium "$@"

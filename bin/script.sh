@@ -28,5 +28,5 @@ source "$HOME"/bin/lib.sh
 # Show $help if necessary.
 if [[ $# > 0 ]]; then
   __1=$(echo "$1" | tr "[:upper:]" "[:lower:]")
-  test "$__1" = help -o "$__1" = "--help" -o "$__1" = "-h" && usage || true
+  [[ "$__1" = help || "$__1" = "--help" || "$__1" = "-h" ]] && usage || true
 fi

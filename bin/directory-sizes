@@ -6,6 +6,6 @@ help="Shows a list of the largest directories. Usage:
 
 source "$HOME"/bin/script.sh
 
-test $# -gt 0 || usage
+[[ $# -gt 0 ]] || usage
 height=$(( $(tput lines) - 2 ))
 du -k "$@" | sort -bn | tail -n $height

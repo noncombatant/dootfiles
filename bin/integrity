@@ -28,7 +28,7 @@ pathname."
 source "$HOME"/bin/script.sh
 
 check() {
-  test $# -eq 2 || usage
+  [[ $# -eq 2 ]] || usage
   old="$1"
   new="$2"
   echo "$old → $new"
@@ -36,7 +36,7 @@ check() {
 }
 
 db() {
-  test $# -gt 0 || usage
+  [[ $# -gt 0 ]] || usage
   cores=$(core_count)
   for pathname in "$@"; do
     output="$(get_sdb_name "$pathname")"
@@ -45,7 +45,7 @@ db() {
 }
 
 sum() {
-  test $# -gt 0 || usage
+  [[ $# -gt 0 ]] || usage
   for pathname in "$@"; do
     sum=$(openssl sha256 -binary "$pathname" | base64)
     echo "$sum" "$(realpath "$pathname")"
@@ -62,7 +62,7 @@ get_sdb_name () {
 }
 
 program=$(basename "$0")
-test $# -gt 0 || usage
+[[ $# -gt 0 ]] || usage
 subprogram="$1"
 shift
 

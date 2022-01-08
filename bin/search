@@ -17,7 +17,7 @@ cleanup() {
 }
 
 for p in "$@"; do
-  if test -e "$p"; then
+  if [[ -e "$p" ]]; then
     roots="${roots-}$p
 "
   else

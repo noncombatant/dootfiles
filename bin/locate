@@ -25,12 +25,12 @@ build_database() {
 }
 
 search_database() {
-  test -f "$db_file" || build_database
+  [[ -f "$db_file" ]] || build_database
   bzgrep -z "$@" "$db_file" | xargs -0 -n1 echo
 }
 
 program=$(basename "$0")
-if test "$program" = "update-locate-db"; then
+if [[ "$program" = "update-locate-db" ]]; then
   build_database
 else
   search_database "$@"

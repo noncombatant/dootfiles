@@ -17,15 +17,16 @@ source "$HOME"/bin/script.sh
 
 GREEN_FG=
 NORMAL=
-if test -t 1; then
+if [[ -t 1 ]]; then
   GREEN_FG="$(tput setaf 2 || echo)"
   NORMAL="$(tput sgr0 || echo)"
 fi
 
-if test $(uname) = "Linux"; then
+if [[ $(uname) = "Linux" ]]; then
+  is_linux="true"
   time_format=""
   format="$GREEN_FG%y  %A  %12s  %12F$NORMAL %N"
-  if test $# -gt 0; then
+  if [[ $# -gt 0 ]]; then
     case "$1" in
       -m)
         shift ;;
@@ -47,9 +48,10 @@ if test $(uname) = "Linux"; then
     esac
   fi
 else
+  is_linux="false"
   time_format="%Y-%m-%d %H:%M:%S"
   format="$GREEN_FG%Sm  %Sp  %12z  %1T$NORMAL %N"
-  if test $# -gt 0; then
+  if [[ $# -gt 0 ]]; then
     case "$1" in
       -m)
         shift ;;
@@ -73,17 +75,17 @@ else
 fi
 
 status() {
-  if test $(uname) = "Linux"; then
+  if [[ "$is_linux" = true ]]; then
     stat -c "$format" "$@"
   else
     stat -t "$time_format" -f "$format" "$@"
   fi
 }
 
-if test $# -eq 0; then
+if [[ $# -eq 0 ]]; then
   status *
 else
   for p in "$@"; do
-    test -f "$p" && status "$p" || status "$p"/*
+    [[ -f "$p" ]] && status "$p" || status "$p"/*
   done
 fi | sort

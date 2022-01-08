@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 help="Multi-move: Renames files by replacing one string with another in each
 file name in the current directory.
@@ -9,12 +9,12 @@ Usage:
 
 source "$HOME"/bin/script.sh
 
-test $# -gt 0 || usage
+[[ $# -gt 0 ]] || usage
 replacement=${2-}
 for name in *"$1"*; do
   new_name=${name/$1/$replacement}
   echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
   read a
   a=$(echo "$a" | tr A-Z a-z)
-  test "$a" = "y" && mv -i "$name" "$new_name"
+  [[ "$a" = "y" ]] && mv -i "$name" "$new_name"
 done

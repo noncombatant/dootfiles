@@ -18,14 +18,14 @@ synchronize() {
 }
 
 vault() {
-  test -d "$vault_volume"
+  [[ -d "$vault_volume" ]] || error "$vault_volume not mounted"
   synchronize "$HOME/" "$vault_volume/$hostname"
   udate > "$vault_volume/$stampfile"
   diskutil eject "$vault_volume"
 }
 
 critical() {
-  test -d "$critical_volume"
+  [[ -d "$critical_volume" ]] || error "$critical_volume not mounted"
   for critical in ${critical_directories[@]}; do
     synchronize "$critical" "$critical_volume/$hostname/$critical"
   done
@@ -33,7 +33,7 @@ critical() {
   diskutil eject "$critical_volume"
 }
 
-test $# -gt 0 || usage
+[[ $# -gt 0 ]] || usage
 for argument in $@; do
   case "$argument" in
     vault)
