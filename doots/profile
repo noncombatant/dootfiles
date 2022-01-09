@@ -22,10 +22,11 @@ alias esed="sed -r"
 alias dis="objdump -Mintel -d"
 
 d() {
-  if test $# -gt 0; then
+  if [[ $# -gt 0 && -d "$1" ]]; then
     cd "$1" || return
+    shift
   fi
-  list
+  list "$@"
 }
 
 get() {
@@ -42,4 +43,4 @@ hgrep() {
 
 source "$HOME"/bin/lib.sh
 
-test -f "$HOME/.local_profile" && source "$HOME/.local_profile"
+[[ -f "$HOME/.local_profile" ]] && source "$HOME/.local_profile"
