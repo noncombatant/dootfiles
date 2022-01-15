@@ -2,9 +2,10 @@
 
 help="Search for files with \`find\` and \`grep\`. Usage:
 
-  search [-d pathname] [-n name-pattern] pattern [...]
+  search [-d pathname] [-n name-pattern] [pattern] [...]
 
-The \`-d\` and \`-n\` options can be given more than once.
+You can provide the \`-d\` and \`-n\` options more than once, and you can
+provide more than one \`pattern\`.
 
 \`search\` will traverse each \`pathname\` for any \`name-pattern\`, and then
 search the content of files whose names match for any of the given
@@ -12,7 +13,8 @@ search the content of files whose names match for any of the given
 
 If you provide no \`pathname\`, \`search\` will search the current working
 directory. If you provide no \`name-pattern\`, \`search\` will search all files
-under the given \`pathname\`(s) (or the current working directory).
+under the given \`pathname\`(s) (or the current working directory). If you
+provide no \`pattern\`, \`search\` will print just the matching pathnames.
 
 The \`name-pattern\`(s) and \`pattern\`(s) are interpreted as case-insensitive
 POSIX extended regular expressions."
@@ -57,5 +59,9 @@ done
 cores="$(core_count)"
 find $directories -type f -print0 |
 grep -zEi -f "$name_patterns_file" |
-xargs -0 -P "$cores" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
+if [[ ! -z "$@" ]]; then
+  xargs -0 -P "$cores" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
+else
+  xargs -0 -n1 echo
+fi
 cleanup
