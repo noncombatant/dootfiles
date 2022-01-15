@@ -56,11 +56,10 @@ for p in "$@"; do
   echo "$p" >> "$content_patterns_file"
 done
 
-cores="$(core_count)"
 find $directories -type f -print0 |
 grep -zEi -f "$name_patterns_file" |
 if [[ ! -z "$@" ]]; then
-  xargs -0 -P "$cores" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
+  xargs -0 -P "$(core_count)" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
 else
   xargs -0 -n1 echo
 fi
