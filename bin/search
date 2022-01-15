@@ -55,5 +55,7 @@ for p in "$@"; do
 done
 
 cores="$(core_count)"
-find $directories -type f -print0 | grep -zEi -f "$name_patterns_file" | xargs -0 -P "$cores" -n1 grep -HEIi -f "$content_patterns_file"
+find $directories -type f -print0 |
+grep -zEi -f "$name_patterns_file" |
+xargs -0 -P "$cores" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
 cleanup
