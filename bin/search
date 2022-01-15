@@ -2,29 +2,57 @@
 
 help="Search for files with \`find\` and \`grep\`. Usage:
 
-  search pathname-or-pattern [...]
+  search [-d pathname] [-n name-pattern] pattern [...]
 
-Each pathname-or-pattern will be interpreted as a pathname (if it exists) or as
-a POSIX extended regular expression (otherwise). \`search\` will traverse the
-given pathname(s) and search each file for lines matching any of the given REs."
+The -d and -n options can be given more than once.
+
+search will traverse each pathname for any name-pattern, and then search the
+content of files whose names match for any of the given pattern(s).
+
+If you provide no pathname, search will search the current working directory.
+If you provide no name-pattern, all search will search all files under the
+given pathname(s) (or the current working directory).
+
+The name-pattern(s) and pattern(s) are interpreted as case-insensitive POSIX
+extended regular expressions."
 
 source "$HOME"/bin/script.sh
 
-patterns="$(mktemp "$HOME"/search.XXXXXX)"
+while getopts "d:n:" o; do
+  case "$o" in
+    d)
+      directories="${directories-}
+$OPTARG"
+      ;;
+    n)
+      if [[ -z "${name_patterns-}" ]]; then
+        name_patterns="$OPTARG"
+      else
+        name_patterns="$name_patterns
+$OPTARG"
+      fi
+      ;;
+    *)
+      usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+directories=${directories=.}
+name_patterns=${name_patterns=.}
 
 cleanup() {
-  rm "$patterns"
+  rm "$name_patterns_file" "$content_patterns_file"
 }
 
+name_patterns_file="$(mktemp "$HOME"/search.XXXXXX)"
+echo "$name_patterns" > "$name_patterns_file"
+
+content_patterns_file="$(mktemp "$HOME"/search.XXXXXX)"
 for p in "$@"; do
-  if [[ -e "$p" ]]; then
-    roots="${roots-}$p
-"
-  else
-    echo "$p" >> "$patterns"
-  fi
+  echo "$p" >> "$content_patterns_file"
 done
 
 cores="$(core_count)"
-find ${roots-.} -type f -print0 | xargs -0 -P "$cores" -n1 grep -HEIi -f "$patterns"
+find $directories -type f -print0 | grep -zEi -f "$name_patterns_file" | xargs -0 -P "$cores" -n1 grep -HEIi -f "$content_patterns_file"
 cleanup
