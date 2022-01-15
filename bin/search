@@ -4,17 +4,18 @@ help="Search for files with \`find\` and \`grep\`. Usage:
 
   search [-d pathname] [-n name-pattern] pattern [...]
 
-The -d and -n options can be given more than once.
+The \`-d\` and \`-n\` options can be given more than once.
 
-search will traverse each pathname for any name-pattern, and then search the
-content of files whose names match for any of the given pattern(s).
+\`search\` will traverse each \`pathname\` for any \`name-pattern\`, and then
+search the content of files whose names match for any of the given
+\`pattern\`(s).
 
-If you provide no pathname, search will search the current working directory.
-If you provide no name-pattern, all search will search all files under the
-given pathname(s) (or the current working directory).
+If you provide no \`pathname\`, \`search\` will search the current working
+directory. If you provide no \`name-pattern\`, \`search\` will search all files
+under the given \`pathname\`(s) (or the current working directory).
 
-The name-pattern(s) and pattern(s) are interpreted as case-insensitive POSIX
-extended regular expressions."
+The \`name-pattern\`(s) and \`pattern\`(s) are interpreted as case-insensitive
+POSIX extended regular expressions."
 
 source "$HOME"/bin/script.sh
 
