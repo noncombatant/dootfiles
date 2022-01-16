@@ -2,10 +2,8 @@
 
 help="Shows a list of the largest directories. Usage:
 
-  directory-sizes pathname [...]"
+  directory-sizes [pathname [...]]"
 
 source "$HOME"/bin/script.sh
 
-[[ $# -gt 0 ]] || usage
-height=$(($(tput lines) - 2))
-du -k "$@" | sort -bn | tail -n $height
+du -m "${@-.}" | sort -bn | tail -n $(($(tput lines) - 2))
