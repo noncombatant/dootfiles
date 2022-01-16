@@ -10,7 +10,7 @@ IFS=$'\n\t'
 trap 'cleanup $?' ERR
 
 error() {
-  echo "$1" > /dev/stderr
+  echo "$@" > /dev/stderr
   exit 1
 }
 
@@ -20,7 +20,7 @@ usage() {
 }
 
 cleanup() {
-  exit $?
+  exit "$1"
 }
 
 source "$HOME"/bin/lib.sh
