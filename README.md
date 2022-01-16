@@ -7,5 +7,5 @@ My dotfiles and scripts.
 Just run:
 
 ```sh
-./install.sh
+./install
 ```
