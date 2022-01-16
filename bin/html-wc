@@ -44,6 +44,7 @@ if __name__ == "__main__":
     import codecs
     import os
     import sys
+    import script
 
     encoding = os.environ.get("encoding", "UTF-8")
 

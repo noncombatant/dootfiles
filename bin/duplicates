@@ -113,6 +113,7 @@ def reduce_to_duplicates(state):
 
 
 if __name__ == "__main__":
+    import script
     options, pathnames = get_options(arguments[1:], "adhlm:ps")
     options = dict(options)
 
