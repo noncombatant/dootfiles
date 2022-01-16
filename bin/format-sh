@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-help='Formats sh source code. Usage:
+help="Formats sh source code. Usage:
 
   format-sh [files...]
 
 When given no arguments, reads from stdin and prints to stdout. When given
-arguments, formats the files in place.'
+arguments, formats the files in place."
 
 # https://github.com/mvdan/sh
 # go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
-source "$HOME/bin/script.sh"
-source "$HOME/.go_profile"
+source "$HOME"/bin/script.sh
+source "$HOME"/.go_profile
 
 if [[ $# -eq 0 ]]; then
   shfmt -i 2 -sr -ln bash
