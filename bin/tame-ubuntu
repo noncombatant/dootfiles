@@ -31,7 +31,7 @@ do-release-upgrade
 #systemctl mask rsyslogd
 #systemctl stop syslog.socket
 #systemctl stop rsyslog.service
-#systemctl is-active rsyslog.service 
+#systemctl is-active rsyslog.service
 echo "Removing syslogd."
 apt -qy remove rsyslog
 

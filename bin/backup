@@ -36,11 +36,14 @@ critical() {
 [[ $# -gt 0 ]] || usage
 for argument in $@; do
   case "$argument" in
-    vault)
-      vault ;;
-    critical)
-      critical ;;
-    *)
-      usage ;;
+  vault)
+    vault
+    ;;
+  critical)
+    critical
+    ;;
+  *)
+    usage
+    ;;
   esac
 done

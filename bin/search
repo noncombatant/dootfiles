@@ -23,20 +23,21 @@ source "$HOME"/bin/script.sh
 
 while getopts "d:n:" o; do
   case "$o" in
-    d)
-      directories="${directories-}
+  d)
+    directories="${directories-}
 $OPTARG"
-      ;;
-    n)
-      if [[ -z "${name_patterns-}" ]]; then
-        name_patterns="$OPTARG"
-      else
-        name_patterns="$name_patterns
+    ;;
+  n)
+    if [[ -z "${name_patterns-}" ]]; then
+      name_patterns="$OPTARG"
+    else
+      name_patterns="$name_patterns
 $OPTARG"
-      fi
-      ;;
-    *)
-      usage ;;
+    fi
+    ;;
+  *)
+    usage
+    ;;
   esac
 done
 shift $((OPTIND - 1))
@@ -57,10 +58,10 @@ for p in "$@"; do
 done
 
 find $directories -type f -print0 |
-grep -zEi -f "$name_patterns_file" |
-if [[ ! -z "$@" ]]; then
-  xargs -0 -P "$(core_count)" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
-else
-  xargs -0 -n1 echo
-fi
+  grep -zEi -f "$name_patterns_file" |
+  if [[ ! -z "$@" ]]; then
+    xargs -0 -P "$(core_count)" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
+  else
+    xargs -0 -n1 echo
+  fi
 cleanup

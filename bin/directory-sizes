@@ -7,5 +7,5 @@ help="Shows a list of the largest directories. Usage:
 source "$HOME"/bin/script.sh
 
 [[ $# -gt 0 ]] || usage
-height=$(( $(tput lines) - 2 ))
+height=$(($(tput lines) - 2))
 du -k "$@" | sort -bn | tail -n $height

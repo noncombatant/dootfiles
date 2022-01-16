@@ -52,7 +52,7 @@ sum() {
   done
 }
 
-get_sdb_name () {
+get_sdb_name() {
   pathname="$1"
   parent=$(dirname "$pathname")
   base=$(basename "$pathname")
@@ -67,12 +67,16 @@ subprogram="$1"
 shift
 
 case $subprogram in
-  check)
-    check "$@" ;;
-  db)
-    db "$@" ;;
-  sum)
-    sum "$@" ;;
-  *)
-    usage ;;
+check)
+  check "$@"
+  ;;
+db)
+  db "$@"
+  ;;
+sum)
+  sum "$@"
+  ;;
+*)
+  usage
+  ;;
 esac

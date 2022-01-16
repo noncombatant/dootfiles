@@ -5,9 +5,9 @@ udate() {
 }
 
 core_count() {
-  sysctl -n hw.physicalcpu 2> /dev/null || \
-  grep -c ^processor /proc/cpuinfo 2> /dev/null || \
-  echo 1
+  sysctl -n hw.physicalcpu 2> /dev/null ||
+    grep -c ^processor /proc/cpuinfo 2> /dev/null ||
+    echo 1
 }
 
 realpath() {
