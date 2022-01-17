@@ -8,11 +8,10 @@ import markdown
 import sys
 import script
 
+extensions = ["tables", "toc", "fenced_code"]
+
 if len(sys.argv) == 1:
-    markdown.markdownFromFile(extensions=[
-                "tables", "toc", "fenced_code"])
+    markdown.markdownFromFile(extensions=extensions)
 else:
     for pathname in sys.argv[1:]:
-        markdown.markdownFromFile(
-            input=pathname, extensions=[
-                "tables", "toc", "fenced_code"])
+        markdown.markdownFromFile(input=pathname, extensions=extensions)
