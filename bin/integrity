@@ -14,11 +14,12 @@ Usage:
 Given 2 checksum database (sdb) files, prints out any mismatches, indicating
 file corruption.
 
-  integrity db pathname [...]
+  integrity db pathname [sdb-file]
 
 For each pathname naming a directory, reads every regular file under the
 pathname and calculates the files’ checksums. Stores the checksums and file
-pathnames in pathname-[timestamp].sdb, a sibling of pathname.
+pathnames in either sdb-file (if given), or pathname-[timestamp].sdb (a sibling
+of pathname).
 
   integrity sum pathname [...]
 
@@ -36,12 +37,10 @@ check() {
 }
 
 db() {
-  [[ $# -gt 0 ]] || usage
+  [[ $# -eq 1 || $# -eq 2 ]] || usage
   cores=$(core_count)
-  for pathname in "$@"; do
-    output="$(get_sdb_name "$pathname")"
-    find "$pathname" -type f -print0 | xargs -0 -P "$cores" "$program" sum | sort -k 2 | bzip2 > "$output"
-  done
+  output=${2-"$(get_sdb_name "$1")"}
+  find "$1" -type f -print0 | xargs -0 -P "$cores" "$program" sum | sort -k 2 | bzip2 > "$output"
 }
 
 sum() {

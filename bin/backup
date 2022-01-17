@@ -7,7 +7,10 @@ help="Backs up files onto another volume. Usage:
 
 source "$HOME"/bin/script.sh
 
-hostname=$(hostname)
+cleanup() {
+  rm /tmp/backup.*
+}
+
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
 critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/src/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
@@ -19,15 +22,22 @@ synchronize() {
 
 vault() {
   [[ -d "$vault_volume" ]] || error "$vault_volume not mounted"
-  synchronize "$HOME/" "$vault_volume/$hostname"
-  udate > "$vault_volume/$stampfile"
+  synchronize "$HOME/" "$vault_volume$HOME/"
+  cd "$(dirname "$HOME")"
+  home_sdb="$(mktemp /tmp/backup.XXXXXX)"
+  integrity db "$(basename "$HOME")" "$home_sdb"
+  cd "$(dirname "$vault_volume$HOME/")"
+  vault_sdb="$(mktemp /tmp/backup.XXXXXX)"
+  integrity db  "$(basename "$HOME")" "$vault_sdb"
+  udate > "$vault_volume$HOME/$stampfile"
+  integrity check "$home_sdb" "$vault_sdb"
   diskutil eject "$vault_volume"
 }
 
 critical() {
   [[ -d "$critical_volume" ]] || error "$critical_volume not mounted"
   for critical in ${critical_directories[@]}; do
-    synchronize "$critical" "$critical_volume/$hostname/$critical"
+    synchronize "$critical" "$critical_volume/$critical"
   done
   udate > "$critical_volume/$stampfile"
   diskutil eject "$critical_volume"
@@ -47,3 +57,4 @@ for argument in $@; do
     ;;
   esac
 done
+cleanup

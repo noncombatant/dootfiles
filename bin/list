@@ -95,9 +95,9 @@ status() {
 }
 
 if [[ $# -eq 0 ]]; then
-  status *
+  status .* *
 else
   for p in "$@"; do
-    [[ -f "$p" ]] && status "$p" || status "$p"/*
+    [[ -f "$p" ]] && status "$p" || status "$p"/.* "$p"/*
   done
 fi | sort
