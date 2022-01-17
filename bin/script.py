@@ -8,4 +8,4 @@ if len(sys.argv) > 1:
             print(d)
         else:
             print("BUG: This program has no help text.")
-    sys.exit(1)
+        sys.exit(1)

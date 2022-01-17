@@ -9,7 +9,8 @@ import sys
 import script
 
 if len(sys.argv) == 1:
-    markdown.markdownFromFile()
+    markdown.markdownFromFile(extensions=[
+                "tables", "toc", "fenced_code"])
 else:
     for pathname in sys.argv[1:]:
         markdown.markdownFromFile(
