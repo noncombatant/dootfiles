@@ -5,7 +5,6 @@ help="Installs the dootfiles. Usage:
   install"
 
 here=$(dirname "$0")
-source "$here"/bin/script.sh
 
 for file in "$here"/doots/*; do
   f=$(basename "$file")
