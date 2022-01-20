@@ -47,7 +47,7 @@ sum() {
   [[ $# -gt 0 ]] || usage
   for pathname in "$@"; do
     sum=$(openssl sha256 -binary "$pathname" | base64)
-    echo "$sum" "$(realpath "$pathname")"
+    echo "$sum" "$pathname"
   done
 }
 
