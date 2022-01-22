@@ -63,5 +63,5 @@ find $directories -type f -print0 |
     xargs -0 -P "$(core_count)" -n1 grep --color=auto -HEIi -f "$content_patterns_file"
   else
     xargs -0 -n1 echo
-  fi
+  fi || true
 cleanup
