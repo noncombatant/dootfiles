@@ -94,10 +94,11 @@ status() {
   fi
 }
 
+GLOBIGNORE=.:..
 if [[ $# -eq 0 ]]; then
-  status .* *
+  status *
 else
   for p in "$@"; do
-    [[ -f "$p" ]] && status "$p" || status "$p"/.* "$p"/*
+    [[ -f "$p" ]] && status "$p" || status "$p"/*
   done
 fi | sort
