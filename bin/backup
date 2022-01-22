@@ -25,11 +25,11 @@ vault() {
   synchronize "$HOME/" "$vault_volume$HOME/"
   udate > "$vault_volume$HOME/$stampfile"
 
-  home_sdb="$(mktemp /tmp/backup.XXXXXX)"
+  local home_sdb="$(mktemp /tmp/backup.XXXXXX)"
   cd "$HOME"
   integrity db . "$home_sdb" || true
 
-  vault_sdb="$(mktemp /tmp/backup.XXXXXX)"
+  local vault_sdb="$(mktemp /tmp/backup.XXXXXX)"
   cd "$vault_volume$HOME"
   integrity db . "$vault_sdb" || true
 
