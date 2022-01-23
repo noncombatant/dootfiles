@@ -19,12 +19,7 @@ file corruption.
 For each pathname naming a directory, reads every regular file under the
 pathname and calculates the files’ checksums. Stores the checksums and file
 pathnames in either sdb-file (if given), or pathname-[timestamp].sdb (a sibling
-of pathname).
-
-  integrity sum pathname [...]
-
-For each pathname naming a regular file, calculates and prints the checksum and
-pathname."
+of pathname)."
 
 source "$HOME"/bin/script.sh
 
@@ -33,22 +28,14 @@ check() {
   local old="$1"
   local new="$2"
   echo "$old → $new"
-  bzcat "$old" | diff - <(bzcat "$new")
+  bzcat "$old" | diff -d - <(bzcat "$new")
 }
 
 db() {
   [[ $# -eq 1 || $# -eq 2 ]] || usage
   local cores=$(core_count)
   local output=${2-"$(get_sdb_name "$1")"}
-  find "$1" -type f -print0 | xargs -0 -P "$cores" "$program" sum | sort -k 2 | bzip2 > "$output"
-}
-
-sum() {
-  [[ $# -gt 0 ]] || usage
-  for pathname in "$@"; do
-    local sum=$(openssl sha256 -binary "$pathname" | base64)
-    echo "$sum" "$pathname"
-  done
+  find "$1" -type f -print0 | xargs -0 -P "$cores" shasum -b -a 256 | sort | bzip2 > "$output"
 }
 
 get_sdb_name() {
@@ -71,9 +58,6 @@ check)
   ;;
 db)
   db "$@"
-  ;;
-sum)
-  sum "$@"
   ;;
 *)
   usage
