@@ -47,6 +47,7 @@ name_patterns=${name_patterns=.}
 
 cleanup() {
   rm "$name_patterns_file" "$content_patterns_file"
+  exit $?
 }
 
 name_patterns_file="$(mktemp "$HOME"/search.XXXXXX)"
@@ -64,4 +65,4 @@ find $directories -type f -print0 |
   else
     xargs -0 -n1 echo
   fi || true
-cleanup
+cleanup 0

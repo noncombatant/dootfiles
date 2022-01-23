@@ -9,6 +9,7 @@ source "$HOME"/bin/script.sh
 
 cleanup() {
   rm /tmp/backup.*
+  exit $?
 }
 
 vault_volume="/Volumes/vault/"
@@ -20,21 +21,23 @@ synchronize() {
   rsync -av --delete --ignore-errors "$@" || true
 }
 
+check_integrity() {
+  local sdb1="$(mktemp /tmp/backup.XXXXXX)"
+  cd "$1"
+  integrity db . "$sdb1" || true
+
+  local sdb2="$(mktemp /tmp/backup.XXXXXX)"
+  cd "$2"
+  integrity db . "$sdb2" || true
+
+  integrity check "$sdb1" "$sdb2" || true
+}
+
 vault() {
   [[ -d "$vault_volume" ]] || error "$vault_volume not mounted"
   synchronize "$HOME/" "$vault_volume$HOME/"
   udate > "$vault_volume$HOME/$stampfile"
-
-  local home_sdb="$(mktemp /tmp/backup.XXXXXX)"
-  cd "$HOME"
-  integrity db . "$home_sdb" || true
-
-  local vault_sdb="$(mktemp /tmp/backup.XXXXXX)"
-  cd "$vault_volume$HOME"
-  integrity db . "$vault_sdb" || true
-
-  integrity check "$home_sdb" "$vault_sdb" && cleanup || true
-
+  #check_integrity "$HOME" "$vault_volume$HOME"
   diskutil eject "$vault_volume"
 }
 
@@ -61,3 +64,4 @@ for argument in $@; do
     ;;
   esac
 done
+cleanup 0
