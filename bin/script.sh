@@ -19,6 +19,10 @@ usage() {
   exit 1
 }
 
+# Exits with exit status $1.
+#
+# You can (and sometimes should) override this function. If you do, your
+# override should also exit with the status given in $1.
 cleanup() {
   exit "$1"
 }
