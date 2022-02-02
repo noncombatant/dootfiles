@@ -42,12 +42,11 @@ $OPTARG"
 done
 shift $((OPTIND - 1))
 
-directories=${directories=.}
-name_patterns=${name_patterns=.}
+: ${directories=.} ${name_patterns=.}
 
 cleanup() {
-  [[ -f "${name_patterns_file=}" ]] && rm "$name_patterns_file"
-  [[ -f "${content_patterns_file=}" ]] && rm "$content_patterns_file"
+  [[ -f "${name_patterns_file-}" ]] && rm "$name_patterns_file"
+  [[ -f "${content_patterns_file-}" ]] && rm "$content_patterns_file"
   exit $?
 }
 
