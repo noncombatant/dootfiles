@@ -14,15 +14,16 @@ error() {
   exit 1
 }
 
+# Prints `$help` (should be Markdown) and exits with status 1.
 usage() {
   echo "${help-BUG: This program has no help text.}"
   exit 1
 }
 
-# Exits with exit status $1.
+# Exits with exit status `$1`.
 #
 # You can (and sometimes should) override this function. If you do, your
-# override should also exit with the status given in $1.
+# override should also exit with the status given in `$1`.
 cleanup() {
   exit "$1"
 }
