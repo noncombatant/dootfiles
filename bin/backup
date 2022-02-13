@@ -9,7 +9,7 @@ source "$HOME"/bin/script.sh
 
 cleanup() {
   rm /tmp/backup.*
-  exit $?
+  exit "$1"
 }
 
 vault_volume="/Volumes/vault/"

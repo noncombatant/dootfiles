@@ -47,7 +47,7 @@ shift $((OPTIND - 1))
 cleanup() {
   [[ -f "${name_patterns_file-}" ]] && rm "$name_patterns_file"
   [[ -f "${content_patterns_file-}" ]] && rm "$content_patterns_file"
-  exit $?
+  exit "$1"
 }
 
 if [[ "$name_patterns" != "." ]]; then
