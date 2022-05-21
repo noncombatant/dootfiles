@@ -21,6 +21,7 @@ set nojoinspaces
 set laststatus=2
 set statusline=%F
 set statusline+=\ \ %l/%L:%c\ \ %P\ \ %m
+set fillchars+=vert:\ 
 highlight StatusLine ctermbg=black ctermfg=yellow
 highlight StatusLineNC ctermbg=yellow ctermfg=black
 
