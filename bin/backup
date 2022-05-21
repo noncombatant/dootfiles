@@ -37,7 +37,7 @@ vault() {
   [[ -d "$vault_volume" ]] || error "$vault_volume not mounted"
   synchronize "$HOME/" "$vault_volume$HOME/"
   udate > "$vault_volume$HOME/$stampfile"
-  check_integrity "$HOME" "$vault_volume$HOME"
+  #check_integrity "$HOME" "$vault_volume$HOME"
   diskutil eject "$vault_volume"
 }
 
