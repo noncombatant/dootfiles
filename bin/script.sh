@@ -7,7 +7,7 @@ set -o nounset
 set -o pipefail
 shopt -s extdebug
 IFS=$'\n\t'
-trap 'cleanup $?' ABRT ERR PIPE STOP TERM TSTP
+trap 'cleanup $?' ABRT ERR PIPE STOP TERM KILL
 
 error() {
   echo "$@" > /dev/stderr
