@@ -36,6 +36,7 @@ autocmd BufReadPost *.rs set shiftwidth=4
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
+autocmd BufReadPost *.content,*.txt,*.html set spelllang=en
 
 " Keyboard shortcuts:
 map Q {gq}
