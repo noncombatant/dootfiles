@@ -18,12 +18,12 @@ set nomodeline
 set tags=tags
 set nonumber
 set nojoinspaces
-set laststatus=2
-set statusline=%F
-set statusline+=\ \ %l/%L:%c\ \ %P\ \ %m
 set fillchars+=vert:\ 
-highlight StatusLine ctermbg=black ctermfg=yellow
-highlight StatusLineNC ctermbg=yellow ctermfg=black
+
+highlight StatusLine ctermbg=white ctermfg=magenta
+highlight StatusLineNC ctermbg=magenta ctermfg=white
+set laststatus=2
+set statusline=%{&modified?'!':'\ '}%F\ %l/%L\ %c
 
 syntax on
 
@@ -36,12 +36,12 @@ autocmd BufReadPost *.rs set shiftwidth=4
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
-autocmd BufReadPost *.content,*.txt,*.html set spelllang=en
+autocmd BufReadPost *.content,*.html,*.md,*.txt set spelllang=en
 
 " Keyboard shortcuts:
 map Q {gq}
-map W :execute ":!wc < " . expand("%:p")<CR>
-":execute ":!tmux split-window -h 'man " . expand('<cword>') . "'"
+map W :execute ":!wc " . expand("%:p")<CR>
+map F :Texplore<CR>
 autocmd FileType c map M :execute ":!man -S 2:3 " . expand('<cword>')<CR>
 autocmd FileType sh map M :execute ":!man -S 1 " . expand('<cword>')<CR>
 autocmd FileType go map M :execute ":!go doc " . expand('<cword>')<CR>
