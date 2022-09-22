@@ -26,7 +26,7 @@ d() {
     cd "$1" || return
     shift
   fi
-  list "$@"
+  list "$@" | sort
 }
 
 get() {
