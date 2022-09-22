@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+help="Prints out the width and height of images. Usage:
+
+  image-dimensions image [...]"
+
+source "$HOME"/bin/script.sh
+
+sips --getProperty pixelWidth --getProperty pixelHeight $*
