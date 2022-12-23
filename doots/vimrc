@@ -43,6 +43,11 @@ autocmd BufReadPost *.content,*.html,*.md,*.txt set spelllang=en
 map Q {gq}
 map W :execute ":!wc " . expand("%:p")<CR>
 map F :Texplore<CR>
+" For local identifier replace
+nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+" For global identifier replace
+nnoremap gR gD:%s/<C-R>///gc<left><left><left>
+
 autocmd FileType c map M :execute ":!man -S 2:3 " . expand('<cword>')<CR>
 autocmd FileType sh map M :execute ":!man -S 1 " . expand('<cword>')<CR>
 autocmd FileType go map M :execute ":!go doc " . expand('<cword>')<CR>
