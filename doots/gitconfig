@@ -10,3 +10,5 @@
 	defaultBranch = main
 [user]
 	name = Chris Palmer
+[core]
+	pager = less -F
