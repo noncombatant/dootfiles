@@ -24,7 +24,7 @@ highlight StatusLine ctermbg=white ctermfg=magenta
 highlight StatusLineNC ctermbg=magenta ctermfg=white
 set laststatus=2
 let gitbranch=trim(system("git rev-parse --abbrev-ref HEAD 2> /dev/null"))
-set statusline=%{&modified?'!':'\ '}%F\ %l/%L\ %c\ %{gitbranch}
+set statusline=%{&modified?'!':'\ '}%F\ %l/%L\ %v\ %{gitbranch}
 
 syntax on
 
