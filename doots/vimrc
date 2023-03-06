@@ -19,6 +19,8 @@ set tags=tags
 set nonumber
 set nojoinspaces
 set fillchars+=vert:\ 
+set whichwrap+=<,>,h,l
+set formatoptions=tcq
 
 highlight StatusLine ctermbg=white ctermfg=magenta
 highlight StatusLineNC ctermbg=magenta ctermfg=white
@@ -34,6 +36,8 @@ autocmd BufReadPost *.go set noexpandtab
 autocmd BufReadPost *.rs set tabstop=4
 autocmd BufReadPost *.rs set softtabstop=4
 autocmd BufReadPost *.rs set shiftwidth=4
+autocmd BufReadPost *.rs set comments=:///,://!,://
+autocmd BufReadPost *.rs set formatlistpat="^\s*\d\+[\]:.)}\t ]\s*"
 
 setlocal spell spelllang=
 setlocal spell spellfile=~/.spell.add
