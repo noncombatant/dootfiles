@@ -20,6 +20,7 @@ alias ln="ln -i"
 
 alias esed="sed -r"
 
+alias make="make -j"
 alias dis="objdump -Mintel -d"
 
 d() {
