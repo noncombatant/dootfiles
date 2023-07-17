@@ -5,7 +5,9 @@ udate() {
 }
 
 core_count() {
-  sysctl -n hw.physicalcpu 2> /dev/null ||
+  getconf _NPROCESSORS_ONLN 2> /dev/null ||
+    nproc 2> /dev/null ||
+    sysctl -n hw.physicalcpu 2> /dev/null ||
     grep -c ^processor /proc/cpuinfo 2> /dev/null ||
     echo 1
 }
