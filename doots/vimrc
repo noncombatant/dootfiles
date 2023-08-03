@@ -8,7 +8,7 @@ set incsearch
 set ignorecase
 set smartcase
 set hlsearch
-set background=dark
+set background=light
 set tabstop=2
 set softtabstop=2
 set expandtab
@@ -22,8 +22,8 @@ set fillchars+=vert:\
 set whichwrap+=<,>,h,l
 set formatoptions=tcq
 
-highlight StatusLine ctermbg=white ctermfg=magenta
-highlight StatusLineNC ctermbg=magenta ctermfg=white
+highlight StatusLine ctermbg=white ctermfg=green
+highlight StatusLineNC ctermbg=green ctermfg=white
 set laststatus=2
 let gitbranch=trim(system("git rev-parse --abbrev-ref HEAD 2> /dev/null"))
 set statusline=%{&modified?'!':'\ '}%F\ %l/%L\ %v\ %{gitbranch}
