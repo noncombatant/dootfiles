@@ -13,8 +13,4 @@ done
 
 bin="$HOME/bin"
 mkdir -p "$bin"
-
-for file in "$here"/bin/*; do
-  f=$(basename "$file")
-  cp "$file" "$bin"
-done
+cp "$here"/bin/* "$bin"
