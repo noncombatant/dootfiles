@@ -4,7 +4,7 @@ export LC_ALL="en_US.UTF-8"
 export MANWIDTH=80
 export PATH="$HOME/bin:$HOME/.local/bin:$HOME/Library/Python/3.9/bin:$PATH"
 export HISTSIZE=1000
-export PAGER=less
+export PAGER="less -Fi"
 
 umask 022
 
@@ -12,7 +12,7 @@ alias l="ls -F"
 alias la="ls -AF"
 alias ll="ls -ltrh"
 
-alias less="less -i"
+alias less="less -Fi"
 
 alias mv="mv -i"
 alias cp="cp -i"
@@ -28,21 +28,13 @@ d() {
     cd "$1" || return
     shift
   fi
-  list "$@" | sort
-}
-
-get() {
-  less -i -p "$1" "$2"
-}
-
-searchc() {
-  search -n '!/out/' -n '\.(h|c|cpp|cc|m|mm)$' "$@"
+  status $*
 }
 
 hgrep() {
-  history | grep -i "$@" | tail -n 10
+  history | grep -i $*
 }
 
-source "$HOME"/bin/lib.sh
+source "$HOME/bin/lib.sh"
 
 [[ -f "$HOME/.local_profile" ]] && source "$HOME/.local_profile"
