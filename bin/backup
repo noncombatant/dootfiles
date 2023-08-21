@@ -14,7 +14,7 @@ cleanup() {
 
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
-critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/src/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
+critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/code/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
 stampfile="backup-date.txt"
 
 synchronize() {
