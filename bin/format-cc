@@ -9,8 +9,10 @@ arguments, formats the files in place."
 
 source "$HOME"/bin/script.sh
 
+style=--style='{BasedOnStyle: chromium, InsertBraces: true}'
+
 if [[ $# -eq 0 ]]; then
-  clang-format -style=Chromium
+  clang-format "$style"
 else
-  clang-format -i -style=Chromium "$@"
+  clang-format -i "$style" $*
 fi
