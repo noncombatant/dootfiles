@@ -8,13 +8,13 @@ help="Backs up files onto another volume. Usage:
 source "$HOME"/bin/script.sh
 
 cleanup() {
-  rm /tmp/backup.*
+  rm -f /tmp/backup.* || true
   exit "$1"
 }
 
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
-critical_directories=($HOME/Desktop/ $HOME/critical/ $HOME/code/ $HOME/web/ $HOME/.ssh/ $HOME/my-music/ $HOME/writing/)
+critical_directories=("$HOME/Desktop/" "$HOME/critical/" "$HOME/code/" "$HOME/web/" "$HOME/.ssh/" "$HOME/my-music/" "$HOME/writing/")
 stampfile="backup-date.txt"
 
 synchronize() {
