@@ -12,3 +12,5 @@
 	name = Chris Palmer
 [core]
 	pager = less -F
+[include]
+	path = ~/.gitconfig.local
