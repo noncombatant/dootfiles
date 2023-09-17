@@ -33,6 +33,9 @@ syntax on
 autocmd BufReadPost *.content set syntax=html
 autocmd BufReadPost *.go,*.js set textwidth=0
 autocmd BufReadPost *.go set noexpandtab
+autocmd BufReadPost *.go set tabstop=8
+autocmd BufReadPost *.go set softtabstop=8
+autocmd BufReadPost *.go set shiftwidth=8
 autocmd BufReadPost *.rs set tabstop=4
 autocmd BufReadPost *.rs set softtabstop=4
 autocmd BufReadPost *.rs set shiftwidth=4
