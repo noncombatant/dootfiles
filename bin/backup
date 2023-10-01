@@ -2,6 +2,7 @@
 
 help="Backs up files onto another volume. Usage:
 
+  backup file
   backup vault
   backup critical"
 
@@ -12,6 +13,7 @@ cleanup() {
   exit "$1"
 }
 
+file_directory="file:/vault/woop-backup/"
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
 critical_directories=("$HOME/Desktop/" "$HOME/critical/" "$HOME/code/" "$HOME/web/" "$HOME/.ssh/" "$HOME/my-music/" "$HOME/writing/")
@@ -31,6 +33,10 @@ check_integrity() {
   integrity db . "$sdb2" || true
 
   integrity check "$sdb1" "$sdb2" || true
+}
+
+file() {
+  synchronize "$HOME/" "$file_directory"
 }
 
 vault() {
@@ -53,6 +59,9 @@ critical() {
 [[ $# -gt 0 ]] || usage
 for argument in $@; do
   case "$argument" in
+  file)
+    file
+    ;;
   vault)
     vault
     ;;
