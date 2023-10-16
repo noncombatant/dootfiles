@@ -35,8 +35,8 @@ hgrep() {
   history | grep -i $*
 }
 
-cs() {
-  files -m '\.go$' | map -l32 -x "filter -i -m $*"
+gs() {
+  files -m '\.go$' | mapx -l8 filter -in -m $*
 }
 
 gd() {
