@@ -7,7 +7,7 @@ help="Formats C/C++ source code. Usage:
 When given no arguments, reads from stdin and prints to stdout. When given
 arguments, formats the files in place."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 style=--style='{BasedOnStyle: chromium, InsertBraces: true}'
 

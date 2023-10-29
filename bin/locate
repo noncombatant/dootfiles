@@ -16,7 +16,7 @@ The options are the same as for grep.
 For some fun history, see \"Finding Files Fast\" by James A. Woods
 (https://www2.eecs.berkeley.edu/Pubs/TechRpts/1983/CSD-83-148.pdf)."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 db_file="$HOME/.locate.db"
 

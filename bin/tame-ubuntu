@@ -5,7 +5,7 @@ configures things to require a bit less babysitting.
 
 This script *should* be idempotent. Hope springs eternal."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 # Configuration: Set these variables to what makes sense on the system. These
 # values work as of Ubuntu 21.10.

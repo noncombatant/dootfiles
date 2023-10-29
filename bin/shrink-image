@@ -4,7 +4,7 @@ help="Scales down an image, using \`sips\` (macOS only). Usage:
 
   shrink-image pathname"
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 #width=$(($(sips -g pixelWidth "$1" | cut -s -d ':' -f 2 | cut -c 2-) / 2))
 sips -Z 500 "$1"

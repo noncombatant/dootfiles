@@ -4,7 +4,7 @@ help="Prints out bugs and to-do items. Usage:
 
   todo [directory]"
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 root=${1-.}
 find "$root" -iname '*TODO*'

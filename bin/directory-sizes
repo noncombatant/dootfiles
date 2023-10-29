@@ -4,6 +4,6 @@ help="Shows a list of the largest directories. Usage:
 
   directory-sizes [pathname [...]]"
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 du -m "${@-.}" | sort -bn | tail -n $(($(tput lines) - 2))

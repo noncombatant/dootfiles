@@ -10,8 +10,8 @@ arguments, formats the files in place."
 # https://github.com/mvdan/sh
 # go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
-source "$HOME"/bin/script.sh
-source "$HOME"/.go_profile
+source "$(dirname "$0")/script.sh"
+source "$HOME/.go_profile"
 
 if [[ $# -eq 0 ]]; then
   shfmt -i 2 -sr -ln bash

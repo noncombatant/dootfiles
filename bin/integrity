@@ -21,7 +21,7 @@ pathname and calculates the files’ checksums. Stores the checksums and file
 pathnames in either sdb-file (if given), or pathname-[timestamp].sdb (a sibling
 of pathname)."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 check() {
   [[ $# -eq 2 ]] || usage

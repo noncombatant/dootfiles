@@ -6,7 +6,7 @@ help="Backs up files onto another volume. Usage:
   backup vault
   backup critical"
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 cleanup() {
   rm -f /tmp/backup.* || true

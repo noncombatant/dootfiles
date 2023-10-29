@@ -9,7 +9,7 @@ Usage:
 When given no arguments, reads from stdin and prints to stdout. When given
 arguments, formats the files in place."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 which autopep8 > /dev/null 2>&1 || error "Run \`pip install --upgrade --user autopep8\`."
 if [[ $# -eq 0 ]]; then

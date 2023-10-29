@@ -19,7 +19,7 @@ provide no \`pattern\`, \`search\` will print just the matching pathnames.
 The \`name-pattern\`(s) and \`pattern\`(s) are interpreted as case-insensitive
 POSIX extended regular expressions."
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 while getopts "d:n:" o; do
   case "$o" in

@@ -9,7 +9,7 @@ Example:
 
   loc '*.c' ~/src"
 
-source "$HOME"/bin/script.sh
+source "$(dirname "$0")/script.sh"
 
 [[ $# -gt 1 ]] || usage
 
