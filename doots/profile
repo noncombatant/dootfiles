@@ -23,9 +23,6 @@ alias esed="sed -r"
 alias make="make -j"
 alias dis="objdump -Mintel -d"
 
-code() {
-  /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code $*
-}
 d() {
   if [[ $# -gt 0 && -d "$1" ]]; then
     cd "$1" || return
