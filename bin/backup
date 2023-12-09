@@ -14,6 +14,7 @@ cleanup() {
 }
 
 file_directory="file:/vault/woop-backup/"
+file_music_directory="file:/vault/share/music/"
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
 critical_directories=("$HOME/Desktop/" "$HOME/critical/" "$HOME/code/" "$HOME/web/" "$HOME/.ssh/" "$HOME/my-music/" "$HOME/writing/")
@@ -37,6 +38,7 @@ check_integrity() {
 
 file() {
   synchronize "$HOME/" "$file_directory"
+  synchronize /Users/Shared/music/ "$file_music_directory"
 }
 
 vault() {
