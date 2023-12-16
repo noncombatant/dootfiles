@@ -45,4 +45,6 @@ gd() {
 
 source "$HOME/bin/lib.sh"
 
+[[ -f "$HOME/.go_profile" ]] && source "$HOME/.go_profile"
+[[ -f "$HOME/.rust_profile" ]] && source "$HOME/.rust_profile"
 [[ -f "$HOME/.local_profile" ]] && source "$HOME/.local_profile"
