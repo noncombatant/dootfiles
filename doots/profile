@@ -36,7 +36,7 @@ hgrep() {
 }
 
 gs() {
-  files -m '\.go$' | mapx -l8 filter -in -m $*
+  files -m '\.go$' | mapx -l8 filter -i -m $*
 }
 
 gd() {
