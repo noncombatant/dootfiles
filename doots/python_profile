@@ -1,2 +1,5 @@
-export PATH="$HOME/Library/Python/3.8/bin:$PATH"
+#!/usr/bin/env sh
+
+python_path=$(find "$HOME/Library/Python" -depth 1 | sort | tail -n 1)
+export PATH="$python_path/bin:$PATH"
 alias py=python3

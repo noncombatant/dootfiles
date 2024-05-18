@@ -2,7 +2,7 @@ export EDITOR=vim
 export VISUAL="$EDITOR"
 export LC_ALL="en_US.UTF-8"
 export MANWIDTH=80
-export PATH="$HOME/bin:$HOME/.local/bin:$HOME/Library/Python/3.9/bin:$PATH"
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 export HISTSIZE=1000
 export PAGER="less -Fi"
 
@@ -47,4 +47,5 @@ source "$HOME/bin/lib.sh"
 
 [[ -f "$HOME/.go_profile" ]] && source "$HOME/.go_profile"
 [[ -f "$HOME/.rust_profile" ]] && source "$HOME/.rust_profile"
+[[ -f "$HOME/.python_profile" ]] && source "$HOME/.python_profile"
 [[ -f "$HOME/.local_profile" ]] && source "$HOME/.local_profile"
