@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
-python_path=$(find "$HOME/Library/Python" -depth 1 | sort | tail -n 1)
-export PATH="$python_path/bin:$PATH"
+macos_python="$HOME/Library/Python"
+
+if [ -d "$macos_python" ]; then
+  python_path=$(find "$macos_python" -depth 1 | sort | tail -n 1)
+  export PATH="$python_path/bin:$PATH"
+fi
+
 alias py=python3
