@@ -1,1 +1,5 @@
-source "$HOME/.cargo/env"
+
+cargo="$HOME/.cargo/env"
+if [ -f "$cargo" ]; then
+  source "$HOME/.cargo/env"
+fi
