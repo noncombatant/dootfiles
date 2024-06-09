@@ -17,7 +17,7 @@ file_directory="file:/vault/woop-backup/"
 file_music_directory="file:/vault/share/music/"
 vault_volume="/Volumes/vault/"
 critical_volume="/Volumes/misc/"
-critical_directories=("$HOME/Desktop/" "$HOME/critical/" "$HOME/code/" "$HOME/web/" "$HOME/.ssh/" "$HOME/my-music/" "$HOME/writing/")
+critical_directories=("$HOME/critical/" "$HOME/Desktop/" "$HOME/.ssh/" "$HOME/writing/" "$HOME/web/" "$HOME/code/" "$HOME/my-music/")
 stampfile="backup-date.txt"
 
 synchronize() {
