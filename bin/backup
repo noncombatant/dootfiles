@@ -52,6 +52,7 @@ vault() {
 critical() {
   [[ -d "$critical_volume" ]] || error "$critical_volume not mounted"
   for critical in ${critical_directories[@]}; do
+    mkdir -p "$critical_volume/$critical"
     synchronize "$critical" "$critical_volume/$critical"
   done
   udate > "$critical_volume/$stampfile"
