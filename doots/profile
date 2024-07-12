@@ -39,6 +39,10 @@ gs() {
   files -m '\.go$' | mapx -l8 filter -i -m $*
 }
 
+rs() {
+  files -m '\.rs$' src benches examples tests 2>/dev/null | mapx -l8 filter -m $*
+}
+
 gd() {
   go doc -all $* | less
 }
