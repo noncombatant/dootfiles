@@ -39,12 +39,16 @@ gs() {
   files -m '\.go$' | mapx -l8 filter -i -m $*
 }
 
+gd() {
+  go doc -all $* | less
+}
+
 rs() {
   files -m '\.rs$' src benches examples tests 2>/dev/null | mapx -l8 filter -m $*
 }
 
-gd() {
-  go doc -all $* | less
+cs() {
+  files -m '\.(c|h|S)$' | mapx -l8 filter -m $*
 }
 
 source "$HOME/bin/lib.sh"
