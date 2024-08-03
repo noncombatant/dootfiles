@@ -48,7 +48,7 @@ rs() {
 }
 
 cs() {
-  files -m '\.(c|h|S)$' | mapx -l8 filter -m $*
+  files -m '\.(c|h|S|cpp|cc|hpp)$' | mapx -l8 filter -m $*
 }
 
 source "$HOME/bin/lib.sh"
