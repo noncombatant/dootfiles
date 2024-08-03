@@ -4,7 +4,7 @@ help="Backs up files onto another volume. Usage:
 
   backup file
   backup vault
-  backup critical"
+  backup misc"
 
 source "$(dirname "$0")/script.sh"
 
@@ -16,25 +16,24 @@ cleanup() {
 file_directory="file:/vault/woop-backup/"
 file_music_directory="file:/vault/share/music/"
 vault_volume="/Volumes/vault/"
-critical_volume="/Volumes/misc/"
-critical_directories=("$HOME/critical/" "$HOME/Desktop/" "$HOME/.ssh/" "$HOME/writing/" "$HOME/web/" "$HOME/code/" "$HOME/my-music/")
+misc_volume="/Volumes/misc/"
 stampfile="backup-date.txt"
 
 synchronize() {
-  rsync -av --delete --ignore-errors --exclude '*Cache*' "$@" || true
+  rsync -av --delete --ignore-errors --exclude '*Cache*' --exclude '*CoreSimulator*' "$@" || true
 }
 
-check_integrity() {
-  local sdb1="$(mktemp /tmp/backup.XXXXXX)"
-  cd "$1"
-  integrity db . "$sdb1" || true
+# check_integrity() {
+#   local sdb1="$(mktemp /tmp/backup.XXXXXX)"
+#   cd "$1"
+#   integrity db . "$sdb1" || true
 
-  local sdb2="$(mktemp /tmp/backup.XXXXXX)"
-  cd "$2"
-  integrity db . "$sdb2" || true
+#   local sdb2="$(mktemp /tmp/backup.XXXXXX)"
+#   cd "$2"
+#   integrity db . "$sdb2" || true
 
-  integrity check "$sdb1" "$sdb2" || true
-}
+#   integrity check "$sdb1" "$sdb2" || true
+# }
 
 file() {
   synchronize "$HOME/" "$file_directory"
@@ -49,14 +48,11 @@ vault() {
   diskutil eject "$vault_volume"
 }
 
-critical() {
-  [[ -d "$critical_volume" ]] || error "$critical_volume not mounted"
-  for critical in ${critical_directories[@]}; do
-    mkdir -p "$critical_volume/$critical"
-    synchronize "$critical" "$critical_volume/$critical"
-  done
-  udate >"$critical_volume/$stampfile"
-  diskutil eject "$critical_volume"
+misc() {
+  [[ -d "$misc_volume" ]] || error "$misc_volume not mounted"
+  synchronize "$HOME/" "$misc_volume/"
+  udate >"$misc_volume/$stampfile"
+  diskutil eject "$misc_volume"
 }
 
 [[ $# -gt 0 ]] || usage
@@ -68,8 +64,8 @@ for argument in $@; do
   vault)
     vault
     ;;
-  critical)
-    critical
+  misc)
+    misc
     ;;
   *)
     usage
