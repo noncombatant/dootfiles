@@ -48,7 +48,9 @@ rs() {
 }
 
 findr() {
-  find . -type f -regextype posix-extended -iregex $* -print0
+  local print="-print0"
+  [[ -t 1 ]] && print="-print"
+  find . -type f -regextype posix-extended -iregex $* $print
 }
 
 findc() {
