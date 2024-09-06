@@ -47,8 +47,20 @@ rs() {
   files -m '\.rs$' src benches examples tests 2>/dev/null | mapx -l8 filter -m $*
 }
 
+findr() {
+  find . -type f -regextype posix-extended -iregex $* -print0
+}
+
+findc() {
+  findr '.+\.(c|h|cc|cpp|hpp)$'
+}
+
+xgrep() {
+  xargs -n10 -0 -P0 grep -niE $*
+}
+
 cs() {
-  files -m '\.(c|h|S|cpp|cc|hpp)$' | mapx -l8 filter -m $*
+  findc | xgrep $* | sed -E -e 's/:([0-9]+):/:\1\t/'
 }
 
 source "$HOME/bin/lib.sh"
