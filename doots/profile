@@ -21,14 +21,14 @@ uname=$(uname)
 
 _stat() {
   if [[ "$uname" = "Darwin" ]]; then
-    stat -t "%Y-%m-%d %H:%M" -f "%Sm  %12z  %Su  %Sg  %Sp  %N%SY" $*
+    stat -t "%Y-%m-%d %H:%M" -f "%Sm  %12z  %-8Su  %-8Sg  %Sp  %N%SY" $*
   else
     stat -c "%y  %12s  %-8U  %-8G  %A  %n" $* | sed -E -e 's/:[0-9][0-9]\.[0-9]+ -[0-9]{4}//'
   fi
 }
 
 d() {
-  printf "%-16s  %12s  %-8s  %-8s  %-10s  %s\n" Modified Size Mode User Group Name
+  printf "%-16s  %12s  %-8s  %-8s  %-10s  %s\n" Modified Size User Group Mode Name
   [[ $# -gt 0 ]] && _stat $* || _stat * | sort
 }
 
