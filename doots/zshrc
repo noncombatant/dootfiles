@@ -1,3 +1,7 @@
 bindkey -e
 PROMPT='%F{green}%m%f:%F{magenta}%~%f %F{green}%#%f '
 source ~/.profile
+
+hgrep() {
+  history 1 | grep -i $*
+}

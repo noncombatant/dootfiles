@@ -8,49 +8,45 @@ export PAGER="less -Fi"
 
 umask 022
 
-alias l="ls -F"
-alias la="ls -AF"
-alias ll="ls -ltrh"
-
 alias less="less -Fi"
 
 alias mv="mv -i"
 alias cp="cp -i"
 alias ln="ln -i"
 
-alias esed="sed -r"
-
 alias make="make -j"
 alias dis="objdump -Mintel -d"
 
-d() {
-  if [[ $# -gt 0 && -d "$1" ]]; then
-    cd "$1" || return
-    shift
+uname=$(uname)
+
+_stat() {
+  if [[ "$uname" = "Darwin" ]]; then
+    stat -t "%Y-%m-%d %H:%M" -f "%Sm  %12z  %Su  %Sg  %Sp  %N%SY" $*
+  else
+    stat -c "%y  %12s  %-8U  %-8G  %A  %n" $* | sed -E -e 's/:[0-9][0-9]\.[0-9]+ -[0-9]{4}//'
   fi
-  status $*
 }
 
-hgrep() {
-  history | grep -i $*
-}
-
-gs() {
-  files -m '\.go$' | mapx -l8 filter -i -m $*
+d() {
+  printf "%-16s  %12s  %-8s  %-8s  %-10s  %s\n" Modified Size Mode User Group Name
+  [[ $# -gt 0 ]] && _stat $* || _stat * | sort
 }
 
 gd() {
   go doc -all $* | less
 }
 
-rs() {
-  files -m '\.rs$' src benches examples tests 2>/dev/null | mapx -l8 filter -m $*
-}
-
 findr() {
-  local print="-print0"
+  local print
+  print="-print0"
+  local cwd
+  cwd=$(pwd)
   [[ -t 1 ]] && print="-print"
-  find . -type f -regextype posix-extended -iregex $* $print
+  if [[ "$uname" = "Darwin" ]]; then
+    find -E "$cwd" -path '.*' -prune -o -type f -iregex $* $print
+  else
+    find "$cwd" -path '.*' -prune -o -type f -regextype posix-extended -iregex $* $print
+  fi | sed -e "s,$cwd/,,"
 }
 
 findc() {
@@ -58,11 +54,27 @@ findc() {
 }
 
 xgrep() {
-  xargs -n10 -0 -P0 grep -niE $*
+  xargs -n10 -0 -P0 grep -niE $* | sed -E -e 's/:([0-9]+):/:\1\t/'
 }
 
 cs() {
-  findc | xgrep $* | sed -E -e 's/:([0-9]+):/:\1\t/'
+  findc | xgrep $*
+}
+
+findrs() {
+  findr '.+\.rs$'
+}
+
+rs() {
+  findrs | xgrep $*
+}
+
+findgo() {
+  findr '.+\.go$'
+}
+
+gs() {
+  findgo | xgrep $*
 }
 
 source "$HOME/bin/lib.sh"
