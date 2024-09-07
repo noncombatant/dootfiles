@@ -35,3 +35,5 @@ if [[ $# -gt 0 ]]; then
   __1=$(echo "$1" | tr "[:upper:]" "[:lower:]")
   [[ "$__1" = help || "$__1" = "--help" || "$__1" = "-h" ]] && usage
 fi
+
+true
