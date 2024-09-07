@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC1111
 help="This simple program attempts to detect file corruption. It works by calculating
 checksums (SHA-256) of files and storing them in a file (.sdb, for “checksum
 database”).
@@ -37,20 +38,25 @@ format_hash() {
 
 db() {
   [[ $# -eq 1 || $# -eq 2 ]] || usage
-  local output=${2-"$(get_sdb_name "$1")"}
+  local output
+  output=${2-"$(get_sdb_name "$1")"}
   find "$1" -type f -print0 | xargs -0 -P0 openssl sha256 | format_hash | sort | bzip2 > "$output"
 }
 
 get_sdb_name() {
-  local pathname="$1"
-  local parent=$(dirname "$pathname")
-  local base=$(basename "$pathname")
-  local date=$(udate)
-  local output="$parent"/"$base"-$date.sdb
+  local pathname
+  pathname="$1"
+  local parent
+  parent=$(dirname "$pathname")
+  local base
+  base=$(basename "$pathname")
+  local date
+  date=$(udate)
+  local output
+  output="$parent"/"$base"-$date.sdb
   echo "$output"
 }
 
-program=$(basename "$0")
 [[ $# -gt 0 ]] || usage
 subprogram="$1"
 shift

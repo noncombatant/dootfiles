@@ -7,7 +7,7 @@ set -o nounset
 set -o pipefail
 shopt -s extdebug
 IFS=$'\n\t'
-trap 'cleanup $?' ABRT ERR PIPE STOP TERM KILL EXIT
+trap 'cleanup $?' ABRT ERR PIPE TERM EXIT
 
 error() {
   echo "$@" > /dev/stderr
@@ -30,8 +30,8 @@ cleanup() {
 
 source "$HOME"/bin/lib.sh
 
-# Show $help if necessary.
-if [[ $# > 0 ]]; then
+# Show `$help` if necessary.
+if [[ $# -gt 0 ]]; then
   __1=$(echo "$1" | tr "[:upper:]" "[:lower:]")
-  [[ "$__1" = help || "$__1" = "--help" || "$__1" = "-h" ]] && usage || true
+  [[ "$__1" = help || "$__1" = "--help" || "$__1" = "-h" ]] && usage
 fi
