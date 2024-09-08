@@ -1,50 +1,59 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1111
-help="This simple program attempts to detect file corruption. It works by calculating
-checksums (SHA-256) of files and storing them in a file (.sdb, for “checksum
-database”).
+# shellcheck disable=SC1111,SC2034
+help="This program attempts to detect file corruption. It works by calculating
+checksums of files and storing them in a sorted, compressed file (a checksum
+database, ckdb).
 
-At any later point, you can then use the program to check that the files have
-the same checksums as before.
+You can then use the program to check that the files have the same checksums
+as before, such as to verify that a filesystem backup matches the original.
 
 Usage:
 
-  integrity check old.sdb new.sdb
-
-Given 2 checksum database (sdb) files, prints out any mismatches, indicating
-file corruption.
-
-  integrity db pathname [sdb-file]
+  integrity db pathname [ckdb-file]
 
 For each pathname naming a directory, reads every regular file under the
 pathname and calculates the files’ checksums. Stores the checksums and file
-pathnames in either sdb-file (if given), or pathname-[timestamp].sdb (a sibling
-of pathname)."
+pathnames in either ckdb-file (if given), or pathname-[timestamp].sdb (a sibling
+of pathname).
+
+  integrity check old.ckdb new.ckdb
+
+Given 2 ckdb files, prints out any differences."
 
 source "$(dirname "$0")/script.sh"
 
+if ! which zstd > /dev/null; then
+  error "this program depends on zstd; you'll need to install it"
+fi
+if ! which b2sum > /dev/null; then
+  error "this program depends on b2sum; you'll need to install it"
+fi
+
 check() {
   [[ $# -eq 2 ]] || usage
-  local old="$1"
-  local new="$2"
-  echo "$old → $new"
-  bzcat "$old" | diff -d - <(bzcat "$new")
-}
-
-format_hash() {
-  sed -E -e s'/SHA256\((.+)\)= ([0-9a-f]+)/\2 \1/'
+  local old
+  old="$1"
+  local new
+  new="$2"
+  zstdcat "$old" | diff -d - <(zstdcat "$new")
 }
 
 db() {
   [[ $# -eq 1 || $# -eq 2 ]] || usage
   local output
-  output=${2-"$(get_sdb_name "$1")"}
-  find "$1" -type f -print0 | xargs -0 -P0 openssl sha256 | format_hash | sort | bzip2 > "$output"
-  echo "$output"
+  output=${2-"$(get_ckdb_name "$1")"}
+
+  # Turn exit-on-error off because we don't want to exit if `b2sum` can't read
+  # some files.
+  set +e
+  set +o pipefail
+
+  find "$1" -type f -print0 | xargs -0 -P0 -n10 b2sum -a blake2s -l 128 | sort | zstd > "$output"
+  ls -l "$output"
 }
 
-get_sdb_name() {
+get_ckdb_name() {
   local pathname
   pathname="$1"
   local parent
@@ -54,7 +63,7 @@ get_sdb_name() {
   local date
   date=$(udate)
   local output
-  output="$parent"/"$base"-$date.sdb
+  output="$parent"/"$base"-$date.ckdb
   echo "$output"
 }
 
