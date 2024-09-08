@@ -6,4 +6,4 @@ help="Prints out the width and height of images. Usage:
 
 source "$(dirname "$0")/script.sh"
 
-sips --getProperty pixelWidth --getProperty pixelHeight $*
+sips --getProperty pixelWidth --getProperty pixelHeight "$@"

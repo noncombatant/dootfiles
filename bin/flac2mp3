@@ -1,6 +1,6 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-for a in $*; do
-  mp3=$(echo "$a" | sed -e 's/\.flac$/.mp3/')
+for a in "$@"; do
+  mp3=${a//.flac/.mp3}
   ffmpeg -i "$a" -ab 320k -map_metadata 0 -id3v2_version 3 "$mp3"
 done

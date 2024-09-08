@@ -15,6 +15,6 @@ for name in *"$1"*; do
   new_name=${name/$1/$replacement}
   echo -n "\"$name\"" → "\"$new_name\"" '[y/N]? '
   read a
-  a=$(echo "$a" | tr A-Z a-z)
+  a=$(echo "$a" | tr '[:upper:]' '[:lower:]')
   [[ "$a" = "y" ]] && mv -i "$name" "$new_name"
 done

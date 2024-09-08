@@ -68,17 +68,13 @@ get_ckdb_name() {
 }
 
 [[ $# -gt 0 ]] || usage
-subprogram="$1"
-shift
-
-case $subprogram in
+case "$1" in
 check)
-  check "$@"
-  ;;
+  shift
+  check "$@" ;;
 db)
-  db "$@"
-  ;;
+  shift
+  db "$@" ;;
 *)
-  usage
-  ;;
+  usage ;;
 esac
