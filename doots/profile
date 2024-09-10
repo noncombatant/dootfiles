@@ -40,21 +40,8 @@ gd() {
   go doc -all "$@" | less
 }
 
-findr() {
-  local print
-  print="-print0"
-  local cwd
-  cwd=$(pwd)
-  [[ -t 1 ]] && print="-print"
-  if [[ "$uname" = "Darwin" ]]; then
-    find -E "$cwd" -path '.*' -prune -o -type f -iregex "$@" $print
-  else
-    find "$cwd" -path '.*' -prune -o -type f -regextype posix-extended -iregex "$@" $print
-  fi | sed -e "s,$cwd/,,"
-}
-
 findc() {
-  findr '.+\.(c|h|cc|cpp|hpp)$'
+  walk -m '.+\.(c|h|cc|cpp|hpp)$'
 }
 
 xgrep() {
@@ -62,7 +49,7 @@ xgrep() {
 }
 
 cs() {
-  findc | xgrep "$@"
+  ORS="" findc | xgrep "$@"
 }
 
 findrs() {
@@ -70,7 +57,7 @@ findrs() {
 }
 
 rs() {
-  findrs | xgrep "$@"
+  ORS="" findrs | xgrep "$@"
 }
 
 findgo() {
@@ -78,7 +65,7 @@ findgo() {
 }
 
 gs() {
-  findgo | xgrep "$@"
+  ORS="" findgo | xgrep "$@"
 }
 
 source "$HOME/bin/lib.sh"

@@ -11,6 +11,9 @@ for file in "$here"/doots/*; do
   cp "$file" "$HOME/.$f"
 done
 
+make all
+mv walk "$HOME/bin"
+
 bin="$HOME/bin"
 mkdir -p "$bin"
 cp "$here"/bin/* "$bin"
