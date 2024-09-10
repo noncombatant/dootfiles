@@ -41,7 +41,7 @@ gd() {
 }
 
 findc() {
-  walk -m '.+\.(c|h|cc|cpp|hpp)$'
+  walk -m '\.(c|h|cc|cpp|hpp)$'
 }
 
 xgrep() {
@@ -53,7 +53,7 @@ cs() {
 }
 
 findrs() {
-  findr '.+\.rs$'
+  walk -m '\.rs$'
 }
 
 rs() {
@@ -61,7 +61,7 @@ rs() {
 }
 
 findgo() {
-  findr '.+\.go$'
+  walk -m '\.go$'
 }
 
 gs() {
