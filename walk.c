@@ -181,7 +181,6 @@ static void Walk(const char* root, const Predicate* p) {
   DIR* d = opendir(root);
   if (d == NULL) {
     perror(root);
-    PrintIfMatch(root, NULL, p);
     return;
   }
 
