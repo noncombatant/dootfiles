@@ -15,8 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 
-// TODO: maxdepth and no-cross-device (find's -mount, -xdev) options. Document
-// ORS.
+// TODO: maxdepth and no-cross-device (find's -mount, -xdev) options.
 
 static char help[] =
     "# walk — easier `find`\n\n"
@@ -40,8 +39,8 @@ static char help[] =
     "-t types\n"
     "      match files of the give type(s)\n\n"
     "### Option Arguments\n\n"
-    "Regular expressions are POSIX Extended expressions; refer to "
-    "re_format(7).\n\n"
+    "Regular expressions are case-insensitive POSIX Extended expressions; "
+    "refer to re_format(7).\n\n"
     "Date-times are in the format \"%Y-%m-%d %H:%M:%S\", \"%Y-%m-%d\","
     "or \"%H:%M:%S\"; refer to strptime(3).\n\n"
     "File types is a string containing 0 or more of 'd'irectory, 'f'file, "
