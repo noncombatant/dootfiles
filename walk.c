@@ -15,43 +15,36 @@
 #include <time.h>
 #include <unistd.h>
 
-// TODO: maxdepth and no-cross-device (find's -mount, -xdev) options.
+// clang-format off
+static unsigned char help[] =
+"-0      delimit records with NUL instead of newline\n"
+"-A      walk hidden files too\n"
+"-a date-time\n"
+"        match files modified after the given date-time\n"
+"-b date-time\n"
+"        matchfiles modified before the given date-time\n"
+"-d depth\n"
+"        descend at most this many directory levels below the argument(s)\n"
+"-h      print this help message\n"
+"-m pattern\n"
+"        match files whose pathnames match the regular expression\n"
+"-S size\n"
+"        match files larger than the given size\n"
+"-s size\n"
+"        match files smaller than the given size\n"
+"-t types\n"
+"        match files of the given file type(s)"
+"\n"
+"Regular expressions are case-insensitive POSIX Extended expressions; refer to re_format(7).\n"
+"\n"
+"Date-times are in the format %Y-%m-%d %H:%M:%S, %Y-%m-%d, or %H:%M:%S; refer to strptime(3).\n"
+"\n"
+"File types is a string containing 1 or more of 'd'irectory, 'f'file, or 's'ymbolic link characters.\n"
+"\n"
+"Sizes can be given in any base; refer to strtoll(3).\n";
+// clang-format on
 
-static char help[] =
-    "# walk — easier `find`\n\n"
-    "Prints the pathnames of files matching given predicates.\n\n"
-    "## Usage\n\n"
-    "    walk [predicate options...] root [roots...]\n"
-    "    walk -h\n\n"
-    "## Predicate Options\n\n"
-    "-A    walk hidden files too\n"
-    "-a date-time\n"
-    "      match files modified after the given date-time\n"
-    "-b date-time\n"
-    "      matchfiles modified before the given date-time\n"
-    "-h    print this help message\n"
-    "-m pattern\n"
-    "      match files whose pathnames match the regular expression\n"
-    "-S size\n"
-    "      match files larger than the given size\n"
-    "-s size\n"
-    "      match files smaller than the given size\n"
-    "-t types\n"
-    "      match files of the give type(s)\n\n"
-    "### Option Arguments\n\n"
-    "Regular expressions are case-insensitive POSIX Extended expressions; "
-    "refer to re_format(7).\n\n"
-    "Date-times are in the format \"%Y-%m-%d %H:%M:%S\", \"%Y-%m-%d\","
-    "or \"%H:%M:%S\"; refer to strptime(3).\n\n"
-    "File types is a string containing 0 or more of 'd'irectory, 'f'file, "
-    "or 's'ymbolic link characters.\n\n"
-    "Sizes can be given in any base.\n\n"
-    "## Environment\n\n"
-    "ORS\n"
-    "    Output record separator. By default, uses \"\\n\"; to use '\\0' (with"
-    " e.g. `xargs -0`), define `ORS` but leave it blank.\n";
-
-static char* ORS = "\n";
+static char ORS = '\n';
 
 static void noreturn PrintHelp(int error) {
   fprintf(error == 0 ? stdout : stderr, "%s", help);
@@ -73,6 +66,7 @@ typedef struct Predicate {
   time_t after;
   bool has_before;
   time_t before;
+  long long depth;
   bool has_larger_than;
   long long larger;
   bool has_smaller_than;
@@ -131,11 +125,7 @@ static Result PrintIfMatch(const char* pathname,
     }
   }
 
-  if (ORS[0] == '\0') {
-    printf("%s%c", pathname, '\0');
-  } else {
-    printf("%s%s", pathname, ORS);
-  }
+  printf("%s%c", pathname, ORS);
   return ResultContinue;
 }
 
@@ -176,7 +166,10 @@ static long long ParseInt(const char* string) {
   return r;
 }
 
-static void Walk(const char* root, const Predicate* p) {
+static void Walk(const char* root, long long depth, const Predicate* p) {
+  if (depth > p->depth) {
+    return;
+  }
   DIR* d = opendir(root);
   if (d == NULL) {
     perror(root);
@@ -202,7 +195,7 @@ static void Walk(const char* root, const Predicate* p) {
 
     const Result r = PrintIfMatch(pathname, entry, p);
     if (r != ResultNoDescend && entry->d_type & DT_DIR) {
-      Walk(pathname, p);
+      Walk(pathname, depth + 1, p);
     }
   }
 
@@ -215,11 +208,14 @@ int main(int count, char* arguments[]) {
   Predicate p = {0};
   opterr = 0;
   while (true) {
-    const int ch = getopt(count, arguments, "Aa:b:hm:S:s:t:");
+    const int ch = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:");
     if (ch == -1) {
       break;
     }
     switch (ch) {
+      case '0':
+        ORS = '\0';
+        break;
       case 'A':
         p.walk_all = true;
         break;
@@ -230,6 +226,9 @@ int main(int count, char* arguments[]) {
       case 'b':
         p.before = ParseDateTime(optarg);
         p.has_before = true;
+        break;
+      case 'd':
+        p.depth = ParseInt(optarg);
         break;
       case 'h':
         PrintHelp(0);
@@ -265,15 +264,10 @@ int main(int count, char* arguments[]) {
   count -= optind;
   arguments += optind;
 
-  char* ors = getenv("ORS");
-  if (ors != NULL) {
-    ORS = ors;
-  }
-
   if (count == 0) {
-    Walk(".", &p);
+    Walk(".", 0, &p);
   }
   for (int i = 0; i < count; i++) {
-    Walk(arguments[i], &p);
+    Walk(arguments[i], 0, &p);
   }
 }
