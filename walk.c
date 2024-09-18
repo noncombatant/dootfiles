@@ -46,6 +46,15 @@ static unsigned char help[] =
 
 static char ORS = '\n';
 
+#define AUTO(type, name, value, destructor) \
+  type name __attribute__((cleanup(destructor))) = (value)
+
+static void CloseDirectory(DIR** d) {
+  if (closedir(*d)) {
+    perror("closedir");
+  }
+}
+
 static void noreturn PrintHelp(int error) {
   fprintf(error == 0 ? stdout : stderr, "%s", help);
   exit(error);
@@ -171,7 +180,7 @@ static void Walk(const char* root, long long depth, const Predicate* p) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
-  DIR* d = opendir(root);
+  AUTO(DIR*, d, opendir(root), CloseDirectory);
   if (d == NULL) {
     perror(root);
     return;
@@ -198,10 +207,6 @@ static void Walk(const char* root, long long depth, const Predicate* p) {
     if (r != ResultNoDescend && entry->d_type & DT_DIR) {
       Walk(pathname, depth + 1, p);
     }
-  }
-
-  if (closedir(d)) {
-    perror(root);
   }
 }
 
