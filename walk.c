@@ -50,7 +50,7 @@ static char ORS = '\n';
   type name __attribute__((cleanup(destructor))) = (value)
 
 static void CloseDirectory(DIR** d) {
-  if (closedir(*d)) {
+  if (*d != NULL && closedir(*d)) {
     perror("closedir");
   }
 }
