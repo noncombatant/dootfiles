@@ -66,6 +66,7 @@ typedef struct Predicate {
   time_t after;
   bool has_before;
   time_t before;
+  bool has_depth;
   long long depth;
   bool has_larger_than;
   long long larger;
@@ -167,7 +168,7 @@ static long long ParseInt(const char* string) {
 }
 
 static void Walk(const char* root, long long depth, const Predicate* p) {
-  if (depth > p->depth) {
+  if (p->has_depth && depth > p->depth) {
     return;
   }
   DIR* d = opendir(root);
@@ -229,6 +230,7 @@ int main(int count, char* arguments[]) {
         break;
       case 'd':
         p.depth = ParseInt(optarg);
+        p.has_depth = true;
         break;
       case 'h':
         PrintHelp(0);

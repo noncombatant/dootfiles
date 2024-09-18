@@ -41,7 +41,9 @@ gd() {
 }
 
 findc() {
-  walk -t f -m '\.(c|h|cc|cpp|hpp)$'
+  local z
+  [[ ! -t 1 ]] && z="-0"
+  walk -t f -m '\.(c|h|cc|cpp|hpp)$' $z
 }
 
 xgrep() {
@@ -49,23 +51,27 @@ xgrep() {
 }
 
 cs() {
-  ORS="" findc | xgrep "$@"
+  findc | xgrep "$@"
 }
 
 findrs() {
-  walk -t f -m '\.rs$'
+  local z
+  [[ ! -t 1 ]] && z="-0"
+  walk -t f -m '\.rs$' $z
 }
 
 rs() {
-  ORS="" findrs | xgrep "$@"
+  findrs | xgrep "$@"
 }
 
 findgo() {
-  walk -t f -m '\.go$'
+  local z
+  [[ ! -t 1 ]] && z="-0"
+  walk -t f -m '\.go$' $z
 }
 
 gs() {
-  ORS="" findgo | xgrep "$@"
+  findgo | xgrep "$@"
 }
 
 source "$HOME/bin/lib.sh"
