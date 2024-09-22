@@ -173,11 +173,11 @@ static void ParseRE(const char* string, regex_t* pattern) {
 
 static long long ParseInt(const char* string) {
   char* end;
-  long long r = strtoll(string, &end, 0);
+  long long n = strtoll(string, &end, 0);
   if (*end != '\0') {
     PrintHelp(1);
   }
-  return r;
+  return n;
 }
 
 static bool StringEquals(const char* a, const char* b) {
@@ -288,11 +288,10 @@ int main(int count, char* arguments[]) {
         break;
       case 'h':
         PrintHelp(0);
-      case 'm': {
+      case 'm':
         ParseRE(optarg, &p.pattern);
         p.has_pattern = true;
         break;
-      }
       case 'S':
         p.larger = ParseInt(optarg);
         p.has_larger_than = true;
