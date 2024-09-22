@@ -48,6 +48,8 @@ static unsigned char help[] =
 "Sizes can be given in any base; refer to strtoll(3).\n";
 // clang-format on
 
+// TODO: Add -x to prevent walk from crossing device boundaries.
+
 static char ORS = '\n';
 
 #define AUTO(type, name, value, destructor) \
