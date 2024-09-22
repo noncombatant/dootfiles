@@ -1,0 +1,27 @@
+#!/usr/bin/env awk -f
+
+BEGIN {
+    FS="[ \t]{2,}"
+    print("[")
+}
+
+NR == 1 {
+    for (i = 1; i <= NF; i++) {
+        fields[i] = $i
+    }
+}
+
+NR > 1 {
+    if (NR > 2) {
+        print(",")
+    }
+    print("  {")
+    for (i = 1; i <= NF; i++) {
+        printf("    \"%s\": \"%s\"%s\n", fields[i], $i, i == NF ? "" : ",")
+    }
+    printf("  }")
+}
+
+END {
+    print("\n]");
+}
