@@ -4,6 +4,7 @@
 #define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE
 #include <dirent.h>
+#include <libgen.h>
 #include <limits.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -36,8 +37,9 @@ static unsigned char help[] =
 "        match files smaller than `size`\n"
 "-t types\n"
 "        match files of the given file `types`\n"
+"-u      search up the directory hierarchy rather than down\n"
 "\n"
-"Patterns are case-insensitive POSIX Extended expressions; refer to re_format(7).\n"
+"Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n"
 "\n"
 "Date-times are in the format %Y-%m-%d %H:%M:%S, %Y-%m-%d, or %H:%M:%S; refer to strptime(3).\n"
 "\n"
@@ -178,7 +180,15 @@ static long long ParseInt(const char* string) {
   return r;
 }
 
-static void Walk(const char* root, long long depth, const Predicate* p) {
+static bool StringEquals(const char* a, const char* b) {
+  return strcmp(a, b) == 0;
+}
+
+static bool IsDotOrDotDot(const char* basename) {
+  return StringEquals(".", basename) || StringEquals("..", basename);
+}
+
+static void Walk(const char* root, const Predicate* p, long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
@@ -193,7 +203,7 @@ static void Walk(const char* root, long long depth, const Predicate* p) {
     if (entry == NULL) {
       break;
     }
-    if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0) {
+    if (IsDotOrDotDot(entry->d_name)) {
       continue;
     }
 
@@ -207,16 +217,53 @@ static void Walk(const char* root, long long depth, const Predicate* p) {
 
     const Result r = PrintIfMatch(pathname, entry, p);
     if (r != ResultNoDescend && entry->d_type & DT_DIR) {
-      Walk(pathname, depth + 1, p);
+      Walk(pathname, p, depth + 1);
     }
+  }
+}
+
+static void WalkUp(const char* pathname, const Predicate* p, long long depth) {
+  if (p->has_depth && depth > p->depth) {
+    return;
+  }
+  AUTO(DIR*, d, opendir(pathname), CloseDirectory);
+  if (d == NULL) {
+    perror(pathname);
+    return;
+  }
+
+  while (true) {
+    const struct dirent* entry = readdir(d);
+    if (entry == NULL) {
+      break;
+    }
+    if (IsDotOrDotDot(entry->d_name)) {
+      continue;
+    }
+
+    char child[PATH_MAX + 1] = "";
+    const int length =
+        snprintf(child, sizeof(child), "%s/%s", pathname, entry->d_name);
+    if (length < 0 || (size_t)length >= sizeof(child)) {
+      fprintf(stderr, "can't handle %s/%s\n", pathname, entry->d_name);
+      continue;
+    }
+    PrintIfMatch(child, entry, p);
+  }
+
+  if (!StringEquals("/", pathname)) {
+    char parent[PATH_MAX + 1] = "";
+    dirname_r(pathname, parent);
+    WalkUp(parent, p, depth + 1);
   }
 }
 
 int main(int count, char* arguments[]) {
   Predicate p = {0};
+  bool up = false;
   opterr = 0;
   while (true) {
-    const int ch = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:");
+    const int ch = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:u");
     if (ch == -1) {
       break;
     }
@@ -266,6 +313,9 @@ int main(int count, char* arguments[]) {
           p.type |= TypeSymbolicLink;
         }
         break;
+      case 'u':
+        up = true;
+        break;
       default:
         PrintHelp(1);
     }
@@ -274,9 +324,17 @@ int main(int count, char* arguments[]) {
   arguments += optind;
 
   if (count == 0) {
-    Walk(".", 0, &p);
+    if (up) {
+      WalkUp(getwd(NULL), &p, 0);
+    } else {
+      Walk(".", &p, 0);
+    }
   }
   for (int i = 0; i < count; i++) {
-    Walk(arguments[i], 0, &p);
+    if (up) {
+      WalkUp(arguments[i], &p, 0);
+    } else {
+      Walk(arguments[i], &p, 0);
+    }
   }
 }
