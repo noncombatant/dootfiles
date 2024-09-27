@@ -43,7 +43,7 @@ gd() {
 findc() {
   local z
   [[ ! -t 1 ]] && z="-0"
-  walk -t f -m '\.(c|h|cc|cpp|hpp)$' $z
+  walk -t f -m '\.(c|h|cc|cpp|hpp|S|asm)$' $z
 }
 
 xgrep() {
