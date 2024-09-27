@@ -224,7 +224,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
   }
 }
 
-static void WalkUp(const char* pathname, const Predicate* p, long long depth) {
+static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
@@ -254,9 +254,7 @@ static void WalkUp(const char* pathname, const Predicate* p, long long depth) {
   }
 
   if (!StringEquals("/", pathname)) {
-    char parent[PATH_MAX + 1] = "";
-    dirname_r(pathname, parent);
-    WalkUp(parent, p, depth + 1);
+    WalkUp(dirname(pathname), p, depth + 1);
   }
 }
 
@@ -326,7 +324,8 @@ int main(int count, char* arguments[]) {
 
   if (count == 0) {
     if (up) {
-      WalkUp(getwd(NULL), &p, 0);
+      char cwd[PATH_MAX + 1] = "";
+      WalkUp(getcwd(cwd, sizeof(cwd)), &p, 0);
     } else {
       Walk(".", &p, 0);
     }
