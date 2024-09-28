@@ -1,16 +1,10 @@
-[transfer] 
-	fsckobjects = true
-[fetch] 
-	fsckobjects = true
-[receive] 
-	fsckobjects = true
 [push]
-	default = simple
+default = simple
 [init]
-	defaultBranch = main
+defaultBranch = main
 [user]
-	name = Chris Palmer
+name = Chris Palmer
 [core]
-	pager = less -F
+pager = less -F
 [include]
-	path = ~/.gitconfig.local
+path = ~/.gitconfig.local
