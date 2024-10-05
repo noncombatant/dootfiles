@@ -71,10 +71,13 @@ get_ckdb_name() {
 case "$1" in
 check)
   shift
-  check "$@" ;;
+  check "$@"
+  ;;
 db)
   shift
-  db "$@" ;;
+  db "$@"
+  ;;
 *)
-  usage ;;
+  usage
+  ;;
 esac
