@@ -12,7 +12,7 @@ for file in "$here"/doots/*; do
 done
 
 make all
-mv walk "$HOME/bin"
+mv walk expand "$HOME/bin"
 
 bin="$HOME/bin"
 mkdir -p "$bin"
