@@ -15,7 +15,7 @@
 
 #define ASSERT_P(p) \
   assert((p));      \
-  assert(*(p));
+  assert(*(p))
 
 void noreturn PrintHelp(bool error, const char* help);
 
