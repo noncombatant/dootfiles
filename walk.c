@@ -16,8 +16,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "utils.h"
+
 // clang-format off
-static unsigned char help[] =
+static char help[] =
 "walk [options...] [pathnames...]\n"
 "\n"
 "-0      delimit records with NUL instead of newline\n"
@@ -51,20 +53,6 @@ static unsigned char help[] =
 // TODO: Add -x to prevent walk from crossing device boundaries.
 
 static char ORS = '\n';
-
-#define AUTO(type, name, value, destructor) \
-  type name __attribute__((cleanup(destructor))) = (value)
-
-static void CloseDirectory(DIR** d) {
-  if (*d != NULL && closedir(*d)) {
-    perror("closedir");
-  }
-}
-
-static void noreturn PrintHelp(int error) {
-  fprintf(error == 0 ? stdout : stderr, "%s", help);
-  exit(error);
-}
 
 typedef enum Type {
   TypeNone = 0,
@@ -160,7 +148,7 @@ static time_t ParseDateTime(const char* string) {
   if (strptime(string, "%H:%M:%S", &date_time)) {
     return mktime(&date_time);
   }
-  PrintHelp(1);
+  PrintHelp(true, help);
 }
 
 static void ParseRE(const char* string, regex_t* pattern) {
@@ -169,7 +157,7 @@ static void ParseRE(const char* string, regex_t* pattern) {
     char message[512] = "";
     (void)regerror(e, pattern, message, sizeof(message));
     fprintf(stderr, "could not compile RE: %s\n", message);
-    PrintHelp(1);
+    PrintHelp(true, help);
   }
 }
 
@@ -177,13 +165,9 @@ static long long ParseInt(const char* string) {
   char* end;
   long long n = strtoll(string, &end, 0);
   if (*end != '\0') {
-    PrintHelp(1);
+    PrintHelp(true, help);
   }
   return n;
-}
-
-static bool StringEquals(const char* a, const char* b) {
-  return strcmp(a, b) == 0;
 }
 
 static bool IsDotOrDotDot(const char* basename) {
@@ -194,7 +178,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
-  AUTO(DIR*, d, opendir(root), CloseDirectory);
+  AUTO(DIR*, d, opendir(root), CloseDirOrWarn);
   if (d == NULL) {
     perror(root);
     return;
@@ -228,7 +212,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
-  AUTO(DIR*, d, opendir(pathname), CloseDirectory);
+  AUTO(DIR*, d, opendir(pathname), CloseDirOrWarn);
   if (d == NULL) {
     perror(pathname);
     return;
@@ -287,7 +271,7 @@ int main(int count, char* arguments[]) {
         p.has_depth = true;
         break;
       case 'h':
-        PrintHelp(0);
+        PrintHelp(false, help);
       case 'm':
         ParseRE(optarg, &p.pattern);
         p.has_pattern = true;
@@ -316,7 +300,7 @@ int main(int count, char* arguments[]) {
         up = true;
         break;
       default:
-        PrintHelp(1);
+        PrintHelp(true, help);
     }
   }
   count -= optind;

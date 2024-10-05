@@ -6,10 +6,16 @@ CFLAGS = -Weverything -Werror -std=c2x -O3 \
 	-Wno-pre-c2x-compat \
 	-Wno-reserved-macro-identifier \
 	-Wno-unused-macros \
-	-Wno-unsafe-buffer-usage
+	-Wno-unsafe-buffer-usage \
+	-Wno-deprecated-declarations
 
-all: walk
+all: expand walk
+	strip expand
 	strip walk
 
+walk: walk.c utils.o
+
+expand: expand.c utils.o
+
 clean:
-	-rm -f walk
+	-rm -rf expand walk *.dSYM *.o
