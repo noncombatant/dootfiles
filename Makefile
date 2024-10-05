@@ -11,7 +11,5 @@ CFLAGS = -Weverything -Werror -std=c2x -O3 \
 all: walk
 	strip walk
 
-walk:
-
 clean:
 	-rm -f walk
