@@ -18,7 +18,7 @@
 
 // clang-format off
 static char help[] =
-"expand [-0] [-j job-count] [-n argument-count] program [arguments...]\n"
+"expand [-0] [-j job-count] [-a argument-count] program [arguments...]\n"
 "\n"
 "To explicitly place the argument(s) in the argument list, use %a.\n";
 // clang-format on
@@ -188,7 +188,7 @@ static void noreturn RunJobs(int count, char** arguments) {
 
 int main(int count, char** arguments) {
   while (true) {
-    const int o = getopt(count, arguments, "0hj:n:");
+    const int o = getopt(count, arguments, "0a:hj:");
     if (o == -1) {
       break;
     }
@@ -196,12 +196,12 @@ int main(int count, char** arguments) {
       case '0':
         delimiter = '\0';
         break;
-      case 'h':
-        PrintHelp(false, help);
-      case 'n':
+      case 'a':
         max_argument_count = strtoul(optarg, NULL, 0);
         break;
-      case 'p':
+      case 'h':
+        PrintHelp(false, help);
+      case 'j':
         max_job_count = strtoul(optarg, NULL, 0);
         break;
       default:
