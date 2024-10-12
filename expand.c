@@ -211,6 +211,10 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
+  if (count == 0) {
+    PrintHelp(true, help);
+  }
+
   long n = sysconf(_SC_ARG_MAX);
   if (n < 0) {
     perror("could not determine maximum command size");
