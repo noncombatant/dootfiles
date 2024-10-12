@@ -242,7 +242,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   }
 }
 
-int main(int count, char* arguments[]) {
+int main(int count, char** arguments) {
   Predicate p = {0};
   bool up = false;
   opterr = 0;

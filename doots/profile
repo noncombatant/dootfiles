@@ -47,7 +47,7 @@ findc() {
 }
 
 xgrep() {
-  xargs -n10 -0 -P0 grep -niE "$@" | sed -E -e 's/:([0-9]+):/:\1\t/'
+  expand -0 -- grep -niE "$@" | sed -E -e 's/:([0-9]+):/:\1\t/'
 }
 
 cs() {
