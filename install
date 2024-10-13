@@ -17,3 +17,5 @@ mv walk expand "$HOME/bin"
 bin="$HOME/bin"
 mkdir -p "$bin"
 cp "$here"/bin/* "$bin"
+
+make clean
