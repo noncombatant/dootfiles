@@ -18,28 +18,28 @@ void noreturn PrintHelp(bool error, const char* help) {
 
 void CloseDirOrDie(DIR** p) {
   ASSERT_P(p);
-  if (closedir(*p)) {
+  if (*p && closedir(*p)) {
     abort();
   }
 }
 
 void CloseDirOrWarn(DIR** p) {
   ASSERT_P(p);
-  if (closedir(*p)) {
+  if (*p && closedir(*p)) {
     perror("closedir");
   }
 }
 
 void CloseFileOrDie(FILE** p) {
   ASSERT_P(p);
-  if (fclose(*p) != 0) {
+  if (*p && fclose(*p) != 0) {
     abort();
   }
 }
 
 void CloseFileOrWarn(FILE** p) {
   ASSERT_P(p);
-  if (fclose(*p) != 0) {
+  if (*p && fclose(*p) != 0) {
     perror("fclose");
   }
 }
