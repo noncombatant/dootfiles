@@ -7,11 +7,13 @@ help="Formats sh source code. Usage:
 When given no arguments, reads from stdin and prints to stdout. When given
 arguments, formats the files in place."
 
-# https://github.com/mvdan/sh
-# go install mvdan.cc/sh/v3/cmd/shfmt@latest
-
 source "$(dirname "$0")/script.sh"
 source "$HOME/.go_profile"
+
+if ! which shfmt; then
+  echo '`shfmt` not found. Run `go install mvdan.cc/sh/v3/cmd/shfmt@latest`.'
+  exit 1
+fi
 
 if [[ $# -eq 0 ]]; then
   shfmt -i 2 -sr -ln bash
