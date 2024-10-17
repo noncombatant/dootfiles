@@ -5,6 +5,7 @@
 #define _XOPEN_SOURCE
 #include <assert.h>
 #include <errno.h>
+#include <signal.h>
 #include <search.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -172,13 +173,22 @@ static void noreturn RunJobs(int count, char** arguments) {
     }
 
     int status;
-    const pid_t child = waitpid(-1, &status, 0);
+    const pid_t child = waitpid(-1, &status, WUNTRACED);
     if (child == -1) {
       if (errno != ECHILD) {
         perror("waitpid");
       }
       ReleaseJobs();
       exit(errno != ECHILD);
+    }
+    if (WIFSIGNALED(status)) {
+      // If a child was signaled, terminate all of them and exit. The most
+      // likely reasons are e.g. SIGINT or SIGPIPE, which are normal.
+      if (kill(0, WTERMSIG(status))) {
+        perror("kill");
+        exit(errno);
+      }
+      exit(0);
     }
     Job* j = FindJob(child);
     assert(j);
