@@ -13,8 +13,9 @@
 #define __has_attribute(x) 0
 #endif
 
-#define ASSERT_P(p) \
-  assert((p))
+#define ASSERT_P(p) assert((p))
+
+#define COUNT(array) (sizeof((array)) / sizeof((array)[0]))
 
 void noreturn PrintHelp(bool error, const char* help);
 
@@ -29,7 +30,6 @@ bool StringEquals(const char* a, const char* b);
 
 void CloseDirOrDie(DIR** p);
 void CloseDirOrWarn(DIR** p);
-
 void CloseFileOrDie(FILE** p);
 void CloseFileOrWarn(FILE** p);
 
