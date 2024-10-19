@@ -41,29 +41,67 @@ static Color colors[] = {
     {"lightgray", "\x1b\x5b\x33\x37\x6d"},
     {"gray", "\x1b\x5b\x33\x38\x6d"},
     {"orange", "\x1b\x5b\x33\x38\x3b\x35\x3b\x32\x30\x30\x30\x6d"},
-    // {"lightcyan", "\x1b\x5b\x33\x96\x6d"},
-    // {"white", "\x1b\x5b\x33\x97\x6d"},
+    {"purple", "\x1b\x5b\x33\x38\x3b\x35\x3b\x32\x30\x31\x6d"},
 };
 
 static char normal[] = "\x1b\x28\x42\x1b\x5b\x6d";
 
+static void CloseProcess(FILE** p) {
+  if (p && *p && pclose(*p)) {
+    perror("pclose");
+  }
+}
+
 static char* FindEscape(const char* name) {
   for (size_t i = 0; i < COUNT(colors); i++) {
     if (StringEquals(name, colors[i].name)) {
-      return colors[i].escape;
+      return strdup(colors[i].escape);
     }
   }
-  return "";
+
+  // Try generating the escape code if `name` is a number. We have now been
+  // elected Mayor of Sillytown, and our first executive order shall be cotton
+  // candy for all!
+  char* end = NULL;
+  const long n = strtol(name, &end, 0);
+  if (end[0] != '\0') {
+    return "";
+  }
+  char text[256];
+  const int r = snprintf(text, sizeof(text), "tput setaf %ld", n);
+  if (r < 0 || (size_t)r > sizeof(text)) {
+    return "";
+  }
+  AUTO(FILE*, tput, popen(text, "r"), CloseProcess);
+  if (!tput) {
+    perror("popen");
+    return "";
+  }
+  const size_t read = fread(text, 1, sizeof(text), tput);
+  if (!read || read >= sizeof(text)) {
+    return "";
+  }
+  text[read] = '\0';
+  return strdup(text);
 }
 
-typedef struct {
-  regex_t pattern;
+typedef struct Pattern {
+  regex_t regex;
   Color color;
 } Pattern;
 
-static void FreePattern(Pattern** p) {
-  if (p && *p) {
-    free(*p);
+typedef struct Patterns {
+  size_t count;
+  Pattern* patterns;
+} Patterns;
+
+static void FreePatterns(Patterns* p) {
+  if (!p) {
+    return;
+  }
+  for (size_t i = 0; i < p->count; i++) {
+    regfree(&(p->patterns[i].regex));
+    free(p->patterns[i].color.escape);
   }
 }
 
@@ -78,38 +116,37 @@ static void PrintColors() {
   for (size_t i = 0; i < COUNT(colors); i++) {
     printf("%s%s%s\n", colors[i].escape, colors[i].name, normal);
   }
+  fputs("\nYou can also use numbers as colors. Experiment and have fun!\n",
+        stdout);
 }
 
 typedef struct FindResult {
-  size_t p;
-  regmatch_t m;
+  size_t pattern;
+  regmatch_t match;
 } FindResult;
 
-static FindResult FindFirstMatch(const char* input,
-                                 Pattern* patterns,
-                                 size_t count) {
+static FindResult FindFirstMatch(const char* input, Patterns patterns) {
   FindResult result;
   memset(&result, 0, sizeof(result));
   bool found = false;
-  for (size_t i = 0; i < count; i++) {
+  for (size_t i = 0; i < patterns.count; i++) {
     regmatch_t match;
-    const int e = regexec(&patterns[i].pattern, input, 1, &match, 0);
+    const int e = regexec(&(patterns.patterns[i].regex), input, 1, &match, 0);
     if (e) {
       if (e != REG_NOMATCH) {
-        PrintRegexError(e, &patterns[i].pattern);
+        PrintRegexError(e, &(patterns.patterns[i].regex));
       }
       continue;
-    } else if (!found || match.rm_so < result.m.rm_so) {
-      result.m.rm_so = match.rm_so;
-      result.m.rm_eo = match.rm_eo;
-      result.p = i;
+    } else if (!found || match.rm_so < result.match.rm_so) {
+      result.match = match;
+      result.pattern = i;
       found = true;
     }
   }
   return result;
 }
 
-static void Colorize(Pattern* patterns, size_t count) {
+static void Colorize(Patterns patterns) {
   AUTO(char*, line, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
@@ -124,16 +161,17 @@ static void Colorize(Pattern* patterns, size_t count) {
 
     char* ln = line;
     while (length) {
-      FindResult match = FindFirstMatch(ln, patterns, count);
-      if (match.m.rm_eo - match.m.rm_so) {
-        fwrite(ln, 1, (size_t)match.m.rm_so, stdout);
-        fwrite(patterns[match.p].color.escape, 1,
-               strlen(patterns[match.p].color.escape), stdout);
-        fwrite(&ln[match.m.rm_so], 1, (size_t)(match.m.rm_eo - match.m.rm_so),
+      FindResult result = FindFirstMatch(ln, patterns);
+      const regmatch_t* match = &result.match;
+      if (match->rm_eo - match->rm_so) {
+        const Pattern* p = &(patterns.patterns[result.pattern]);
+        fwrite(ln, 1, (size_t)match->rm_so, stdout);
+        fwrite(p->color.escape, 1, strlen(p->color.escape), stdout);
+        fwrite(&ln[match->rm_so], 1, (size_t)(match->rm_eo - match->rm_so),
                stdout);
         fwrite(normal, 1, strlen(normal), stdout);
-        length -= match.m.rm_eo;
-        ln = &ln[match.m.rm_eo];
+        length -= match->rm_eo;
+        ln = &ln[match->rm_eo];
       } else {
         fwrite(ln, 1, (size_t)length, stdout);
         break;
@@ -143,24 +181,24 @@ static void Colorize(Pattern* patterns, size_t count) {
   }
 }
 
-static Pattern* BuildPatterns(size_t count, char** arguments) {
+static Patterns BuildPatterns(size_t count, char** arguments) {
   if (!count || count % 2) {
     PrintHelp(true, help);
   }
 
   Pattern* patterns = calloc(count / 2, sizeof(Pattern));
   for (size_t i = 0; i < count; i += 2) {
-    size_t p = i / 2;
+    Pattern* pattern = &patterns[i / 2];
     const int e =
-        regcomp(&patterns[p].pattern, arguments[i], REG_EXTENDED | REG_ICASE);
+        regcomp(&(pattern->regex), arguments[i], REG_EXTENDED | REG_ICASE);
     if (e) {
-      PrintRegexError(e, &patterns[p].pattern);
+      PrintRegexError(e, &(pattern->regex));
       PrintHelp(true, help);
     }
-    patterns[p].color.name = arguments[i + 1];
-    patterns[p].color.escape = FindEscape(patterns[p].color.name);
+    pattern->color.name = arguments[i + 1];
+    pattern->color.escape = FindEscape(pattern->color.name);
   }
-  return patterns;
+  return (Patterns){.count = count / 2, .patterns = patterns};
 }
 
 int main(int count, char** arguments) {
@@ -185,7 +223,7 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
-  AUTO(Pattern*, patterns, BuildPatterns((size_t)count, arguments),
-       FreePattern);
-  Colorize(patterns, (size_t)count / 2);
+  AUTO(Patterns, patterns, BuildPatterns((size_t)count, arguments),
+       FreePatterns);
+  Colorize(patterns);
 }
