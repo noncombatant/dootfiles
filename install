@@ -4,6 +4,7 @@ help="Installs the dootfiles. Usage:
 
   install"
 
+source bin/script.sh
 here=$(dirname "$0")
 
 for file in "$here"/doots/*; do
@@ -19,3 +20,12 @@ make clean
 make RELEASE=1 all
 mv color expand walk "$HOME/bin"
 make clean
+
+# Rust goodies
+git clone git@github.com:cbiffle/drupes.git
+cd drupes || exit 1
+cargo install --path .
+cd ..
+
+# Go goodies
+go install mvdan.cc/sh/v3/cmd/shfmt@latest
