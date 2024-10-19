@@ -25,6 +25,7 @@ make clean
 git clone git@github.com:cbiffle/drupes.git
 cd drupes || exit 1
 cargo install --path .
+cargo clean
 cd ..
 
 # Go goodies
