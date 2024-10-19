@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Weverything -Werror -std=c2x -O3 -flto=thin \
+CFLAGS = -Weverything -Werror -std=c2x \
 	-Wno-poison-system-directories \
 	-Wno-padded \
 	-Wno-declaration-after-statement \
@@ -8,6 +8,12 @@ CFLAGS = -Weverything -Werror -std=c2x -O3 -flto=thin \
 	-Wno-unused-macros \
 	-Wno-unsafe-buffer-usage \
 	-Wno-deprecated-declarations
+
+ifdef RELEASE
+	CFLAGS += -O3 -flto=thin
+else
+	CFLAGS += -O0 -g -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
+endif
 
 all: color expand walk
 	strip color
