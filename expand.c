@@ -5,8 +5,8 @@
 #define _XOPEN_SOURCE
 #include <assert.h>
 #include <errno.h>
-#include <signal.h>
 #include <search.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,14 @@
 
 // clang-format off
 static char help[] =
-"expand [-0] [-j job-count] [-a argument-count] program [arguments...]\n"
+"expand [options] program [arguments...]\n"
+"\n"
+"-0      delimit input records with NUL instead of newline\n"
+"-a count\n"
+"        pass each run of `program` at most `count` arguments\n"
+"-h      print this help message\n"
+"-j count\n"
+"        create `count` concurrent processes to handle the input; default is the number of cores\n"
 "\n"
 "To explicitly place the argument(s) in the argument list, use %a.\n";
 // clang-format on
