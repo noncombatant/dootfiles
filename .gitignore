@@ -1,5 +1,6 @@
 *.o
 *.dSYM
+color
 expand
 walk
 *.swp

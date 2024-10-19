@@ -9,13 +9,16 @@ CFLAGS = -Weverything -Werror -std=c2x -O3 \
 	-Wno-unsafe-buffer-usage \
 	-Wno-deprecated-declarations
 
-all: expand walk
+all: color expand walk
+	strip color
 	strip expand
 	strip walk
 
 walk: walk.c utils.o
 
 expand: expand.c utils.o
+
+color: color.c utils.o
 
 clean:
 	-rm -rf expand walk *.dSYM *.o
