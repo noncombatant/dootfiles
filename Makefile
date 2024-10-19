@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Weverything -Werror -std=c2x -O3 \
+CFLAGS = -Weverything -Werror -std=c2x -O3 -flto=thin \
 	-Wno-poison-system-directories \
 	-Wno-padded \
 	-Wno-declaration-after-statement \
