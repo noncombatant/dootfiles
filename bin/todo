@@ -8,4 +8,4 @@ source "$(dirname "$0")/script.sh"
 
 root=${1-.}
 walk -m TODO
-ORS="" walk -t f | xargs -0 -P0 grep -E '(TODO|BUG|XXX|FIXME)'
+ORS="" walk -0 -t f "$root" | expand -0 -- grep -iE '(TODO|BUG|XXX|FIXME)'
