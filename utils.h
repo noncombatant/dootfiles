@@ -28,11 +28,12 @@ bool StringEquals(const char* a, const char* b);
 #error we depend on __attribute__((cleanup))
 #endif
 
-void CloseDirOrDie(DIR** p);
-void CloseDirOrWarn(DIR** p);
-void CloseFileOrDie(FILE** p);
-void CloseFileOrWarn(FILE** p);
-
+void MustCloseDir(DIR** p);
+void CloseDir(DIR** p);
+void MustCloseFile(FILE** p);
+void CloseFile(FILE** p);
+void MustCloseProcess(FILE** p);
+void CloseProcess(FILE** p);
 void FreeChar(char** p);
 
 #endif

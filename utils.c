@@ -16,31 +16,45 @@ void noreturn PrintHelp(bool error, const char* help) {
   exit(error);
 }
 
-void CloseDirOrDie(DIR** p) {
+void MustCloseDir(DIR** p) {
   ASSERT_P(p);
   if (*p && closedir(*p)) {
     abort();
   }
 }
 
-void CloseDirOrWarn(DIR** p) {
+void CloseDir(DIR** p) {
   ASSERT_P(p);
   if (*p && closedir(*p)) {
     perror("closedir");
   }
 }
 
-void CloseFileOrDie(FILE** p) {
+void MustCloseFile(FILE** p) {
   ASSERT_P(p);
   if (*p && fclose(*p) != 0) {
     abort();
   }
 }
 
-void CloseFileOrWarn(FILE** p) {
+void CloseFile(FILE** p) {
   ASSERT_P(p);
   if (*p && fclose(*p) != 0) {
     perror("fclose");
+  }
+}
+
+void MustCloseProcess(FILE** p) {
+  ASSERT_P(p);
+  if (*p && pclose(*p)) {
+    abort();
+  }
+}
+
+void CloseProcess(FILE** p) {
+  ASSERT_P(p);
+  if (*p && pclose(*p)) {
+    perror("pclose");
   }
 }
 

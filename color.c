@@ -46,12 +46,6 @@ static Color colors[] = {
 
 static char normal[] = "\x1b\x28\x42\x1b\x5b\x6d";
 
-static void CloseProcess(FILE** p) {
-  if (p && *p && pclose(*p)) {
-    perror("pclose");
-  }
-}
-
 static char* FindEscape(const char* name) {
   for (size_t i = 0; i < COUNT(colors); i++) {
     if (StringEquals(name, colors[i].name)) {

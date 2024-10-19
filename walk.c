@@ -178,7 +178,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
-  AUTO(DIR*, d, opendir(root), CloseDirOrWarn);
+  AUTO(DIR*, d, opendir(root), CloseDir);
   if (d == NULL) {
     perror(root);
     return;
@@ -212,7 +212,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   if (p->has_depth && depth > p->depth) {
     return;
   }
-  AUTO(DIR*, d, opendir(pathname), CloseDirOrWarn);
+  AUTO(DIR*, d, opendir(pathname), CloseDir);
   if (d == NULL) {
     perror(pathname);
     return;
