@@ -21,4 +21,4 @@ expand: expand.c utils.o
 color: color.c utils.o
 
 clean:
-	-rm -rf expand walk *.dSYM *.o
+	-rm -rf color expand walk *.dSYM *.o
