@@ -22,7 +22,7 @@
 static char help[] =
 "walk [options...] [pathnames...]\n"
 "\n"
-"-0      delimit records with NUL instead of newline\n"
+"-0      delimit output records with NUL instead of newline\n"
 "-A      walk hidden files too\n"
 "-a date-time\n"
 "        match files modified after `date-time`\n"
