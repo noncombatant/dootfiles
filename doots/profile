@@ -8,7 +8,7 @@ export PAGER="less -Fi"
 
 umask 022
 
-alias less="less -Fi"
+alias less="less -RFi"
 
 alias mv="mv -i"
 alias cp="cp -i"
