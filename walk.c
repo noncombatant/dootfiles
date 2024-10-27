@@ -81,17 +81,17 @@ typedef struct Predicate {
 
 typedef enum Result {
   ResultContinue = 0,
-  ResultNoDescend = 1,
+  ResultStop = 1,
 } Result;
 
 static Result PrintIfMatch(const char* pathname,
                            const struct dirent* entry,
                            const Predicate* p) {
   if (entry->d_name[0] == '.' && !p->walk_all) {
-    return ResultNoDescend;
+    return ResultStop;
   }
 
-  // These tests are arranged such that the least expensive are run first.
+  // These tests are arranged such that the least expensive run first.
   if (p->has_type) {
     Type expected = TypeNone;
     if (entry->d_type == DT_REG) {
@@ -202,7 +202,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
     }
 
     const Result r = PrintIfMatch(pathname, entry, p);
-    if (r != ResultNoDescend && entry->d_type & DT_DIR) {
+    if (r != ResultStop && entry->d_type & DT_DIR) {
       Walk(pathname, p, depth + 1);
     }
   }
