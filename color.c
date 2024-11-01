@@ -23,8 +23,6 @@ static const char help[] =
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n";
 // clang-format on
 
-static char delimiter = '\n';
-
 typedef struct {
   char* name;
   char* escape;
@@ -140,7 +138,7 @@ static FindResult FindFirstMatch(const char* input, Patterns patterns) {
   return result;
 }
 
-static void Colorize(Patterns patterns) {
+static void Colorize(Patterns patterns, char delimiter) {
   AUTO(char*, line, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
@@ -196,8 +194,9 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
-  const int o = getopt(count, arguments, "0h");
+  char delimiter = '\n';
   while (true) {
+    const int o = getopt(count, arguments, "0h");
     if (o == -1) {
       break;
     }
@@ -219,5 +218,5 @@ int main(int count, char** arguments) {
 
   AUTO(Patterns, patterns, BuildPatterns((size_t)count, arguments),
        FreePatterns);
-  Colorize(patterns);
+  Colorize(patterns, delimiter);
 }
