@@ -179,14 +179,14 @@ static void Walk(const char* root, const Predicate* p, long depth) {
     return;
   }
   AUTO(DIR*, d, opendir(root), CloseDir);
-  if (d == NULL) {
+  if (!d) {
     perror(root);
     return;
   }
 
   while (true) {
     const struct dirent* entry = readdir(d);
-    if (entry == NULL) {
+    if (!entry) {
       break;
     }
     if (IsDotOrDotDot(entry->d_name)) {
@@ -213,14 +213,14 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
     return;
   }
   AUTO(DIR*, d, opendir(pathname), CloseDir);
-  if (d == NULL) {
+  if (!d) {
     perror(pathname);
     return;
   }
 
   while (true) {
     const struct dirent* entry = readdir(d);
-    if (entry == NULL) {
+    if (!entry) {
       break;
     }
     if (IsDotOrDotDot(entry->d_name)) {
