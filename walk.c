@@ -247,11 +247,11 @@ int main(int count, char** arguments) {
   bool up = false;
   opterr = 0;
   while (true) {
-    const int ch = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:u");
-    if (ch == -1) {
+    const int o = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:u");
+    if (o == -1) {
       break;
     }
-    switch (ch) {
+    switch (o) {
       case '0':
         ORS = '\0';
         break;
