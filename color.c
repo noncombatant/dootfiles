@@ -14,7 +14,7 @@
 #include "utils.h"
 
 // clang-format off
-static char help[] =
+static const char help[] =
 "color [options] pattern color [pattern color [...]]\n"
 "\n"
 "-0      delimit input records with NUL instead of newline\n"
