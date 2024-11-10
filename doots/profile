@@ -74,6 +74,16 @@ gs() {
   findgo | xgrep "$@"
 }
 
+findtext() {
+  local z
+  [[ ! -t 1 ]] && z="-0"
+  walk -t f -m '\.(txt|tex|md|content|html?|rst)$' $z
+}
+
+ts() {
+  findtext | xgrep "$@"
+}
+
 source "$HOME/bin/lib.sh"
 
 [[ -f "$HOME/.go_profile" ]] && source "$HOME/.go_profile"
