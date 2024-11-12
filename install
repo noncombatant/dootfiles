@@ -2,31 +2,58 @@
 
 help="Installs the dootfiles. Usage:
 
-  install"
+  install sh
+  install rust
+  install c
+  install go"
 
 source bin/script.sh
 here=$(dirname "$0")
 
-for file in "$here"/doots/*; do
-  f=$(basename "$file")
-  cp "$file" "$HOME/.$f"
-done
+install_sh() {
+  for file in "$here"/doots/*; do
+    f=$(basename "$file")
+    cp "$file" "$HOME/.$f"
+  done
 
-bin="$HOME/bin"
-mkdir -p "$bin"
-cp "$here"/bin/* "$bin"
+  bin="$HOME/bin"
+  mkdir -p "$bin"
+  cp "$here"/bin/* "$bin"
+}
 
-make clean
-make RELEASE=1 all
-mv color expand walk "$HOME/bin"
-make clean
+install_rust() {
+  git clone git@github.com:cbiffle/drupes.git
+  cd drupes || exit 1
+  cargo install --path .
+  cd ..
+  rm -rf drupes
+}
 
-# Rust goodies
-git clone git@github.com:cbiffle/drupes.git
-cd drupes || exit 1
-cargo install --path .
-cd ..
-rm -rf drupes
+install_c() {
+  make clean
+  make RELEASE=1 all
+  mv color expand walk "$HOME/bin"
+  make clean
+}
 
-# Go goodies
-go install mvdan.cc/sh/v3/cmd/shfmt@latest
+install_go() {
+  go install mvdan.cc/sh/v3/cmd/shfmt@latest
+}
+
+case "${1-}" in
+  sh)
+    install_sh
+    ;;
+  rust)
+    install_rust
+    ;;
+  c)
+    install_c
+    ;;
+  go)
+    install_go
+    ;;
+  *)
+    usage
+    ;;
+esac
