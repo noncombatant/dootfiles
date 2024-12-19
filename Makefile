@@ -7,7 +7,8 @@ CFLAGS = -Weverything -Werror -std=c2x \
 	-Wno-reserved-macro-identifier \
 	-Wno-unused-macros \
 	-Wno-unsafe-buffer-usage \
-	-Wno-deprecated-declarations
+	-Wno-deprecated-declarations \
+	-Wno-pre-c11-compat
 
 ifdef RELEASE
 	CFLAGS += -O3 -flto=thin
