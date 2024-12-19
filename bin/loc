@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-help="Counts lines (and words, and characters) of all files whose names match
-a glob pattern beneath 1 or more given directories. Usage:
+help="Counts lines words, and characters of all files whose names match a glob
+pattern beneath 1 or more given directories. Usage:
 
   loc pattern directory [...]
 
 Example:
 
-  loc '*.c' ~/src"
+  loc '\\.c$' ~/src"
 
 source "$(dirname "$0")/script.sh"
 
@@ -16,8 +16,8 @@ source "$(dirname "$0")/script.sh"
 pattern="$1"
 shift
 
-# We have to suppress `wc`'s last "total" line, to get a correct count.
-find "$@" -name "$pattern" -print0 | xargs -0 -P0 wc | awk '
+# We suppress `wc`'s last "total" line to get a correct count.
+walk -m "$pattern" -tf -0 "$@" | expand -0 wc | awk '
 BEGIN {
   printf "%10s  %10s  %10s  %s\n", "Lines", "Words", "Characters", "Name"
 }
