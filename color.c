@@ -3,7 +3,6 @@
 
 #define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE
-#include <assert.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -28,6 +27,7 @@ typedef struct {
   char* escape;
 } Color;
 
+// Provide the 16 ANSI colors (only).
 static Color colors[] = {
     {"black", "\x1b\x5b\x33\x30\x6d"},
     {"red", "\x1b\x5b\x33\x31\x6d"},

@@ -8,19 +8,13 @@
 
 #include "utils.h"
 
-bool StringEquals(const char* a, const char* b) {
-  return strcmp(a, b) == 0;
-}
-
 void noreturn PrintHelp(bool error, const char* help) {
   fputs(help, error ? stderr : stdout);
-  exit(error);
+  exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-void MustCloseDir(DIR** p) {
-  if (*p && closedir(*p)) {
-    abort();
-  }
+bool StringEquals(const char* a, const char* b) {
+  return strcmp(a, b) == 0;
 }
 
 void CloseDir(DIR** p) {
@@ -29,21 +23,9 @@ void CloseDir(DIR** p) {
   }
 }
 
-void MustCloseFile(FILE** p) {
-  if (*p && fclose(*p) != 0) {
-    abort();
-  }
-}
-
 void CloseFile(FILE** p) {
   if (*p && fclose(*p) != 0) {
     perror("fclose");
-  }
-}
-
-void MustCloseProcess(FILE** p) {
-  if (*p && pclose(*p)) {
-    abort();
   }
 }
 
@@ -59,4 +41,22 @@ void FreeChar(char** p) {
 
 void FreeRegex(regex_t** p) {
   regfree(*p);
+}
+
+void MustCloseDir(DIR** p) {
+  if (*p && closedir(*p)) {
+    abort();
+  }
+}
+
+void MustCloseFile(FILE** p) {
+  if (*p && fclose(*p) != 0) {
+    abort();
+  }
+}
+
+void MustCloseProcess(FILE** p) {
+  if (*p && pclose(*p)) {
+    abort();
+  }
 }
