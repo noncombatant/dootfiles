@@ -6,14 +6,13 @@
 
 #include <assert.h>
 #include <dirent.h>
+#include <regex.h>
 #include <stdbool.h>
 #include <stdnoreturn.h>
 
 #ifndef __has_attribute
 #define __has_attribute(x) 0
 #endif
-
-#define ASSERT_P(p) assert((p))
 
 #define COUNT(array) (sizeof((array)) / sizeof((array)[0]))
 
@@ -35,5 +34,6 @@ void CloseFile(FILE** p);
 void MustCloseProcess(FILE** p);
 void CloseProcess(FILE** p);
 void FreeChar(char** p);
+void FreeRegex(regex_t** p);
 
 #endif

@@ -106,7 +106,7 @@ static void PrintRegexError(int error, regex_t* regex) {
 static void PrintColors() {
   fputs("The available colors are:\n", stdout);
   for (size_t i = 0; i < COUNT(colors); i++) {
-    printf("%s%s%s\n", colors[i].escape, colors[i].name, normal);
+    printf("\t· %s%s%s\n", colors[i].escape, colors[i].name, normal);
   }
   fputs("\nYou can also use numbers as colors. Experiment and have fun!\n",
         stdout);

@@ -2,5 +2,8 @@
 *.dSYM
 color
 expand
+fold
+pathname
+shuffle
 walk
 *.swp

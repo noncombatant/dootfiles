@@ -8,7 +8,8 @@ CFLAGS = -Weverything -Werror -std=c2x \
 	-Wno-unused-macros \
 	-Wno-unsafe-buffer-usage \
 	-Wno-deprecated-declarations \
-	-Wno-pre-c11-compat
+	-Wno-pre-c11-compat \
+	-Wno-gnu-statement-expression-from-macro-expansion
 
 ifdef RELEASE
 	CFLAGS += -O3 -flto=thin
@@ -16,10 +17,12 @@ else
 	CFLAGS += -O0 -g -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
 endif
 
-all: color expand walk
-	strip color
-	strip expand
-	strip walk
+TARGETS = color expand fold pathname shuffle walk
+
+all: $(TARGETS)
+
+strip:
+	strip $(TARGETS)
 
 walk: walk.c utils.o
 
@@ -27,5 +30,11 @@ expand: expand.c utils.o
 
 color: color.c utils.o
 
+fold: fold.c utils.o
+
+pathname: pathname.c utils.o
+
+shuffle: shuffle.c utils.o
+
 clean:
-	-rm -rf color expand walk *.dSYM *.o
+	-rm -rf $(TARGETS) *.dSYM *.o
