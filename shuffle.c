@@ -1,8 +1,4 @@
-// This program reads in records from files, shuffles them cryptographically
-// randomly, and outputs them. By default, the record is the line; use $OFS and
-// $IFS to change the record delimiters.
-//
-// Written by Chris Palmer <https://noncombatant.org> 24 April 2010.
+// Copyright 2024 Chris Palmer, https://noncombatant.org/
 // SPDX-License-Identifier: MIT
 
 #define _DEFAULT_SOURCE
@@ -14,8 +10,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/random.h>
+#include <unistd.h>
 
 #include "utils.h"
+
+// clang-format off
+static char help[] =
+"shuffle [file...]\n"
+"shuffle -h\n"
+"\n"
+"-h      print this help message\n";
+// clang-format on
 
 static uint64_t Random() {
   uint64_t r;
@@ -48,18 +53,33 @@ static void RandomizeLines(FILE* input, char ifs, const char* ofs) {
 }
 
 int main(int count, char** arguments) {
+  while (true) {
+    const int o = getopt(count, arguments, "h");
+    if (o == -1) {
+      break;
+    }
+    switch (o) {
+      case 'h':
+        PrintHelp(false, help);
+      default:
+        PrintHelp(true, help);
+    }
+  }
+  count -= optind;
+  arguments += optind;
+
   char* fs = getenv("IFS");
   const char ifs = fs ? fs[0] : '\n';
   fs = getenv("OFS");
   const char* ofs = fs ? fs : "\n";
 
-  if (count == 1) {
+  if (count == 0) {
     RandomizeLines(stdin, ifs, ofs);
   }
-  for (int i = 1; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     AUTO(FILE*, input, fopen(arguments[i], "rb"), CloseFile);
     if (!input) {
-      warn("%s", arguments[1]);
+      warn("%s", arguments[i]);
       continue;
     }
     RandomizeLines(input, ifs, ofs);
