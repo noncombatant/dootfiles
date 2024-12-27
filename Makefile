@@ -8,7 +8,7 @@ CFLAGS = -Weverything -Werror -std=c2x \
 	-Wno-unused-macros \
 	-Wno-unsafe-buffer-usage \
 	-Wno-deprecated-declarations \
-	-Wno-pre-c11-compat \
+	-Wno-pre-c2x-compat \
 	-Wno-gnu-statement-expression-from-macro-expansion
 
 ifdef RELEASE
