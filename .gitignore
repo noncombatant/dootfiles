@@ -1,9 +1,9 @@
 *.o
 *.dSYM
+*.swp
 color
 expand
 fold
 pathname
 shuffle
 walk
-*.swp
