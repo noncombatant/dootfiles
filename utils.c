@@ -64,9 +64,7 @@ void MustCloseProcess(FILE** p) {
 
 const size_t not_found = SIZE_MAX;
 
-// Returns the last index in the string `s`, of `length` bytes, that equals
-// `c`.
-size_t LastIndex(size_t length, const char* s, char c) {
+size_t LastIndex(const char* s, size_t length, char c) {
   for (size_t i = length; i > 0; i--) {
     if (s[i] == c) {
       return i;

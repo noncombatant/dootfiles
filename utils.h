@@ -58,6 +58,8 @@ typedef struct Bytes {
 
 extern const size_t not_found;
 
-size_t LastIndex(size_t length, const char* s, char c);
+// Returns the position of the last instance of `c` in the string `s`, of
+// `length` bytes.
+size_t LastIndex(const char* s, size_t length, char c);
 
 #endif
