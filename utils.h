@@ -4,13 +4,29 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <assert.h>
 #include <dirent.h>
+#include <limits.h>
 #include <regex.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdnoreturn.h>
 
+static_assert(CHAR_BIT == 8, "we assume 8-bit chars");
+static_assert(sizeof(char) == sizeof(int8_t),
+              "we assume char is the same size as int8_t");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconstant-logical-operand"
+static_assert(sizeof(size_t) == 4 || sizeof(size_t) == 8,
+              "we assume a 32- or 64-bit machine");
+#pragma clang diagnostic pop
+static_assert(sizeof(size_t) == sizeof(void*),
+              "we assume size_t is the same size as a pointer");
+static_assert(sizeof(size_t) == sizeof(intptr_t),
+              "we assume size_t is the same size as intptr_t");
+
 #ifndef __has_attribute
-#define __has_attribute(x) 0
+#error we depend on __has_attribute
 #endif
 
 #if __has_attribute(cleanup)
@@ -34,5 +50,14 @@ void FreeRegex(regex_t** p);
 void MustCloseDir(DIR** p);
 void MustCloseFile(FILE** p);
 void MustCloseProcess(FILE** p);
+
+typedef struct Bytes {
+  size_t count;
+  char* bytes;
+} Bytes;
+
+extern const size_t not_found;
+
+size_t LastIndex(size_t length, const char* s, char c);
 
 #endif

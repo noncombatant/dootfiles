@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #define _POSIX_C_SOURCE 200112L
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,4 +60,17 @@ void MustCloseProcess(FILE** p) {
   if (*p && pclose(*p)) {
     abort();
   }
+}
+
+const size_t not_found = SIZE_MAX;
+
+// Returns the last index in the string `s`, of `length` bytes, that equals
+// `c`.
+size_t LastIndex(size_t length, const char* s, char c) {
+  for (size_t i = length; i > 0; i--) {
+    if (s[i] == c) {
+      return i;
+    }
+  }
+  return not_found;
 }
