@@ -2,6 +2,8 @@
 // portion by Russ Cox copyright 2003.
 // SPDX-License-Identifier: MIT
 
+#define _DEFAULT_SOURCE
+#define _XOPEN_SOURCE
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>

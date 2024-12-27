@@ -5,6 +5,7 @@
 // Written by Chris Palmer <https://noncombatant.org> 24 April 2010.
 // SPDX-License-Identifier: MIT
 
+#define _DEFAULT_SOURCE
 #include <err.h>
 #include <errno.h>
 #include <inttypes.h>
