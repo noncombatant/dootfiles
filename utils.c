@@ -25,7 +25,7 @@ void CloseDir(DIR** p) {
 }
 
 void CloseFile(FILE** p) {
-  if (*p && fclose(*p) != 0) {
+  if (*p && fclose(*p)) {
     perror("fclose");
   }
 }
@@ -51,7 +51,7 @@ void MustCloseDir(DIR** p) {
 }
 
 void MustCloseFile(FILE** p) {
-  if (*p && fclose(*p) != 0) {
+  if (*p && fclose(*p)) {
     abort();
   }
 }
