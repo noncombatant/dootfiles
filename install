@@ -32,7 +32,7 @@ install_rust() {
 install_c() {
   make clean
   make RELEASE=1 all
-  mv color expand walk "$HOME/bin"
+  mv color expand fold pathname shuffle walk "$HOME/bin"
   make clean
 }
 
@@ -41,19 +41,19 @@ install_go() {
 }
 
 case "${1-}" in
-  sh)
-    install_sh
-    ;;
-  rust)
-    install_rust
-    ;;
-  c)
-    install_c
-    ;;
-  go)
-    install_go
-    ;;
-  *)
-    usage
-    ;;
+sh)
+  install_sh
+  ;;
+rust)
+  install_rust
+  ;;
+c)
+  install_c
+  ;;
+go)
+  install_go
+  ;;
+*)
+  usage
+  ;;
 esac
