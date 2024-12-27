@@ -10,36 +10,27 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/random.h>
 
 #include "utils.h"
 
-static char random_file[] = "/dev/urandom";
-
-// TODO: Optimize this
 static uint64_t Random() {
-  static FILE* random = NULL;
-
-// Set the buffer to be effective but not so large that it eats up too much
-// randomness.
-#define buffer_size 0x100 * sizeof(uint64_t)
-  static char buffer[buffer_size] = "";
-
-  if (!random) {
-    random = fopen(random_file, "rb");
-    if (!random) {
-      err(errno, "%s", random_file);
-    }
-    setbuffer(random, buffer, buffer_size);
+  uint64_t r;
+#if defined(__MACH__)
+  if (getentropy(&r, sizeof(r))) {
+    err(errno, "getentropy");
   }
-
-  uint64_t value;
-  if (1 != fread(&value, sizeof(uint64_t), 1, random)) {
-    err(1, "%s", random_file);
+#elif defined(__linux)
+  if (sizeof(r) != (size_t)getrandom(&r, sizeof(r), GRND_NONBLOCK)) {
+    err(errno, "getrandom");
   }
-  return value;
+#else
+#error unsupported platform
+#endif
+  return r;
 }
 
 static void RandomizeLines(FILE* input, char ifs, const char* ofs) {
