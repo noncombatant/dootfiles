@@ -22,7 +22,7 @@ static const char help[] =
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n";
 // clang-format on
 
-typedef struct {
+typedef struct Color {
   char* name;
   char* escape;
 } Color;
@@ -57,21 +57,21 @@ static char* FindEscape(const char* name) {
   char* end = NULL;
   const long n = strtol(name, &end, 0);
   if (end[0] != '\0') {
-    return "";
+    return strdup("");
   }
   char text[256];
   const int r = snprintf(text, sizeof(text), "tput setaf %ld", n);
   if (r < 0 || (size_t)r > sizeof(text)) {
-    return "";
+    return strdup("");
   }
   AUTO(FILE*, tput, popen(text, "r"), CloseProcess);
   if (!tput) {
     perror("popen");
-    return "";
+    return strdup("");
   }
   const size_t read = fread(text, 1, sizeof(text), tput);
   if (!read || read >= sizeof(text)) {
-    return "";
+    return strdup("");
   }
   text[read] = '\0';
   return strdup(text);
@@ -174,10 +174,6 @@ static void Colorize(Patterns patterns, char delimiter) {
 }
 
 static Patterns BuildPatterns(size_t count, char** arguments) {
-  if (!count || count % 2) {
-    PrintHelp(true, help);
-  }
-
   Pattern* patterns = calloc(count / 2, sizeof(Pattern));
   for (size_t i = 0; i < count; i += 2) {
     Pattern* pattern = &patterns[i / 2];
@@ -216,6 +212,10 @@ int main(int count, char** arguments) {
   }
   count -= optind;
   arguments += optind;
+
+  if (!count || count % 2) {
+    PrintHelp(true, help);
+  }
 
   AUTO(Patterns, patterns, BuildPatterns((size_t)count, arguments),
        FreePatterns);
