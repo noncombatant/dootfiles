@@ -4,6 +4,7 @@
 #define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE
 #include <dirent.h>
+#include <errno.h>
 #include <libgen.h>
 #include <limits.h>
 #include <regex.h>
@@ -40,6 +41,7 @@ static char help[] =
 "-t types\n"
 "        match files of the given file `types`\n"
 "-u      search up the directory hierarchy rather than down\n"
+"-x      do not cross a device boundary when walking\n"
 "\n"
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n"
 "\n"
@@ -49,8 +51,6 @@ static char help[] =
 "\n"
 "Sizes can be given in any base; refer to strtoll(3).\n";
 // clang-format on
-
-// TODO: Add -x to prevent walk from crossing device boundaries.
 
 static char ORS = '\n';
 
@@ -77,6 +77,8 @@ typedef struct Predicate {
   long long smaller;
   bool has_type;
   Type type;
+  bool has_no_cross_device;
+  dev_t device;
 } Predicate;
 
 typedef enum Result {
@@ -111,11 +113,15 @@ static Result PrintIfMatch(const char* pathname,
   }
 
   if (p->has_after || p->has_before || p->has_larger_than ||
-      p->has_smaller_than) {
+      p->has_smaller_than || p->has_no_cross_device) {
     struct stat status;
     if (lstat(pathname, &status)) {
       perror(pathname);
       return ResultContinue;
+    }
+
+    if (p->has_no_cross_device && p->device != status.st_dev) {
+      return ResultStop;
     }
 
     if ((p->has_after && status.st_mtime <= p->after) ||
@@ -234,6 +240,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
       fprintf(stderr, "can't handle %s/%s\n", pathname, entry->d_name);
       continue;
     }
+    // TODO: Check return value.
     PrintIfMatch(child, entry, p);
   }
 
@@ -242,12 +249,24 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   }
 }
 
+static int PopulateDevice(Predicate* p, const char* pathname) {
+  if (!p->has_no_cross_device) {
+    return 0;
+  }
+  struct stat status;
+  if (lstat(pathname, &status)) {
+    return errno;
+  }
+  p->device = status.st_dev;
+  return 0;
+}
+
 int main(int count, char** arguments) {
   Predicate p = {0};
   bool up = false;
   opterr = 0;
   while (true) {
-    const int o = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:u");
+    const int o = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:ux");
     if (o == -1) {
       break;
     }
@@ -299,6 +318,9 @@ int main(int count, char** arguments) {
       case 'u':
         up = true;
         break;
+      case 'x':
+        p.has_no_cross_device = true;
+        break;
       default:
         PrintHelp(true, help);
     }
@@ -309,12 +331,28 @@ int main(int count, char** arguments) {
   if (count == 0) {
     if (up) {
       char cwd[PATH_MAX + 1] = "";
-      WalkUp(getcwd(cwd, sizeof(cwd)), &p, 0);
+      getcwd(cwd, sizeof(cwd));
+      const int e = PopulateDevice(&p, cwd);
+      if (e) {
+        fprintf(stderr, "%s: %s\n", cwd, strerror(e));
+        return errno;
+      }
+      WalkUp(cwd, &p, 0);
     } else {
+      const int e = PopulateDevice(&p, ".");
+      if (e) {
+        fprintf(stderr, "./: %s\n", strerror(e));
+        return errno;
+      }
       Walk(".", &p, 0);
     }
   }
   for (int i = 0; i < count; i++) {
+    const int e = PopulateDevice(&p, arguments[i]);
+    if (e) {
+      fprintf(stderr, "./: %s\n", strerror(e));
+      continue;
+    }
     if (up) {
       WalkUp(arguments[i], &p, 0);
     } else {
