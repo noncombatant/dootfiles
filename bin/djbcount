@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 
-# By Daniel J Bernstein: https://cr.yp.to/qmail/qmailsec-20071101.pdf
+# From [Some thoughts on security after ten years of qmail
+# 1.0](https://cr.yp.to/qmail/qmailsec-20071101.pdf) by Daniel J Bernstein. We
+# skip `cpp -fpreprocessed` because clang doesn't support that option, and
+# because leaving it out allows us to handle any language.
 
-help="Prints the number of code-words in source code. Usage:
+help="Prints the number of words of code in source code. Usage:
 
-  djbcount [file...]"
+  codewords [file...]"
 
 source "$(dirname "$0")/script.sh"
 
-cat "$@" |
-    # clang appears not to support this, so just skip it:
-    #cpp -fpreprocessed |
-    sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' |
-    tr -d ' \012' | wc -c
+sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' "$@" | tr -d ' \012' | wc -c
