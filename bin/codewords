@@ -11,4 +11,4 @@ help="Prints the number of words of code in source code. Usage:
 
 source "$(dirname "$0")/script.sh"
 
-sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' "$@" | tr -d ' \012' | wc -c
+sed -E 's/[_a-zA-Z0-9]+/x/g' "$@" | tr -d ' \012' | wc -c
