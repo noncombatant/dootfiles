@@ -16,7 +16,7 @@ CFLAGS = -Weverything -Werror -std=c2x \
 ifdef RELEASE
 	CFLAGS += -O3 -flto=thin
 else
-	CFLAGS += -O0 -g -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
+	CFLAGS += -O0 -g -DTEST -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
 endif
 
 TARGETS = color expand fold pathname shuffle walk

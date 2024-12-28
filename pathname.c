@@ -96,6 +96,7 @@ typedef struct Test {
   char* want;
 } Test;
 
+#if defined(TEST)
 static void TestLexicallyCanonicalizePathname() {
   Test tests[] = {
       {"/goat/bloat/../../../../../etc/passwd", "/etc/passwd"},
@@ -117,6 +118,7 @@ static void TestLexicallyCanonicalizePathname() {
     }
   }
 }
+#endif
 
 static Bytes PathnameFromString(char* string) {
   char* canonical = LexicallyCanonicalizePathname(string);
@@ -163,8 +165,9 @@ int main(int count, char** arguments) {
     PrintHelp(true, help);
   }
 
-  // TODO: Separate this out into a _test.c file.
+#if defined(TEST)
   TestLexicallyCanonicalizePathname();
+#endif
 
   for (int i = 0; i < count; i++) {
     AUTO(char*, copy, strdup(arguments[i]), FreeChar);
