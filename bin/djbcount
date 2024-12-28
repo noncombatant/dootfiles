@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# By Daniel J Bernstein: https://cr.yp.to/qmail/qmailsec-20071101.pdf
+
+help="Prints the number of code-words in source code. Usage:
+
+  djbcount [file...]"
+
+source "$(dirname "$0")/script.sh"
+
+cat "$@" |
+    # clang appears not to support this, so just skip it:
+    #cpp -fpreprocessed |
+    sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' |
+    tr -d ' \012' | wc -c
