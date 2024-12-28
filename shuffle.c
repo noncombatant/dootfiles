@@ -38,7 +38,10 @@ static uint64_t Random() {
   return r;
 }
 
-static void RandomizeLines(FILE* input, char ifs, const char* ofs) {
+static void RandomizeLines(FILE* input,
+                           char ifs,
+                           const char* ofs,
+                           const char* ors) {
   AUTO(char*, line, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
@@ -47,8 +50,7 @@ static void RandomizeLines(FILE* input, char ifs, const char* ofs) {
       break;
     }
     line[r - 1] = '\0';
-    // TODO: Consider parameterizing ORS too.
-    printf("%016" PRIx64 "\t%s%s", Random(), line, ofs);
+    printf("%016" PRIx64 "%s%s%s", Random(), ors, line, ofs);
   }
 }
 
@@ -69,13 +71,15 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
-  char* fs = getenv("IFS");
-  const char ifs = fs ? fs[0] : '\n';
-  fs = getenv("OFS");
-  const char* ofs = fs ? fs : "\n";
+  const char* IFS = getenv("IFS");
+  const char ifs = IFS ? IFS[0] : '\n';
+  const char* OFS = getenv("OFS");
+  const char* ofs = OFS ? OFS : "\n";
+  const char* ORS = getenv("ORS");
+  const char* ors = ORS ? ORS : "\t";
 
   if (count == 0) {
-    RandomizeLines(stdin, ifs, ofs);
+    RandomizeLines(stdin, ifs, ofs, ors);
   }
   for (int i = 0; i < count; i++) {
     AUTO(FILE*, input, fopen(arguments[i], "rb"), CloseFile);
@@ -83,6 +87,6 @@ int main(int count, char** arguments) {
       warn("%s", arguments[i]);
       continue;
     }
-    RandomizeLines(input, ifs, ofs);
+    RandomizeLines(input, ifs, ofs, ors);
   }
 }
