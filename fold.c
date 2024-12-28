@@ -39,15 +39,6 @@ static size_t FindNextSpace(const char* line) {
   return n;
 }
 
-// TODO: Move this to utils.
-static size_t GetUTF8Count(const char* s, size_t count) {
-  size_t c = 0;
-  for (size_t i = 0; i < count && s[i] != '\0'; i++) {
-    c += (s[i] & 0xC0) != 0x80;
-  }
-  return c;
-}
-
 static void Format(FILE* output, FILE* input, size_t width) {
   AUTO(char*, line, NULL, FreeChar);
   size_t capacity = 0;
@@ -67,7 +58,7 @@ static void Format(FILE* output, FILE* input, size_t width) {
         break;
       }
       const size_t n = FindNextSpace(word);
-      const size_t utf8_length = GetUTF8Count(word, n);
+      const size_t utf8_length = CountUTF8(word, n);
       if (width_consumed + utf8_length > width) {
         // const char* dash = strchr(word, '-');
         // if (dash) {
@@ -78,7 +69,7 @@ static void Format(FILE* output, FILE* input, size_t width) {
         //   }
         //   word = &word[d];
         //   chars_consumed += d;
-        //   width_consumed += GetUTF8Count(word, d);
+        //   width_consumed += CountUTF8(word, d);
         //   continue;
         // }
         fputs("\n", output);

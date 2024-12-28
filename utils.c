@@ -14,6 +14,14 @@ void noreturn PrintHelp(bool error, const char* help) {
   exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
+size_t CountUTF8(const char* s, size_t count) {
+  size_t c = 0;
+  for (size_t i = 0; i < count && s[i] != '\0'; i++) {
+    c += (s[i] & 0xC0) != 0x80;
+  }
+  return c;
+}
+
 bool StringEquals(const char* a, const char* b) {
   return strcmp(a, b) == 0;
 }

@@ -40,6 +40,10 @@ static_assert(sizeof(size_t) == sizeof(intptr_t),
 
 void noreturn PrintHelp(bool error, const char* help);
 
+// Returns the number of UTF-8 characters in the first `count` bytes of
+// `string`.
+size_t CountUTF8(const char* s, size_t count);
+
 bool StringEquals(const char* a, const char* b);
 
 void CloseDir(DIR** p);
