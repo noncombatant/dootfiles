@@ -101,6 +101,7 @@ static void Format(FILE* output, FILE* input, size_t width) {
 }
 
 int main(int count, char** arguments) {
+  opterr = 0;
   size_t width = 80;
   while (true) {
     const int o = getopt(count, arguments, "hw:");

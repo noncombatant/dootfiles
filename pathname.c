@@ -139,6 +139,7 @@ static size_t Dirname(Bytes b) {
 int main(int count, char** arguments) {
   bool print_basename = false;
   bool print_dirname = false;
+  opterr = 0;
   while (true) {
     const int o = getopt(count, arguments, "bdh");
     if (o == -1) {

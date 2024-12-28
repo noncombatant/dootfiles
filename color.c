@@ -194,6 +194,7 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
+  opterr = 0;
   char delimiter = '\n';
   while (true) {
     const int o = getopt(count, arguments, "0h");

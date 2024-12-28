@@ -204,6 +204,7 @@ static void noreturn RunJobs(int count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
+  opterr = 0;
   while (true) {
     const int o = getopt(count, arguments, "0a:hj:");
     if (o == -1) {

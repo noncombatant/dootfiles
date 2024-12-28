@@ -53,6 +53,7 @@ static void RandomizeLines(FILE* input, char ifs, const char* ofs) {
 }
 
 int main(int count, char** arguments) {
+  opterr = 0;
   while (true) {
     const int o = getopt(count, arguments, "h");
     if (o == -1) {
