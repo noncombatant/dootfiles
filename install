@@ -2,10 +2,7 @@
 
 help="Installs the dootfiles. Usage:
 
-  install sh
-  install rust
-  install c
-  install go"
+  install [c] [go] [rust] [sh]"
 
 source bin/script.sh
 here=$(dirname "$0")
@@ -42,20 +39,24 @@ install_go() {
   go install mvdan.cc/sh/v3/cmd/shfmt@latest
 }
 
-case "${1-}" in
-sh)
-  install_sh
-  ;;
-rust)
-  install_rust
-  ;;
-c)
-  install_c
-  ;;
-go)
-  install_go
-  ;;
-*)
-  usage
-  ;;
-esac
+[[ "$#" -eq 0 ]] && usage
+
+for x in "$@"; do
+  case "$x" in
+  sh)
+    install_sh
+    ;;
+  rust)
+    install_rust
+    ;;
+  c)
+    install_c
+    ;;
+  go)
+    install_go
+    ;;
+  *)
+    usage
+    ;;
+  esac
+done
