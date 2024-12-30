@@ -33,6 +33,7 @@ install_c() {
   make strip
   mv color expand fold list pathname shuffle walk "$HOME/bin"
   make clean
+  cd ../
 }
 
 install_go() {
