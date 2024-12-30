@@ -20,25 +20,17 @@ else
 endif
 
 TARGETS = color expand fold list pathname shuffle walk
+.PHONY: all clean strip
 
 all: $(TARGETS)
-
 strip:
 	strip $(TARGETS)
-
 color: color.c utils.o
-
 list: list.c utils.o
-
 expand: expand.c utils.o
-
 fold: fold.c utils.o
-
 pathname: pathname.c utils.o
-
 shuffle: shuffle.c utils.o
-
 walk: walk.c utils.o
-
 clean:
 	-rm -rf $(TARGETS) *.dSYM *.o
