@@ -30,6 +30,7 @@ install_rust() {
 }
 
 install_c() {
+  cd cantrips
   make clean
   make RELEASE=1 all
   make strip
