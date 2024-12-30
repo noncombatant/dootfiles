@@ -19,24 +19,26 @@ else
 	CFLAGS += -O0 -g -DTEST -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
 endif
 
-TARGETS = color expand fold pathname shuffle walk
+TARGETS = color expand fold list pathname shuffle walk
 
 all: $(TARGETS)
 
 strip:
 	strip $(TARGETS)
 
-walk: walk.c utils.o
+color: color.c utils.o
+
+list: list.c utils.o
 
 expand: expand.c utils.o
-
-color: color.c utils.o
 
 fold: fold.c utils.o
 
 pathname: pathname.c utils.o
 
 shuffle: shuffle.c utils.o
+
+walk: walk.c utils.o
 
 clean:
 	-rm -rf $(TARGETS) *.dSYM *.o

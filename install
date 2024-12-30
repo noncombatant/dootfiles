@@ -31,7 +31,7 @@ install_c() {
   make clean
   make RELEASE=1 all
   make strip
-  mv color expand fold pathname shuffle walk "$HOME/bin"
+  mv color expand fold list pathname shuffle walk "$HOME/bin"
   make clean
 }
 
