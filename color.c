@@ -19,6 +19,7 @@ static const char help[] =
 "\n"
 "-0      delimit input records with NUL instead of newline\n"
 "-h      print this help message\n"
+"-x      print help and extended color set\n"
 "\n"
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n";
 // clang-format on
@@ -339,13 +340,17 @@ static void PrintRegexError(int error, regex_t* regex) {
   fprintf(stderr, "bad RE: %s\n", message);
 }
 
-static void PrintColors() {
+static void PrintColors(bool extended) {
   fputs("The available colors are:\n", stdout);
   for (size_t i = 0; i < COUNT(colors); i++) {
     printf("\t· %s%s%s\n", colors[i].escape, colors[i].name, normal);
   }
-  fputs("\nYou can also use numbers as colors. Experiment and have fun!\n",
-        stdout);
+  if (extended) {
+    for (size_t i = 0; i < COUNT(extended_colors); i++) {
+      printf("\t· %s%s%s\n", extended_colors[i].escape, extended_colors[i].name,
+             normal);
+    }
+  }
 }
 
 typedef struct FindResult {
@@ -429,7 +434,7 @@ int main(int count, char** arguments) {
   opterr = 0;
   char delimiter = '\n';
   while (true) {
-    const int o = getopt(count, arguments, "0h");
+    const int o = getopt(count, arguments, "0hx");
     if (o == -1) {
       break;
     }
@@ -438,9 +443,10 @@ int main(int count, char** arguments) {
         delimiter = '\0';
         break;
       case 'h':
+      case 'x':
         fputs(help, stdout);
         fputs("\n", stdout);
-        PrintColors();
+        PrintColors(o == 'x');
         return 0;
       default:
         PrintHelp(true, help);
