@@ -103,6 +103,8 @@ static size_t ReadArguments(char** arguments) {
           fprintf(stderr,
                   "record '%s' too long to fit into command size limit (%zu)\n",
                   line, conservative_limit);
+          // TODO BUG?: Do we need to reset `bytes_used` here, to avoid infinite
+          // loop?
         } else {
           return count;
         }
@@ -121,10 +123,12 @@ static size_t ReadArguments(char** arguments) {
   }
 }
 
-static enum {
+typedef enum FillStatus {
   Continue,
   Complete,
-} FillCommandLine(Job* job, int count, char** arguments) {
+} FillStatus;
+
+static FillStatus FillCommandLine(Job* job, int count, char** arguments) {
   bool have_read = false;
   const size_t count_allocated = (size_t)count + max_argument_count + 1;
   job->arguments = calloc(count_allocated, sizeof(char*));
