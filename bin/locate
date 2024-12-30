@@ -5,7 +5,7 @@ system. Usage:
 
 To build the database:
 
-  locate-updatedb
+  update-locate-db
 
 To search the database:
 
@@ -21,12 +21,12 @@ source "$(dirname "$0")/script.sh"
 db_file="$HOME/.locate.db"
 
 build_database() {
-  find / -print0 2> /dev/null | bzip2 > "$db_file"
+  walk -x -0 "$HOME" 2>/dev/null | bzip2 -9 >"$db_file"
 }
 
 search_database() {
   [[ -f "$db_file" ]] || build_database
-  bzgrep -z "$@" "$db_file" | xargs -0 -n1 echo
+  bzgrep -z "$@" "$db_file" | tr '\0' '\n'
 }
 
 program=$(basename "$0")

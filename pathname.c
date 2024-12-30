@@ -17,16 +17,20 @@ static const char help[] =
 "pathname string [...]\n"
 "pathname -b string [...]\n"
 "pathname -d string [...]\n"
+"pathname -e string [...]\n"
 "pathname -h\n"
 "\n"
 "With no options, prints the lexically canonicalized form(s) of the given string(s).\n"
 "\n"
-"-b      canonicalize the given string(s) and prints their basename(s)\n"
-"-d      canonicalize the given string(s) and prints their dirname(s)\n"
+"-b      canonicalize the given string(s) and print their basename(s)\n"
+"-d      canonicalize the given string(s) and print their dirname(s)\n"
+"-e      canonicalize the given string(s) and print their file extension(s), if any\n"
 "-h      print this help message\n"
 "\n"
 "Note that because it canonicalizes the strings first, this program may produce different results than basename(1) and dirname(1).\n";
 // clang-format on
+
+// TODO: Consider supporting printing all of -b, -d, -e, separated by $ORS.
 
 static const char path_separator = '/';
 
@@ -138,12 +142,27 @@ static size_t Dirname(Bytes b) {
   return i == not_found ? 0 : i;
 }
 
+// Returns the index in the basename of `b.bytes` of the last '.', or
+// `not_found`.
+static size_t Extension(Bytes b) {
+  const size_t basename = Basename(b);
+  if (basename == not_found) {
+    return LastIndex(b.bytes, b.count, '.');
+  }
+  const size_t dot = LastIndex(&b.bytes[basename], b.count - basename, '.');
+  if (dot == not_found) {
+    return dot;
+  }
+  return basename + dot;
+}
+
 int main(int count, char** arguments) {
   bool print_basename = false;
   bool print_dirname = false;
+  bool print_extension = false;
   opterr = 0;
   while (true) {
-    const int o = getopt(count, arguments, "bdh");
+    const int o = getopt(count, arguments, "bdeh");
     if (o == -1) {
       break;
     }
@@ -154,14 +173,18 @@ int main(int count, char** arguments) {
       case 'd':
         print_dirname = true;
         break;
+      case 'e':
+        print_extension = true;
+        break;
       default:
         PrintHelp(true, help);
     }
   }
   count -= optind;
   arguments += optind;
-  const bool print_canonical = !print_basename && !print_dirname;
-  if (count == 0 || (print_basename && print_dirname)) {
+  const bool print_canonical =
+      !print_basename && !print_dirname && !print_extension;
+  if (count == 0 || print_basename + print_dirname + print_extension > 1) {
     PrintHelp(true, help);
   }
 
@@ -184,6 +207,11 @@ int main(int count, char** arguments) {
         printf("%s\n", p.bytes);
       } else {
         printf(".\n");
+      }
+    } else if (print_extension) {
+      const size_t e = Extension(p);
+      if (e != not_found) {
+        printf("%s\n", &p.bytes[e]);
       }
     }
   }
