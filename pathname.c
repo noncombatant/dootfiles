@@ -100,30 +100,6 @@ typedef struct Test {
   char* want;
 } Test;
 
-#if defined(TEST)
-static void TestLexicallyCanonicalizePathname() {
-  Test tests[] = {
-      {"/goat/bloat/../../../../../etc/passwd", "/etc/passwd"},
-      {"goat/blorp/././///yow", "goat/blorp/yow"},
-      {"/goat/blorp/../../../../../", "/"},
-      {"", ""},
-      {"/leg/foot///////////", "/leg/foot"},
-      {".", "."},
-      {"/", "/"},
-      {"./", "."},
-      {"../goat/../", ".."},
-  };
-  for (size_t i = 0; i < COUNT(tests); i++) {
-    AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
-    const char* canonicalized = LexicallyCanonicalizePathname(copy);
-    if (!StringEquals(canonicalized, tests[i].want)) {
-      fprintf(stderr, "Lexically '%s': wanted '%s', got '%s'\n",
-              tests[i].pathname, tests[i].want, canonicalized);
-    }
-  }
-}
-#endif
-
 static Bytes PathnameFromString(char* string) {
   char* canonical = LexicallyCanonicalizePathname(string);
   return (Bytes){.count = strlen(canonical), .bytes = canonical};
@@ -156,7 +132,113 @@ static size_t Extension(Bytes b) {
   return basename + dot;
 }
 
+#if defined(TEST)
+static void TestLexicallyCanonicalizePathname() {
+  Test tests[] = {
+      {"/goat/bloat/../../../../../etc/passwd", "/etc/passwd"},
+      {"goat/blorp/././///yow", "goat/blorp/yow"},
+      {"/goat/blorp/../../../../../", "/"},
+      {"", ""},
+      {"/leg/foot///////////", "/leg/foot"},
+      {".", "."},
+      {"/", "/"},
+      {"./", "."},
+      {"../goat/../", ".."},
+  };
+  for (size_t i = 0; i < COUNT(tests); i++) {
+    AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
+    const char* canonicalized = LexicallyCanonicalizePathname(copy);
+    if (!StringEquals(canonicalized, tests[i].want)) {
+      fprintf(stderr, "Lexically '%s': wanted '%s', got '%s'\n",
+              tests[i].pathname, tests[i].want, canonicalized);
+    }
+  }
+}
+
+static void TestBasename() {
+  Test tests[] = {
+      {"/goat/bloat/../../../../../etc/passwd", "passwd"},
+      {"goat/blorp/././///yow", "yow"},
+      {"/goat/blorp/../../../../../", "/"},
+      {"", ""},
+      {"/leg/foot///////////", "foot"},
+      {".", "."},
+      {"/", "/"},
+      {"./", "."},
+      {"../goat/../", ".."},
+  };
+  for (size_t i = 0; i < COUNT(tests); i++) {
+    AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
+    const Bytes bytes = PathnameFromString(copy);
+    const size_t b = Basename(bytes);
+    const char* basename = &bytes.bytes[b];
+    if (!StringEquals(basename, tests[i].want)) {
+      fprintf(stderr, "Basename '%s': wanted '%s', got '%s'\n",
+              tests[i].pathname, tests[i].want, basename);
+    }
+  }
+}
+
+static void TestDirname() {
+  Test tests[] = {
+      {"/goat/bloat/../../../../../etc/passwd", "/etc"},
+      {"goat/blorp/././///yow", "goat/blorp"},
+      {"/goat/blorp/../../../../../", "."},
+      {"", "."},
+      {"/leg/foot///////////", "/leg"},
+      {".", "."},
+      {"/", "."},  // TODO: Should maybe/probably be "/"
+      {"./", "."},
+      {"../goat/../", "."},
+  };
+  for (size_t i = 0; i < COUNT(tests); i++) {
+    AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
+    const Bytes bytes = PathnameFromString(copy);
+    const size_t d = Dirname(bytes);
+    if (d) {
+      bytes.bytes[d] = '\0';
+    }
+    const char* basename = d ? bytes.bytes : ".";
+    if (!StringEquals(basename, tests[i].want)) {
+      fprintf(stderr, "Dirname '%s': wanted '%s', got '%s'\n",
+              tests[i].pathname, tests[i].want, basename);
+    }
+  }
+}
+
+static void TestExtension() {
+  Test tests[] = {
+      {"/goat/bloat/../../../../../etc/passwd", ""},
+      {"goat/blorp/././///yow.txt", ".txt"},
+      {"/goat/blorp/../../../../../pdf.exe.c", ".c"},
+      {"", ""},
+      {"/leg/foot///////////stuff.rs", ".rs"},
+      {".", ""},
+      {"/", ""},
+      {"./", ""},
+      {"../goat/../things.db", ".db"},
+  };
+  for (size_t i = 0; i < COUNT(tests); i++) {
+    AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
+    const Bytes bytes = PathnameFromString(copy);
+    const size_t e = Extension(bytes);
+    const char* extension = e == not_found ? "" : &bytes.bytes[e];
+    if (!StringEquals(extension, tests[i].want)) {
+      fprintf(stderr, "Extension '%s': wanted '%s', got '%s'\n",
+              tests[i].pathname, tests[i].want, extension);
+    }
+  }
+}
+#endif
+
 int main(int count, char** arguments) {
+#if defined(TEST)
+  TestLexicallyCanonicalizePathname();
+  TestBasename();
+  TestDirname();
+  TestExtension();
+#endif
+
   bool print_basename = false;
   bool print_dirname = false;
   bool print_extension = false;
@@ -176,6 +258,8 @@ int main(int count, char** arguments) {
       case 'e':
         print_extension = true;
         break;
+      case 'h':
+        PrintHelp(false, help);
       default:
         PrintHelp(true, help);
     }
@@ -187,10 +271,6 @@ int main(int count, char** arguments) {
   if (count == 0 || print_basename + print_dirname + print_extension > 1) {
     PrintHelp(true, help);
   }
-
-#if defined(TEST)
-  TestLexicallyCanonicalizePathname();
-#endif
 
   for (int i = 0; i < count; i++) {
     AUTO(char*, copy, strdup(arguments[i]), FreeChar);
