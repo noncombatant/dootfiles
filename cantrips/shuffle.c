@@ -15,7 +15,7 @@
 #include "utils.h"
 
 // clang-format off
-static char help[] =
+static const char help[] =
 "shuffle [file...]\n"
 "shuffle -h\n"
 "\n"

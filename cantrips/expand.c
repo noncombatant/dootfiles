@@ -18,7 +18,7 @@
 #include "utils.h"
 
 // clang-format off
-static char help[] =
+static const char help[] =
 "expand [options] program [arguments...]\n"
 "\n"
 "-0      delimit input records with NUL instead of newline\n"
