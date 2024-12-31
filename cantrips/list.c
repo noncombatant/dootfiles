@@ -23,8 +23,12 @@ static const char help[] =
 "d -h\n"
 "\n"
 "-A      print the status of hidden files, too\n"
+"-g      print times in GMT (default: local)\n"
 "-h      print this help message\n";
 // clang-format on
+
+typedef struct tm* Time2Tm(const time_t* clock);
+static Time2Tm* time2tm = localtime;
 
 static void PrintStatus(const char* pathname) {
   struct stat status;
@@ -33,7 +37,7 @@ static void PrintStatus(const char* pathname) {
     return;
   }
 
-  const struct tm* t = gmtime(&status.st_mtime);
+  const struct tm* t = time2tm(&status.st_mtime);
 
   const struct passwd* u = getpwuid(status.st_uid);
   char u_buffer[13] = {0};
@@ -68,8 +72,8 @@ static void PrintStatus(const char* pathname) {
 
   MustPrintf(stdout,
              "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s\n",
-             t->tm_year + 1900, t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
-             (long long)status.st_size, u ? u->pw_name : u_buffer,
+             t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
+             t->tm_min, (long long)status.st_size, u ? u->pw_name : u_buffer,
              g ? g->gr_name : g_buffer, mode, pathname);
 }
 
@@ -77,13 +81,16 @@ int main(int count, char** arguments) {
   bool show_hidden = false;
   opterr = 0;
   while (true) {
-    const int o = getopt(count, arguments, "Ah");
+    const int o = getopt(count, arguments, "Agh");
     if (o == -1) {
       break;
     }
     switch (o) {
       case 'A':
         show_hidden = true;
+        break;
+      case 'g':
+        time2tm = gmtime;
         break;
       case 'h':
         PrintHelp(false, help);
