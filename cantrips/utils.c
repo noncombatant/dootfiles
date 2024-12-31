@@ -100,10 +100,11 @@ size_t Format(char* result, size_t size, const char* format, ...) {
 void MustFormat(char* result, size_t size, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  const size_t count = Format(result, size, format, arguments);
+  const int count = vsnprintf(result, size, format, arguments);
   va_end(arguments);
-  if (count == SIZE_MAX) {
-    Die(EINVAL, "buffer too small (%zu chars) or invalid format", size);
+  if (count < 0 || (size_t)count >= size) {
+    fprintf(stderr, "buffer too small (%zu chars) or invalid format", size);
+    _exit(EINVAL);
   }
 }
 
@@ -120,20 +121,32 @@ void MustPrintf(FILE* f, const char* format, ...) {
 void Warn(int error, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  MustPrintf(stderr, format, arguments);
+  int count = vfprintf(stderr, format, arguments);
   va_end(arguments);
+  if (count < 0) {
+    abort();
+  }
   if (error) {
-    MustPrintf(stderr, ": %s", strerror(error));
+    count = fprintf(stderr, ": %s", strerror(error));
+    if (count < 0) {
+      abort();
+    }
   }
 }
 
 void noreturn Die(int error, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  MustPrintf(stderr, format, arguments);
+  int count = vfprintf(stderr, format, arguments);
   va_end(arguments);
+  if (count < 0) {
+    abort();
+  }
   if (error) {
-    MustPrintf(stderr, ": %s", strerror(error));
+    count = fprintf(stderr, ": %s", strerror(error));
+    if (count < 0) {
+      abort();
+    }
   }
   _exit(error);
 }
