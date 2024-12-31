@@ -149,8 +149,8 @@ static void TestLexicallyCanonicalizePathname() {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
     const char* canonicalized = LexicallyCanonicalizePathname(copy);
     if (!StringEquals(canonicalized, tests[i].want)) {
-      fprintf(stderr, "Lexically '%s': wanted '%s', got '%s'\n",
-              tests[i].pathname, tests[i].want, canonicalized);
+      MustPrintf(stderr, "Lexically '%s': wanted '%s', got '%s'\n",
+                 tests[i].pathname, tests[i].want, canonicalized);
     }
   }
 }
@@ -173,8 +173,8 @@ static void TestBasename() {
     const size_t b = Basename(bytes);
     const char* basename = &bytes.bytes[b];
     if (!StringEquals(basename, tests[i].want)) {
-      fprintf(stderr, "Basename '%s': wanted '%s', got '%s'\n",
-              tests[i].pathname, tests[i].want, basename);
+      MustPrintf(stderr, "Basename '%s': wanted '%s', got '%s'\n",
+                 tests[i].pathname, tests[i].want, basename);
     }
   }
 }
@@ -200,8 +200,8 @@ static void TestDirname() {
     }
     const char* basename = d ? bytes.bytes : ".";
     if (!StringEquals(basename, tests[i].want)) {
-      fprintf(stderr, "Dirname '%s': wanted '%s', got '%s'\n",
-              tests[i].pathname, tests[i].want, basename);
+      MustPrintf(stderr, "Dirname '%s': wanted '%s', got '%s'\n",
+                 tests[i].pathname, tests[i].want, basename);
     }
   }
 }
@@ -224,8 +224,8 @@ static void TestExtension() {
     const size_t e = Extension(bytes);
     const char* extension = e == not_found ? "" : &bytes.bytes[e];
     if (!StringEquals(extension, tests[i].want)) {
-      fprintf(stderr, "Extension '%s': wanted '%s', got '%s'\n",
-              tests[i].pathname, tests[i].want, extension);
+      MustPrintf(stderr, "Extension '%s': wanted '%s', got '%s'\n",
+                 tests[i].pathname, tests[i].want, extension);
     }
   }
 }
@@ -276,22 +276,22 @@ int main(int count, char** arguments) {
     AUTO(char*, copy, strdup(arguments[i]), FreeChar);
     const Bytes p = PathnameFromString(copy);
     if (print_canonical) {
-      printf("%s\n", p.bytes);
+      MustPrintf(stdout, "%s\n", p.bytes);
     } else if (print_basename) {
       const size_t b = Basename(p);
-      printf("%s\n", &p.bytes[b]);
+      MustPrintf(stdout, "%s\n", &p.bytes[b]);
     } else if (print_dirname) {
       const size_t d = Dirname(p);
       if (d) {
         p.bytes[d] = '\0';
-        printf("%s\n", p.bytes);
+        MustPrintf(stdout, "%s\n", p.bytes);
       } else {
-        printf(".\n");
+        MustPrintf(stdout, ".\n");
       }
     } else if (print_extension) {
       const size_t e = Extension(p);
       if (e != not_found) {
-        printf("%s\n", &p.bytes[e]);
+        MustPrintf(stdout, "%s\n", &p.bytes[e]);
       }
     }
   }

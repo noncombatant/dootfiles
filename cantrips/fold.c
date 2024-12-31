@@ -3,6 +3,7 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include <ctype.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,7 +65,7 @@ static void Fold(FILE* output, FILE* input, size_t width) {
         // if (dash) {
         //   const size_t d = (size_t)(dash - word) + 1;
         //   if (fwrite(word, 1, d, output) != d) {
-        //     perror("fwrite");
+        //     Warn(errno, "fwrite");
         //     return;
         //   }
         //   word = &word[d];
@@ -78,7 +79,7 @@ static void Fold(FILE* output, FILE* input, size_t width) {
         fputs(" ", output);
       }
       if (fwrite(word, 1, n, output) != n) {
-        perror("fwrite");
+        Warn(errno, "fwrite");
         return;
       }
       p = &word[n];

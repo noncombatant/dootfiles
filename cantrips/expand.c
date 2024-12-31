@@ -100,9 +100,10 @@ static size_t ReadArguments(char** arguments) {
         bytes_used += length;
       } else {
         if (count == 0) {
-          fprintf(stderr,
-                  "record '%s' too long to fit into command size limit (%zu)\n",
-                  line, conservative_limit);
+          MustPrintf(
+              stderr,
+              "record '%s' too long to fit into command size limit (%zu)\n",
+              line, conservative_limit);
           // TODO BUG?: Do we need to reset `bytes_used` here, to avoid infinite
           // loop?
         } else {
@@ -171,14 +172,13 @@ static void noreturn RunJobs(int count, char** arguments) {
 
       const pid_t child = vfork();
       if (child == -1) {
-        perror("vfork");
+        Warn(errno, "vfork");
         continue;
       } else if (child) {
         jobs[i].pid = child;
       } else {
         if (execvp(jobs[i].arguments[0], jobs[i].arguments)) {
-          perror(jobs[i].arguments[0]);
-          _exit(errno);
+          Die(errno, "%s", jobs[i].arguments[0]);
         }
       }
     }
@@ -187,7 +187,7 @@ static void noreturn RunJobs(int count, char** arguments) {
     const pid_t child = waitpid(-1, &status, WUNTRACED);
     if (child == -1) {
       if (errno != ECHILD) {
-        perror("waitpid");
+        Warn(errno, "waitpid");
       }
       ReleaseJobs();
       exit(errno != ECHILD);
@@ -196,8 +196,7 @@ static void noreturn RunJobs(int count, char** arguments) {
       // If a child was signaled, terminate all of them and exit. The most
       // likely reasons are e.g. SIGINT or SIGPIPE, which are normal.
       if (kill(0, WTERMSIG(status))) {
-        perror("kill");
-        exit(errno);
+        Die(errno, "kill");
       }
       exit(0);
     }
@@ -239,16 +238,14 @@ int main(int count, char** arguments) {
 
   long n = sysconf(_SC_ARG_MAX);
   if (n < 0) {
-    perror("could not determine maximum command size");
-    exit(1);
+    Die(errno, "could not determine maximum command size");
   }
   max_command_size = (size_t)n;
   max_argument_count = max_argument_count ? max_argument_count : 100;
   if (max_job_count == 0) {
     n = sysconf(_SC_NPROCESSORS_ONLN);
     if (n < 0) {
-      perror("could not determine processor count");
-      exit(1);
+      Die(errno, "could not determine processor count");
     }
     max_job_count = (size_t)n;
   }

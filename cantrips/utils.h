@@ -74,4 +74,14 @@ __attribute__((__format__(__printf__, 3, 0))) size_t Format(char* result,
 __attribute__((__format__(__printf__, 3, 0))) void
 MustFormat(char* result, size_t size, const char* format, ...);
 
+__attribute__((__format__(__printf__, 2, 0))) void
+MustPrintf(FILE* f, const char* format, ...);
+
+__attribute__((__format__(__printf__, 2, 0))) void Warn(int error,
+                                                        const char* format,
+                                                        ...);
+
+__attribute__((__format__(__printf__, 2, 0))) void noreturn
+Die(int error, const char* format, ...);
+
 #endif

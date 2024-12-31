@@ -26,11 +26,11 @@ static uint64_t Random() {
   uint64_t r;
 #if defined(__MACH__)
   if (getentropy(&r, sizeof(r))) {
-    err(errno, "getentropy");
+    Die(errno, "getentropy");
   }
 #elif defined(__linux)
   if (sizeof(r) != (size_t)getrandom(&r, sizeof(r), GRND_NONBLOCK)) {
-    err(errno, "getrandom");
+    Die(errno, "getrandom");
   }
 #else
 #error unsupported platform
@@ -50,7 +50,7 @@ static void RandomizeLines(FILE* input,
       break;
     }
     line[r - 1] = '\0';
-    printf("%016" PRIx64 "%s%s%s", Random(), ors, line, ofs);
+    MustPrintf(stdout, "%016" PRIx64 "%s%s%s", Random(), ors, line, ofs);
   }
 }
 
@@ -84,7 +84,7 @@ int main(int count, char** arguments) {
   for (int i = 0; i < count; i++) {
     AUTO(FILE*, input, fopen(arguments[i], "rb"), CloseFile);
     if (!input) {
-      warn("%s", arguments[i]);
+      Warn(errno, "%s", arguments[i]);
       continue;
     }
     RandomizeLines(input, ifs, ofs, ors);

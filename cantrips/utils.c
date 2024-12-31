@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "utils.h"
 
@@ -30,19 +31,19 @@ bool StringEquals(const char* a, const char* b) {
 
 void CloseDir(DIR** p) {
   if (*p && closedir(*p)) {
-    perror("closedir");
+    Warn(errno, "closedir");
   }
 }
 
 void CloseFile(FILE** p) {
   if (*p && fclose(*p)) {
-    perror("fclose");
+    Warn(errno, "fclose");
   }
 }
 
 void CloseProcess(FILE** p) {
   if (*p && pclose(*p)) {
-    perror("pclose");
+    Warn(errno, "pclose");
   }
 }
 
@@ -56,19 +57,19 @@ void FreeRegex(regex_t** p) {
 
 void MustCloseDir(DIR** p) {
   if (*p && closedir(*p)) {
-    abort();
+    Die(errno, "closedir");
   }
 }
 
 void MustCloseFile(FILE** p) {
   if (*p && fclose(*p)) {
-    abort();
+    Die(errno, "fclose");
   }
 }
 
 void MustCloseProcess(FILE** p) {
   if (*p && pclose(*p)) {
-    abort();
+    Die(errno, "pclose");
   }
 }
 
@@ -102,6 +103,37 @@ void MustFormat(char* result, size_t size, const char* format, ...) {
   const size_t count = Format(result, size, format, arguments);
   va_end(arguments);
   if (count == SIZE_MAX) {
+    Die(EINVAL, "buffer too small (%zu chars) or invalid format", size);
+  }
+}
+
+void MustPrintf(FILE* f, const char* format, ...) {
+  va_list arguments;
+  va_start(arguments, format);
+  const int count = vfprintf(f, format, arguments);
+  va_end(arguments);
+  if (count < 0) {
     abort();
   }
+}
+
+void Warn(int error, const char* format, ...) {
+  va_list arguments;
+  va_start(arguments, format);
+  MustPrintf(stderr, format, arguments);
+  va_end(arguments);
+  if (error) {
+    MustPrintf(stderr, ": %s", strerror(error));
+  }
+}
+
+void noreturn Die(int error, const char* format, ...) {
+  va_list arguments;
+  va_start(arguments, format);
+  MustPrintf(stderr, format, arguments);
+  va_end(arguments);
+  if (error) {
+    MustPrintf(stderr, ": %s", strerror(error));
+  }
+  _exit(error);
 }

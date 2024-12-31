@@ -116,7 +116,7 @@ static Result PrintIfMatch(const char* pathname,
       p->has_smaller_than || p->has_no_cross_device) {
     struct stat status;
     if (lstat(pathname, &status)) {
-      perror(pathname);
+      Warn(errno, "%s", pathname);
       return ResultContinue;
     }
 
@@ -135,7 +135,7 @@ static Result PrintIfMatch(const char* pathname,
     }
   }
 
-  printf("%s%c", pathname, ORS);
+  MustPrintf(stdout, "%s%c", pathname, ORS);
   return ResultContinue;
 }
 
@@ -162,7 +162,7 @@ static void ParseRE(const char* string, regex_t* pattern) {
   if (e != 0) {
     char message[512] = "";
     (void)regerror(e, pattern, message, sizeof(message));
-    fprintf(stderr, "could not compile RE: %s\n", message);
+    MustPrintf(stderr, "could not compile RE: %s\n", message);
     PrintHelp(true, help);
   }
 }
@@ -186,7 +186,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
   }
   AUTO(DIR*, d, opendir(root), CloseDir);
   if (!d) {
-    perror(root);
+    Warn(errno, "%s", root);
     return;
   }
 
@@ -203,7 +203,7 @@ static void Walk(const char* root, const Predicate* p, long depth) {
     const size_t length =
         Format(pathname, sizeof(pathname), "%s/%s", root, entry->d_name);
     if (length == SIZE_MAX) {
-      fprintf(stderr, "can't handle %s/%s\n", root, entry->d_name);
+      MustPrintf(stderr, "can't handle %s/%s\n", root, entry->d_name);
       continue;
     }
 
@@ -220,7 +220,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
   }
   AUTO(DIR*, d, opendir(pathname), CloseDir);
   if (!d) {
-    perror(pathname);
+    Warn(errno, "%s", pathname);
     return;
   }
 
@@ -237,7 +237,7 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
     const size_t length =
         Format(child, sizeof(child), "%s/%s", pathname, entry->d_name);
     if (length == SIZE_MAX) {
-      fprintf(stderr, "can't handle %s/%s\n", pathname, entry->d_name);
+      MustPrintf(stderr, "can't handle %s/%s\n", pathname, entry->d_name);
       continue;
     }
     // TODO: Check return value.
@@ -334,14 +334,14 @@ int main(int count, char** arguments) {
       getcwd(cwd, sizeof(cwd));
       const int e = PopulateDevice(&p, cwd);
       if (e) {
-        fprintf(stderr, "%s: %s\n", cwd, strerror(e));
+        MustPrintf(stderr, "%s: %s\n", cwd, strerror(e));
         return errno;
       }
       WalkUp(cwd, &p, 0);
     } else {
       const int e = PopulateDevice(&p, ".");
       if (e) {
-        fprintf(stderr, "./: %s\n", strerror(e));
+        MustPrintf(stderr, "./: %s\n", strerror(e));
         return errno;
       }
       Walk(".", &p, 0);
@@ -350,7 +350,7 @@ int main(int count, char** arguments) {
   for (int i = 0; i < count; i++) {
     const int e = PopulateDevice(&p, arguments[i]);
     if (e) {
-      fprintf(stderr, "./: %s\n", strerror(e));
+      MustPrintf(stderr, "./: %s\n", strerror(e));
       continue;
     }
     if (up) {

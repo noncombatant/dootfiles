@@ -337,18 +337,19 @@ static void FreePatterns(Patterns* p) {
 static void PrintRegexError(int error, regex_t* regex) {
   char message[512] = "";
   (void)regerror(error, regex, message, sizeof(message));
-  fprintf(stderr, "bad RE: %s\n", message);
+  MustPrintf(stderr, "bad RE: %s\n", message);
 }
 
 static void PrintColors(bool extended) {
   fputs("The available colors are:\n", stdout);
   for (size_t i = 0; i < COUNT(colors); i++) {
-    printf("\t· %s%s%s\n", colors[i].escape, colors[i].name, normal);
+    MustPrintf(stdout, "\t· %s%s%s\n", colors[i].escape, colors[i].name,
+               normal);
   }
   if (extended) {
     for (size_t i = 0; i < COUNT(extended_colors); i++) {
-      printf("\t· %s%s%s\n", extended_colors[i].escape, extended_colors[i].name,
-             normal);
+      MustPrintf(stdout, "\t· %s%s%s\n", extended_colors[i].escape,
+                 extended_colors[i].name, normal);
     }
   }
 }

@@ -5,6 +5,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <dirent.h>
 #include <err.h>
+#include <errno.h>
 #include <grp.h>
 #include <pwd.h>
 #include <stdbool.h>
@@ -28,7 +29,7 @@ static const char help[] =
 static void PrintStatus(const char* pathname) {
   struct stat status;
   if (lstat(pathname, &status)) {
-    warn("%s", pathname);
+    Warn(errno, "%s", pathname);
     return;
   }
 
@@ -65,10 +66,11 @@ static void PrintStatus(const char* pathname) {
   mode[6] = m & S_ISGID ? 's' : mode[6];
   mode[9] = m & S_ISVTX ? 's' : mode[9];
 
-  printf("%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s\n",
-         t->tm_year + 1900, t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
-         (long long)status.st_size, u ? u->pw_name : u_buffer,
-         g ? g->gr_name : g_buffer, mode, pathname);
+  MustPrintf(stdout,
+             "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s\n",
+             t->tm_year + 1900, t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
+             (long long)status.st_size, u ? u->pw_name : u_buffer,
+             g ? g->gr_name : g_buffer, mode, pathname);
 }
 
 int main(int count, char** arguments) {
@@ -92,8 +94,8 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
-  fprintf(stderr, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified", "Size",
-          "User", "Group", "Mode", "Name");
+  MustPrintf(stderr, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified",
+             "Size", "User", "Group", "Mode", "Name");
   if (count == 0) {
     AUTO(DIR*, cwd, opendir("."), CloseDir);
     while (true) {
