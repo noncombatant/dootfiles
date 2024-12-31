@@ -84,69 +84,66 @@ size_t LastIndex(const char* s, size_t length, char c) {
   return not_found;
 }
 
-size_t Format(char* result, size_t size, const char* format, ...) {
+__attribute__((__format__(__printf__, 3, 0))) static size_t
+VFormat(char* result, size_t size, const char* format, va_list arguments) {
   if (size > INT_MAX || (0 != size && NULL == result) || NULL == format) {
     errno = EINVAL;
     return SIZE_MAX;
   }
+  const int count = vsnprintf(result, size, format, arguments);
+  return count >= 0 ? (size_t)count : SIZE_MAX;
+}
 
+__attribute__((__format__(__printf__, 2, 0))) static void
+VMustPrintf(FILE* f, const char* format, va_list arguments) {
+  const int count = vfprintf(f, format, arguments);
+  if (count < 0) {
+    abort();
+  }
+}
+
+size_t Format(char* result, size_t size, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  const int count = vsnprintf(result, size, format, arguments);
+  const size_t count = VFormat(result, size, format, arguments);
   va_end(arguments);
-  return count >= 0 ? (size_t)count : SIZE_MAX;
+  return count;
 }
 
 void MustFormat(char* result, size_t size, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  const int count = vsnprintf(result, size, format, arguments);
+  const size_t count = VFormat(result, size, format, arguments);
   va_end(arguments);
-  if (count < 0 || (size_t)count >= size) {
-    fprintf(stderr, "buffer too small (%zu chars) or invalid format", size);
-    _exit(EINVAL);
+  if (count == SIZE_MAX) {
+    MustPrintf(stderr, "buffer too small (%zu chars) or invalid format", size);
   }
 }
 
 void MustPrintf(FILE* f, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  const int count = vfprintf(f, format, arguments);
+  VMustPrintf(f, format, arguments);
   va_end(arguments);
-  if (count < 0) {
-    abort();
-  }
 }
 
 void Warn(int error, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  int count = vfprintf(stderr, format, arguments);
+  VMustPrintf(stderr, format, arguments);
   va_end(arguments);
-  if (count < 0) {
-    abort();
-  }
   if (error) {
-    count = fprintf(stderr, ": %s", strerror(error));
-    if (count < 0) {
-      abort();
-    }
+    MustPrintf(stderr, ": %s", strerror(error));
   }
 }
 
 void noreturn Die(int error, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  int count = vfprintf(stderr, format, arguments);
+  VMustPrintf(stderr, format, arguments);
   va_end(arguments);
-  if (count < 0) {
-    abort();
-  }
   if (error) {
-    count = fprintf(stderr, ": %s", strerror(error));
-    if (count < 0) {
-      abort();
-    }
+    MustPrintf(stderr, ": %s", strerror(error));
   }
   _exit(error);
 }
