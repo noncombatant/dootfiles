@@ -39,7 +39,7 @@ static size_t FindNextSpace(const char* line) {
   return n;
 }
 
-static void Format(FILE* output, FILE* input, size_t width) {
+static void Fold(FILE* output, FILE* input, size_t width) {
   AUTO(char*, line, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
@@ -119,9 +119,9 @@ int main(int count, char** arguments) {
 
   for (int i = 0; i < count; i++) {
     AUTO(FILE*, input, fopen(arguments[i], "r"), CloseFile);
-    Format(stdout, input, width);
+    Fold(stdout, input, width);
   }
   if (count == 0) {
-    Format(stdout, stdin, width);
+    Fold(stdout, stdin, width);
   }
 }

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #define _POSIX_C_SOURCE 200809L
+#include <errno.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,4 +81,27 @@ size_t LastIndex(const char* s, size_t length, char c) {
     }
   }
   return not_found;
+}
+
+size_t Format(char* result, size_t size, const char* format, ...) {
+  if (size > INT_MAX || (0 != size && NULL == result) || NULL == format) {
+    errno = EINVAL;
+    return SIZE_MAX;
+  }
+
+  va_list arguments;
+  va_start(arguments, format);
+  const int count = vsnprintf(result, size, format, arguments);
+  va_end(arguments);
+  return count >= 0 ? (size_t)count : SIZE_MAX;
+}
+
+void MustFormat(char* result, size_t size, const char* format, ...) {
+  va_list arguments;
+  va_start(arguments, format);
+  const size_t count = Format(result, size, format, arguments);
+  va_end(arguments);
+  if (count == SIZE_MAX) {
+    abort();
+  }
 }

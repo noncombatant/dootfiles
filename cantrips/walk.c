@@ -200,9 +200,9 @@ static void Walk(const char* root, const Predicate* p, long depth) {
     }
 
     char pathname[PATH_MAX + 1] = "";
-    const int length =
-        snprintf(pathname, sizeof(pathname), "%s/%s", root, entry->d_name);
-    if (length < 0 || (size_t)length >= sizeof(pathname)) {
+    const size_t length =
+        Format(pathname, sizeof(pathname), "%s/%s", root, entry->d_name);
+    if (length == SIZE_MAX) {
       fprintf(stderr, "can't handle %s/%s\n", root, entry->d_name);
       continue;
     }
@@ -234,9 +234,9 @@ static void WalkUp(char* pathname, const Predicate* p, long long depth) {
     }
 
     char child[PATH_MAX + 1] = "";
-    const int length =
-        snprintf(child, sizeof(child), "%s/%s", pathname, entry->d_name);
-    if (length < 0 || (size_t)length >= sizeof(child)) {
+    const size_t length =
+        Format(child, sizeof(child), "%s/%s", pathname, entry->d_name);
+    if (length == SIZE_MAX) {
       fprintf(stderr, "can't handle %s/%s\n", pathname, entry->d_name);
       continue;
     }

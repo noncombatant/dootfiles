@@ -66,4 +66,12 @@ extern const size_t not_found;
 // `length` bytes.
 size_t LastIndex(const char* s, size_t length, char c);
 
+__attribute__((__format__(__printf__, 3, 0))) size_t Format(char* result,
+                                                            size_t size,
+                                                            const char* format,
+                                                            ...);
+
+__attribute__((__format__(__printf__, 3, 0))) void
+MustFormat(char* result, size_t size, const char* format, ...);
+
 #endif

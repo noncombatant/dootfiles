@@ -37,13 +37,13 @@ static void PrintStatus(const char* pathname) {
   const struct passwd* u = getpwuid(status.st_uid);
   char u_buffer[13] = {0};
   if (!u) {
-    (void)snprintf(u_buffer, sizeof(u_buffer), "%u", (unsigned)status.st_uid);
+    MustFormat(u_buffer, sizeof(u_buffer), "%u", (unsigned)status.st_uid);
   }
 
   const struct group* g = getgrgid(status.st_gid);
   char g_buffer[13] = {0};
   if (!g) {
-    (void)snprintf(g_buffer, sizeof(g_buffer), "%u", (unsigned)status.st_gid);
+    MustFormat(g_buffer, sizeof(g_buffer), "%u", (unsigned)status.st_gid);
   }
 
   mode_t m = status.st_mode;
@@ -56,7 +56,7 @@ static void PrintStatus(const char* pathname) {
   } else if (m & S_IFLNK) {
     type = 'l';
   }
-  (void)snprintf(
+  MustFormat(
       mode, sizeof(mode), "%c%c%c%c%c%c%c%c%c%c", type, m & S_IRUSR ? 'r' : '-',
       m & S_IWUSR ? 'w' : '-', m & S_IXUSR ? 'x' : '-', m & S_IRGRP ? 'r' : '-',
       m & S_IWGRP ? 'w' : '-', m & S_IXGRP ? 'x' : '-', m & S_IROTH ? 'r' : '-',
