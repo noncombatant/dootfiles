@@ -19,6 +19,8 @@ install_sh() {
 }
 
 install_rust() {
+  cargo install b3sum
+  # drupes is not (yet?) on crates.io:
   git clone git@github.com:cbiffle/drupes.git
   cd drupes || exit 1
   cargo install --path .
