@@ -101,7 +101,7 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
-  MustPrintf(stderr, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified",
+  MustPrintf(stdout, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified",
              "Size", "User", "Group", "Mode", "Name");
   if (count == 0) {
     AUTO(DIR*, cwd, opendir("."), CloseDir);
