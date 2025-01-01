@@ -10,7 +10,7 @@ as before, such as to verify that a filesystem backup matches the original.
 
 Usage:
 
-  integrity db pathname [ckdb-file]
+  integrity db pathname foo.ckdb
 
 For each pathname naming a directory, reads every regular file under the
 pathname and calculates the files’ checksums. Stores the checksums and file
@@ -26,8 +26,8 @@ source "$(dirname "$0")/script.sh"
 if ! which zstd >/dev/null; then
   error "this program depends on zstd; you'll need to install it"
 fi
-if ! which b2sum >/dev/null; then
-  error "this program depends on b2sum; you'll need to install it"
+if ! which b3sum >/dev/null; then
+  error "this program depends on b3sum; you'll need to install it"
 fi
 
 check() {
@@ -40,31 +40,12 @@ check() {
 }
 
 db() {
-  [[ $# -eq 1 || $# -eq 2 ]] || usage
-  local output
-  output=${2-"$(get_ckdb_name "$1")"}
-
-  # Turn exit-on-error off because we don't want to exit if `b2sum` can't read
+  [[ $# -eq 2 ]] || usage
+  # Turn exit-on-error off because we don't want to exit if `b3sum` can't read
   # some files.
   set +e
   set +o pipefail
-
-  walk -t f -0 "$1" | expand -0 -a10 -- b2sum -a blake2s -l 128 | sort | zstd >"$output"
-  ls -l "$output"
-}
-
-get_ckdb_name() {
-  local pathname
-  pathname="$1"
-  local parent
-  parent=$(dirname "$pathname")
-  local base
-  base=$(basename "$pathname")
-  local date
-  date=$(udate)
-  local output
-  output="$parent"/"$base"-$date.ckdb
-  echo "$output"
+  walk -t f -0 "$1" | expand -0 -a1 -j1 -- b3sum -l 16 | sort | zstd >"$2"
 }
 
 [[ $# -gt 0 ]] || usage
