@@ -69,7 +69,7 @@ static uint64_t RandomInRange(uint64_t lo, uint64_t hi) {
   }
 }
 
-static char* ReadRecord(FILE* input, char ifs) {
+static char* Read(FILE* input, char ifs) {
   static char* line = NULL;
   static size_t capacity = 0;
   ssize_t r = getdelim(&line, &capacity, ifs, input);
@@ -87,7 +87,7 @@ static void ShuffleStream(FILE* input,
                           const char* ofs,
                           const char* ors) {
   while (true) {
-    const char* record = ReadRecord(input, ifs);
+    const char* record = Read(input, ifs);
     if (!record) {
       return;
     }
@@ -102,7 +102,7 @@ typedef struct Records {
   char** data;
 } Records;
 
-static void AppendRecord(Records* r, char* new) {
+static void Append(Records* r, char* new) {
   assert(r->capacity >= r->count);
   if (r->capacity == r->count) {
     const size_t c = r->capacity;
@@ -119,11 +119,11 @@ static void AppendRecord(Records* r, char* new) {
 static void ShuffleInMemory(FILE* input, char ifs, const char*, const char*) {
   Records records = {0};
   while (true) {
-    char* record = ReadRecord(input, ifs);
+    char* record = Read(input, ifs);
     if (!record) {
       break;
     }
-    AppendRecord(&records, strdup(record));
+    Append(&records, strdup(record));
   }
 
   // Now shuffle them, Fisher-Yates stylee.
@@ -136,7 +136,6 @@ static void ShuffleInMemory(FILE* input, char ifs, const char*, const char*) {
     records.data[j] = x;
   }
 
-  MustPrintf(stdout, "%zu records\n", records.count);
   for (size_t i = 0; i < records.count; i++) {
     MustPrintf(stdout, "%s\n", records.data[i]);
   }
