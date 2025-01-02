@@ -1,6 +1,7 @@
 *.o
 *.dSYM
 *.swp
+cli_test
 color
 expand
 fold

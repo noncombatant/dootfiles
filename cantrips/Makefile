@@ -19,7 +19,7 @@ else
 	CFLAGS += -O0 -g -DTEST -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
 endif
 
-TARGETS = color expand fold list pathname shuffle walk
+TARGETS = cli_test color expand fold list pathname shuffle walk
 .PHONY: all clean strip
 
 all: $(TARGETS)
@@ -32,5 +32,6 @@ fold: fold.c utils.o
 pathname: pathname.c utils.o
 shuffle: shuffle.c utils.o
 walk: walk.c utils.o
+cli_test: cli_test.c cli.o utils.o
 clean:
 	-rm -rf $(TARGETS) *.dSYM *.o
