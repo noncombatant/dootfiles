@@ -11,7 +11,8 @@ CFLAGS = -Weverything -Werror -std=c2x \
 	-Wno-unknown-warning-option \
 	-Wno-pre-c11-compat \
 	-Wno-pre-c2x-compat \
-	-Wno-gnu-statement-expression-from-macro-expansion
+	-Wno-gnu-statement-expression-from-macro-expansion \
+	-Wno-switch-default
 
 ifdef RELEASE
 	CFLAGS += -O3 -flto=thin

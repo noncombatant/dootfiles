@@ -1,6 +1,7 @@
 // Copyright 2024 Chris Palmer, https://noncombatant.org/
 // SPDX-License-Identifier: MIT
 
+#define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <errno.h>
 #include <search.h>
@@ -115,7 +116,7 @@ void ParseCLI(Options* os,
         }
         break;
       case TypeInt:
-        parsed->value.d = strtoll(optarg, &end, 0);
+        parsed->value.i = strtoll(optarg, &end, 0);
         if (*end != '\0') {
           ShowHelpAndExit(cli, true);
         }
