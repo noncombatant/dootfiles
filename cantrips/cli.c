@@ -89,8 +89,8 @@ void ParseCLI(Options* os,
   BuildOptString(optstring, sizeof(optstring), &(cli->options));
 
   opterr = 0;
-  size_t c = 0;
-  while (true) {
+  os->count = 0;
+  while (os->count < os->capacity) {
     const int flag = getopt(count, arguments, optstring);
     if (flag == -1) {
       break;
@@ -101,7 +101,7 @@ void ParseCLI(Options* os,
       ShowHelpAndExit(cli, true);
     }
 
-    Option* parsed = &(os->options[c]);
+    Option* parsed = &(os->options[os->count]);
     parsed->flag = (char)flag;
     parsed->value.type = o->value.type;
     char* end;
@@ -125,9 +125,8 @@ void ParseCLI(Options* os,
         parsed->value.s = strdup(optarg);
         break;
     }
-    c++;
+    os->count++;
   }
-  os->count = c;
 
   as->count = (size_t)(count - optind);
   as->arguments = arguments + optind;
