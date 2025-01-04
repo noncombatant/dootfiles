@@ -12,14 +12,24 @@ static char description[] =
 
 static Option options[] = {
     {
-        .flag = 'x',
-        .description = "explain the Turbo Encabulator",
-        .value = { .type = TypeBool }
+        .flag = 'n',
+        .description = "set Encabulator name",
+        .value = { .type = TypeString }
+    },
+    {
+        .flag = 't',
+        .description = "set turbo level",
+        .value = { .type = TypeInt }
     },
     {
         .flag = 'w',
         .description = "set maximum widget variance tolerance",
         .value = { .type = TypeDouble }
+    },
+    {
+        .flag = 'x',
+        .description = "explain the Turbo Encabulator",
+        .value = { .type = TypeBool }
     },
 };
 
@@ -31,10 +41,9 @@ static CLI cli = {
 // clang-format on
 
 int main(int count, char** arguments) {
-  Options os = {
-      .capacity = 5, .count = 0, .options = calloc(5, sizeof(Option))};
-  Arguments as = {
-      .capacity = 5, .count = 0, .arguments = calloc(5, sizeof(char*))};
+  Option storage[10] = {0};
+  Options os = {.capacity = COUNT(storage), .count = 0, .options = storage};
+  Arguments as = {0};
   ParseCLI(&os, &as, &cli, count, arguments);
 
   ShowHelp(stdout, &cli);
@@ -51,10 +60,10 @@ int main(int count, char** arguments) {
         MustPrintf(stdout, "%zu\t-%c\tdouble\t%g\n", i, o->flag, o->value.d);
         break;
       case TypeInt:
-        MustPrintf(stdout, "%zu\t-%c\tdouble\t%lld\n", i, o->flag, o->value.i);
+        MustPrintf(stdout, "%zu\t-%c\tinteger\t%lld\n", i, o->flag, o->value.i);
         break;
       case TypeString:
-        MustPrintf(stdout, "%zu\t-%c\tdouble\t'%s'\n", i, o->flag, o->value.s);
+        MustPrintf(stdout, "%zu\t-%c\tstring\t'%s'\n", i, o->flag, o->value.s);
         break;
     }
   }
@@ -64,10 +73,14 @@ int main(int count, char** arguments) {
     MustPrintf(stdout, "%zu\t'%s'\n", i, as.arguments[i]);
   }
 
-  Option* explain = FindOption(&os, 'x');
+  const Option* explain = FindOption(&os, 'x');
   if (explain) {
     MustPrintf(stdout,
                "\nFor a number of years now, work has been proceeding in order "
                "to bring perfection to the crudely-conceived idea of a...\n");
+  }
+  const Option* tolerance = FindLastOption(&os, 'w');
+  if (tolerance) {
+    MustPrintf(stdout, "Widget variance tolerance: %g\n", tolerance->value.d);
   }
 }

@@ -75,6 +75,16 @@ Option* FindOption(const Options* o, char flag) {
   return lfind(&find, o->options, &count, sizeof(Option), CompareOption);
 }
 
+Option* FindLastOption(const Options* o, char flag) {
+  for (size_t i = o->count; i > 0; i--) {
+    const size_t j = i - 1;
+    if (o->options[j].flag == flag) {
+      return &(o->options[j]);
+    }
+  }
+  return NULL;
+}
+
 // Maximum of e.g. 127 Boolean options or 63 argument-taking options. Not even
 // `ls` has that many, so this should suffice.
 #define OPTSTRING_LENGTH 128
@@ -90,7 +100,12 @@ void ParseCLI(Options* os,
 
   opterr = 0;
   os->count = 0;
-  while (os->count < os->capacity) {
+  for (int i = 1; i < count; i++) {
+    if (os->count == os->capacity) {
+      MustPrintf(stderr, "too many options given (capacity: %zu)\n",
+                 os->capacity);
+      exit(EX_USAGE);
+    }
     const int flag = getopt(count, arguments, optstring);
     if (flag == -1) {
       break;
