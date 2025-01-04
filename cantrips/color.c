@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sysexits.h>
 #include <unistd.h>
 
 #include "utils.h"
@@ -312,6 +313,10 @@ static const char* FindEscape(const char* name) {
     escape =
         lfind(&key, extended_colors, &count, sizeof(Color), CompareColorName);
   }
+  if (!escape) {
+    MustPrintf(stderr, "No such color: '%s'\n", name);
+    exit(EX_USAGE);
+  }
   return escape->escape;
 }
 
@@ -343,14 +348,17 @@ static void PrintRegexError(int error, regex_t* regex) {
 static void PrintColors(bool extended) {
   fputs("The available colors are:\n", stdout);
   for (size_t i = 0; i < COUNT(colors); i++) {
-    MustPrintf(stdout, "\t· %s%s%s\n", colors[i].escape, colors[i].name,
-               normal);
+    MustPrintf(stdout, "%s%s%s%s", colors[i].escape, colors[i].name, normal,
+               i < COUNT(colors) - 1 ? " " : "");
   }
+  MustPrintf(stdout, "\n");
   if (extended) {
     for (size_t i = 0; i < COUNT(extended_colors); i++) {
-      MustPrintf(stdout, "\t· %s%s%s\n", extended_colors[i].escape,
-                 extended_colors[i].name, normal);
+      MustPrintf(stdout, "%s%s%s%s", extended_colors[i].escape,
+                 extended_colors[i].name, normal,
+                 i < COUNT(extended_colors) - 1 ? " " : "");
     }
+    MustPrintf(stdout, "\n");
   }
 }
 
