@@ -15,19 +15,33 @@
 #include <sys/random.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
-"shuffle [file...] | sort | sed -E 's/[0-9a-f]{16}\\t//'\n"
-"shuffle -m [file...]\n"
-"shuffle -h\n"
-"\n"
-"-h      print this help message\n"
-"-m      shuffle in memory (uses more memory but the shuffle is faster)\n";
-// clang-format on
+static char description[] =
+"Shuffle lines of input, either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
 
-// TODO: Also support -0
+static Option options[] = {
+    {
+        .flag = 'h',
+        .description = "print help message",
+        .value = { .type = TypeBool }
+    },
+    {
+        .flag = 'm',
+        .description = "shuffle in memory (uses more memory but the shuffle is faster)",
+        .value = { .type = TypeBool }
+    },
+    // TODO: Also support -0
+};
+
+static const CLI cli = {
+    .name = "shuffle",
+    .description = description,
+    .options = {.count = COUNT(options), .options = options},
+};
+// clang-format on
 
 static uint64_t Random() {
   uint64_t r;
@@ -163,25 +177,16 @@ int main(int count, char** arguments) {
   TestRandomInRangeBias();
 #endif
 
-  opterr = 0;
-  Shuffler* shuffle = ShuffleStream;
-  while (true) {
-    const int o = getopt(count, arguments, "hm");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case 'h':
-        PrintHelp(false, help);
-      case 'm':
-        shuffle = ShuffleInMemory;
-        break;
-      default:
-        PrintHelp(true, help);
-    }
+  Option storage[10] = {0};
+  Options os = {.capacity = COUNT(storage), .count = 0, .options = storage};
+  Arguments as = {0};
+  ParseCLI(&os, &as, &cli, count, arguments);
+
+  if (FindOption(&os, 'h')) {
+    ShowHelpAndExit(&cli, false);
   }
-  count -= optind;
-  arguments += optind;
+
+  Shuffler* shuffle = FindOption(&os, 'm') ? ShuffleInMemory : ShuffleStream;
 
   const char* IFS = getenv("IFS");
   const char ifs = IFS ? IFS[0] : '\n';
@@ -190,13 +195,13 @@ int main(int count, char** arguments) {
   const char* ORS = getenv("ORS");
   const char* ors = ORS ? ORS : "\t";
 
-  if (count == 0) {
+  if (as.count == 0) {
     shuffle(stdin, ifs, ofs, ors);
   }
-  for (int i = 0; i < count; i++) {
-    AUTO(FILE*, input, fopen(arguments[i], "rb"), CloseFile);
+  for (size_t i = 0; i < as.count; i++) {
+    AUTO(FILE*, input, fopen(as.arguments[i], "rb"), CloseFile);
     if (!input) {
-      Warn(errno, "%s", arguments[i]);
+      Warn(errno, "%s", as.arguments[i]);
       continue;
     }
     shuffle(input, ifs, ofs, ors);

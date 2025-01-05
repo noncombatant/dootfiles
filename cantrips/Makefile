@@ -31,7 +31,7 @@ list: list.c utils.o
 expand: expand.c utils.o
 fold: fold.c utils.o
 pathname: pathname.c utils.o
-shuffle: shuffle.c utils.o
+shuffle: shuffle.c cli.o utils.o
 walk: walk.c utils.o
 cli_test: cli_test.c cli.o utils.o
 clean:
