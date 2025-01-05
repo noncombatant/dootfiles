@@ -33,7 +33,7 @@ static Option options[] = {
     },
 };
 
-static CLI cli = {
+static const CLI cli = {
     .name = "turbo",
     .description = description,
     .options = {.count = COUNT(options), .options = options},
