@@ -181,11 +181,9 @@ int main(int count, char** arguments) {
   Options os = {.capacity = COUNT(storage), .count = 0, .options = storage};
   Arguments as = {0};
   ParseCLI(&os, &as, &cli, count, arguments);
-
   if (FindOption(&os, 'h')) {
     ShowHelpAndExit(&cli, false);
   }
-
   Shuffler* shuffle = FindOption(&os, 'm') ? ShuffleInMemory : ShuffleStream;
 
   const char* IFS = getenv("IFS");
