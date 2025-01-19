@@ -133,7 +133,7 @@ void Warn(int error, const char* format, ...) {
   VMustPrintf(stderr, format, arguments);
   va_end(arguments);
   if (error) {
-    MustPrintf(stderr, ": %s", strerror(error));
+    MustPrintf(stderr, ": %s\n", strerror(error));
   }
 }
 
@@ -143,7 +143,7 @@ void noreturn Die(int error, const char* format, ...) {
   VMustPrintf(stderr, format, arguments);
   va_end(arguments);
   if (error) {
-    MustPrintf(stderr, ": %s", strerror(error));
+    MustPrintf(stderr, ": %s\n", strerror(error));
   }
   _exit(error);
 }
