@@ -70,6 +70,12 @@ static void PrintStatus(const char* pathname) {
   mode[6] = m & S_ISGID ? 's' : mode[6];
   mode[9] = m & S_ISVTX ? 's' : mode[9];
 
+  static bool printed_header = false;
+  if (!printed_header) {
+    MustPrintf(stdout, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified",
+               "Size", "User", "Group", "Mode", "Name");
+    printed_header = true;
+  }
   MustPrintf(stdout,
              "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s\n",
              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
@@ -101,8 +107,6 @@ int main(int count, char** arguments) {
   count -= optind;
   arguments += optind;
 
-  MustPrintf(stdout, "%-16s  %12s  %-12s  %-12s  %-10s  %s\n", "Modified",
-             "Size", "User", "Group", "Mode", "Name");
   if (count == 0) {
     AUTO(DIR*, cwd, opendir("."), CloseDir);
     while (true) {
