@@ -10,6 +10,7 @@
 #include <pwd.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -51,16 +52,26 @@ static void PrintStatus(const char* pathname) {
     MustFormat(g_buffer, sizeof(g_buffer), "%u", (unsigned)status.st_gid);
   }
 
-  mode_t m = status.st_mode;
-  char mode[11];
+  const mode_t m = status.st_mode;
   char type = '-';
-  if (m & S_IFDIR) {
+  const char arrow[] = " → ";
+  char target[sizeof(arrow) + PATH_MAX + 1] = {0};
+  if (S_ISDIR(m)) {
     type = 'd';
-  } else if (m & S_IFREG) {
-    type = '-';
-  } else if (m & S_IFLNK) {
+  } else if (S_ISLNK(m)) {
     type = 'l';
+    strncpy(target, arrow, strlen(arrow));
+    const ssize_t r = readlink(pathname, target + strlen(arrow),
+                               sizeof(target) - strlen(arrow));
+    if (r == -1) {
+      Warn(errno, "readlink(%s)", pathname);
+      target[0] = '\0';
+    }
+  } else if (S_ISREG(m)) {
+    type = '-';
   }
+
+  char mode[11];
   MustFormat(
       mode, sizeof(mode), "%c%c%c%c%c%c%c%c%c%c", type, m & S_IRUSR ? 'r' : '-',
       m & S_IWUSR ? 'w' : '-', m & S_IXUSR ? 'x' : '-', m & S_IRGRP ? 'r' : '-',
@@ -77,10 +88,11 @@ static void PrintStatus(const char* pathname) {
     printed_header = true;
   }
   MustPrintf(stdout,
-             "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s\n",
+             "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s%s\n",
              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
              t->tm_min, (long long)status.st_size, u ? u->pw_name : u_buffer,
-             g ? g->gr_name : g_buffer, mode, pathname);
+             g ? g->gr_name : g_buffer, mode, pathname,
+             target[0] == '\0' ? "" : target);
 }
 
 int main(int count, char** arguments) {
