@@ -339,12 +339,6 @@ static void FreePatterns(Patterns* p) {
   }
 }
 
-static void PrintRegexError(int error, regex_t* regex) {
-  char message[512] = "";
-  (void)regerror(error, regex, message, sizeof(message));
-  MustPrintf(stderr, "bad RE: %s\n", message);
-}
-
 static void PrintColors(bool extended) {
   fputs("The available colors are:\n", stdout);
   for (size_t i = 0; i < COUNT(colors); i++) {

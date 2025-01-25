@@ -50,7 +50,6 @@ void CloseDir(DIR** p);
 void CloseFile(FILE** p);
 void CloseProcess(FILE** p);
 void FreeChar(char** p);
-void FreeRegex(regex_t** p);
 void MustCloseDir(DIR** p);
 void MustCloseFile(FILE** p);
 void MustCloseProcess(FILE** p);
@@ -83,5 +82,14 @@ __attribute__((__format__(__printf__, 2, 0))) void Warn(int error,
 
 __attribute__((__format__(__printf__, 2, 0))) void noreturn
 Die(int error, const char* format, ...);
+
+typedef struct Regex {
+  int error;
+  regex_t regex;
+} Regex;
+
+Regex CompileRegex(const char* pattern, int flags);
+void FreeRegex(Regex* r);
+void PrintRegexError(int error, const regex_t* regex);
 
 #endif

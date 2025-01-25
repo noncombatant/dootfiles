@@ -51,10 +51,6 @@ void FreeChar(char** p) {
   free(*p);
 }
 
-void FreeRegex(regex_t** p) {
-  regfree(*p);
-}
-
 void MustCloseDir(DIR** p) {
   if (*p && closedir(*p)) {
     Die(errno, "closedir");
@@ -146,4 +142,22 @@ void noreturn Die(int error, const char* format, ...) {
     MustPrintf(stderr, ": %s\n", strerror(error));
   }
   _exit(error);
+}
+
+Regex CompileRegex(const char* pattern, int flags) {
+  Regex status = {0};
+  status.error = regcomp(&status.regex, pattern, flags);
+  return status;
+}
+
+void FreeRegex(Regex* r) {
+  if (r && r->error == 0) {
+    regfree(&r->regex);
+  }
+}
+
+void PrintRegexError(int error, const regex_t* regex) {
+  char message[512] = {0};
+  (void)regerror(error, regex, message, sizeof(message));
+  MustPrintf(stderr, "bad RE: %s\n", message);
 }
