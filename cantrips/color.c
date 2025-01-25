@@ -321,7 +321,7 @@ static const char* FindEscape(const char* name) {
 }
 
 typedef struct Pattern {
-  regex_t regex;
+  Regex regex;
   Color color;
 } Pattern;
 
@@ -335,7 +335,7 @@ static void FreePatterns(Patterns* p) {
     return;
   }
   for (size_t i = 0; i < p->count; i++) {
-    regfree(&(p->patterns[i].regex));
+    FreeRegex(&(p->patterns[i].regex));
   }
 }
 
@@ -362,15 +362,15 @@ typedef struct FindResult {
 } FindResult;
 
 static FindResult FindFirstMatch(const char* input, Patterns patterns) {
-  FindResult result;
-  memset(&result, 0, sizeof(result));
+  FindResult result = {0};
   bool found = false;
   for (size_t i = 0; i < patterns.count; i++) {
+    const Regex* r = &(patterns.patterns[i].regex);
     regmatch_t match;
-    const int e = regexec(&(patterns.patterns[i].regex), input, 1, &match, 0);
+    const int e = regexec(&(r->regex), input, 1, &match, 0);
     if (e) {
       if (e != REG_NOMATCH) {
-        PrintRegexError(e, &(patterns.patterns[i].regex));
+        PrintRegexError(e, &(r->regex));
       }
       continue;
     } else if (!found || match.rm_so < result.match.rm_so) {
@@ -420,15 +420,14 @@ static void Colorize(Patterns patterns, char delimiter) {
 static Patterns BuildPatterns(size_t count, char** arguments) {
   Pattern* patterns = calloc(count / 2, sizeof(Pattern));
   for (size_t i = 0; i < count; i += 2) {
-    Pattern* pattern = &patterns[i / 2];
-    const int e =
-        regcomp(&(pattern->regex), arguments[i], REG_EXTENDED | REG_ICASE);
-    if (e) {
-      PrintRegexError(e, &(pattern->regex));
+    Pattern* p = &patterns[i / 2];
+    p->regex = CompileRegex(arguments[i], REG_EXTENDED | REG_ICASE);
+    if (p->regex.error) {
+      PrintRegexError(p->regex.error, &(p->regex.regex));
       PrintHelp(true, help);
     }
-    pattern->color.name = arguments[i + 1];
-    pattern->color.escape = FindEscape(pattern->color.name);
+    p->color.name = arguments[i + 1];
+    p->color.escape = FindEscape(p->color.name);
   }
   return (Patterns){.count = count / 2, .patterns = patterns};
 }
