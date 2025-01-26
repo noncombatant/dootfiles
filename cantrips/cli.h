@@ -29,7 +29,6 @@ typedef struct Option {
 } Option;
 
 typedef struct Options {
-  size_t capacity;
   size_t count;
   Option* options;
 } Options;
@@ -42,7 +41,7 @@ typedef struct Arguments {
 typedef struct CLI {
   const char* name;
   const char* description;
-  const Options options;
+  Options options;
 } CLI;
 
 // Prints a formatted help message, generated from the contents of `cli`.
@@ -52,17 +51,15 @@ void ShowHelp(FILE* output, const CLI* cli);
 // exits with status 0 (if `error` is false) or `EX_USAGE`.
 noreturn void ShowHelpAndExit(const CLI* cli, bool error);
 
-// Returns the first instance of the option `flag` in `o`, or `NULL`.
-Option* FindOption(const Options* o, char flag);
+// Searches `options` for the `Option` with the matching `flag` and returns it,
+// or `NULL`.
+Option* FindOption(const Options* options, char flag);
 
-// Returns the last instance of the option `flag` in `o`, or `NULL`.
-Option* FindLastOption(const Options* o, char flag);
+// Searches `options` for the `Option` with the matching `flag` and returns its
+// `Value`, or `NULL`.
+Value* FindOptionValue(const Options* options, char flag);
 
-// Parses the `count` `arguments` according to the specification in `cli`, and
-// populates `os` (which is caller-allocated) and `as`. If parsing fails for any
-// reason, calls `ShowHelpAndExit` with `error` set.
-void ParseCLI(Options* os,
-              Arguments* as,
-              const CLI* cli,
-              int count,
-              char** arguments);
+// Parses the arguments and options according to the specification in `cli`, and
+// populates `cli` (which is caller-allocated). If parsing fails for any reason,
+// calls `ShowHelpAndExit` with `error` set.
+Arguments ParseCLI(CLI* cli, int count, char** arguments);

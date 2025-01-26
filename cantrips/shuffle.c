@@ -36,7 +36,7 @@ static Option options[] = {
     // TODO: Also support -0
 };
 
-static const CLI cli = {
+static CLI cli = {
     .name = "shuffle",
     .description = description,
     .options = {.count = COUNT(options), .options = options},
@@ -177,14 +177,12 @@ int main(int count, char** arguments) {
   TestRandomInRangeBias();
 #endif
 
-  Option storage[10] = {0};
-  Options os = {.capacity = COUNT(storage), .count = 0, .options = storage};
-  Arguments as = {0};
-  ParseCLI(&os, &as, &cli, count, arguments);
-  if (FindOption(&os, 'h')) {
+  Arguments as = ParseCLI(&cli, count, arguments);
+  if (FindOptionValue(&cli.options, 'h')->b) {
     ShowHelpAndExit(&cli, false);
   }
-  Shuffler* shuffle = FindOption(&os, 'm') ? ShuffleInMemory : ShuffleStream;
+  Shuffler* shuffle =
+      FindOptionValue(&cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
 
   const char* IFS = getenv("IFS");
   const char ifs = IFS ? IFS[0] : '\n';

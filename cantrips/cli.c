@@ -16,10 +16,9 @@
 // TODO: Rename ShowHelp to PrintHelp[AndExit] after migrating everything to
 // this library.
 
+// TODO: Add an option to show defaults.
 void ShowHelp(FILE* output, const CLI* cli) {
-  MustPrintf(output, "%s\n\n%s\n", cli->name, cli->description);
-
-  MustPrintf(output, "\nOptions\n\n");
+  MustPrintf(output, "%s\n\n%s\n\nOptions\n\n", cli->name, cli->description);
   for (size_t i = 0; i < cli->options.count; i++) {
     const Option* o = &(cli->options.options[i]);
     char* t = "";
@@ -45,12 +44,14 @@ noreturn void ShowHelpAndExit(const CLI* cli, bool error) {
   exit(error ? EX_USAGE : 0);
 }
 
-static void BuildOptString(char* result, size_t size, const Options* o) {
+static void BuildOptString(char* result, size_t size, const Options* options) {
+  // TODO: Should be able to get rid of `flag` and just use `i`?
   size_t flag = 0;
-  for (size_t i = 0; i < o->count && flag < size; i++) {
-    result[flag] = o->options[i].flag;
+  for (size_t i = 0; i < options->count && flag < size; i++) {
+    const Option* o = &(options->options[i]);
+    result[flag] = o->flag;
     flag++;
-    if (o->options[i].value.type != TypeBool) {
+    if (o->value.type != TypeBool) {
       result[flag] = ':';
       flag++;
     }
@@ -69,80 +70,66 @@ static int CompareOption(const void* a, const void* b) {
   return 0;
 }
 
-Option* FindOption(const Options* o, char flag) {
+Option* FindOption(const Options* options, char flag) {
   Option find = {.flag = flag};
-  size_t count = o->count;
-  return lfind(&find, o->options, &count, sizeof(Option), CompareOption);
+  size_t count = options->count;
+  return lfind(&find, options->options, &count, sizeof(Option), CompareOption);
 }
 
-Option* FindLastOption(const Options* o, char flag) {
-  for (size_t i = o->count; i > 0; i--) {
-    const size_t j = i - 1;
-    if (o->options[j].flag == flag) {
-      return &(o->options[j]);
-    }
-  }
-  return NULL;
+Value* FindOptionValue(const Options* options, char flag) {
+  Option* o = FindOption(options, flag);
+  return o ? &o->value : NULL;
 }
 
 // Maximum of e.g. 127 Boolean options or 63 argument-taking options. Not even
 // `ls` has that many, so this should suffice.
 #define OPTSTRING_LENGTH 128
 
-void ParseCLI(Options* os,
-              Arguments* as,
-              const CLI* cli,
-              int count,
-              char** arguments) {
+Arguments ParseCLI(CLI* cli, int count, char** arguments) {
   char optstring[OPTSTRING_LENGTH];
   assert(cli->options.count * 2 < sizeof(optstring));
-  BuildOptString(optstring, sizeof(optstring), &(cli->options));
+  Options* options = &cli->options;
+  BuildOptString(optstring, sizeof(optstring), options);
 
   opterr = 0;
-  os->count = 0;
   for (int i = 1; i < count; i++) {
-    if (os->count == os->capacity) {
-      MustPrintf(stderr, "too many options given (capacity: %zu)\n",
-                 os->capacity);
-      exit(EX_USAGE);
-    }
     const int flag = getopt(count, arguments, optstring);
     if (flag == -1) {
       break;
     }
 
-    const Option* o = FindOption(&(cli->options), (char)flag);
+    Option* o = FindOption(options, (char)flag);
     if (!o) {
       ShowHelpAndExit(cli, true);
     }
 
-    Option* parsed = &(os->options[os->count]);
-    parsed->flag = (char)flag;
-    parsed->value.type = o->value.type;
-    char* end;
-    switch (o->value.type) {
+    Value* v = &(o->value);
+    switch (v->type) {
       case TypeBool:
-        parsed->value.b = true;
+        v->b = true;
         break;
-      case TypeDouble:
-        parsed->value.d = strtod(optarg, &end);
+      case TypeDouble: {
+        char* end;
+        v->d = strtod(optarg, &end);
         if (*end != '\0') {
           ShowHelpAndExit(cli, true);
         }
         break;
-      case TypeInt:
-        parsed->value.i = strtoll(optarg, &end, 0);
+      }
+      case TypeInt: {
+        char* end;
+        v->i = strtoll(optarg, &end, 0);
         if (*end != '\0') {
           ShowHelpAndExit(cli, true);
         }
         break;
+      }
       case TypeString:
-        parsed->value.s = strdup(optarg);
+        v->s = strdup(optarg);
         break;
     }
-    os->count++;
   }
 
-  as->count = (size_t)(count - optind);
-  as->arguments = arguments + optind;
+  return (Arguments){.count = (size_t)(count - optind),
+                     .arguments = arguments + optind};
 }

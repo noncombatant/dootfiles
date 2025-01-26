@@ -33,7 +33,7 @@ static Option options[] = {
     },
 };
 
-static const CLI cli = {
+static CLI cli = {
     .name = "turbo",
     .description = description,
     .options = {.count = COUNT(options), .options = options},
@@ -41,16 +41,14 @@ static const CLI cli = {
 // clang-format on
 
 int main(int count, char** arguments) {
-  Option storage[10] = {0};
-  Options os = {.capacity = COUNT(storage), .count = 0, .options = storage};
-  Arguments as = {0};
-  ParseCLI(&os, &as, &cli, count, arguments);
+  Arguments as = ParseCLI(&cli, count, arguments);
 
   ShowHelp(stdout, &cli);
 
   MustPrintf(stdout, "\nOptions parsed:\n");
-  for (size_t i = 0; i < os.count; i++) {
-    Option* o = &os.options[i];
+  const Options* os = &(cli.options);
+  for (size_t i = 0; i < os->count; i++) {
+    Option* o = &os->options[i];
     switch (o->value.type) {
       case TypeBool:
         MustPrintf(stdout, "%zu\t-%c\tbool\t%s\n", i, o->flag,
@@ -73,14 +71,12 @@ int main(int count, char** arguments) {
     MustPrintf(stdout, "%zu\t'%s'\n", i, as.arguments[i]);
   }
 
-  const Option* explain = FindOption(&os, 'x');
-  if (explain) {
+  const Value* explain = FindOptionValue(os, 'x');
+  if (explain->b) {
     MustPrintf(stdout,
                "\nFor a number of years now, work has been proceeding in order "
                "to bring perfection to the crudely-conceived idea of a...\n");
   }
-  const Option* tolerance = FindLastOption(&os, 'w');
-  if (tolerance) {
-    MustPrintf(stdout, "Widget variance tolerance: %g\n", tolerance->value.d);
-  }
+  const Value* tolerance = FindOptionValue(os, 'w');
+  MustPrintf(stdout, "Widget variance tolerance: %g\n", tolerance->d);
 }
