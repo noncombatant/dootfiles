@@ -24,10 +24,10 @@ TARGETS = cli_test color expand fold list pathname shuffle walk
 .PHONY: all clean strip
 
 all: $(TARGETS)
-strip:
+strip: $(TARGETS)
 	strip $(TARGETS)
 color: color.c utils.o
-list: list.c utils.o
+list: list.c cli.o utils.o
 expand: expand.c utils.o
 fold: fold.c utils.o
 pathname: pathname.c utils.o

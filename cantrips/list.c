@@ -16,16 +16,40 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
-"d [file...]\n"
-"d -h\n"
-"\n"
-"-A      print the status of hidden files, too\n"
-"-g      print times in GMT (default: local)\n"
-"-h      print this help message\n";
+static char description[] = "Print names and properties of files.";
+
+static Option options[] = {
+  {
+    .flag = 'A',
+    .description = "print the status of hidden files, too",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'g',
+    .description = "print times in GMT (default: local)",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'm',
+    .description = "shuffle in memory (uses more memory but the shuffle is faster)",
+    .value = { .type = TypeBool }
+  },
+};
+
+static CLI cli = {
+  .name = "list",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
 
 typedef struct tm* Time2Tm(const time_t* clock);
@@ -96,42 +120,23 @@ static void PrintStatus(const char* pathname) {
 }
 
 int main(int count, char** arguments) {
-  bool show_hidden = false;
-  opterr = 0;
-  while (true) {
-    const int o = getopt(count, arguments, "Agh");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case 'A':
-        show_hidden = true;
-        break;
-      case 'g':
-        time2tm = gmtime;
-        break;
-      case 'h':
-        PrintHelp(false, help);
-      default:
-        PrintHelp(true, help);
-    }
+  Arguments as = ParseCLI(&cli, count, arguments);
+  if (FindOptionValue(&cli.options, 'h')->b) {
+    ShowHelpAndExit(&cli, false, true);
   }
-  count -= optind;
-  arguments += optind;
-
-  if (count == 0) {
+  if (as.count == 0) {
     AUTO(DIR*, cwd, opendir("."), CloseDir);
     while (true) {
       const struct dirent* e = readdir(cwd);
       if (!e) {
         break;
       }
-      if (show_hidden || e->d_name[0] != '.') {
+      if (FindOptionValue(&cli.options, 'A')->b || e->d_name[0] != '.') {
         PrintStatus(e->d_name);
       }
     }
   }
-  for (int i = 0; i < count; i++) {
-    PrintStatus(arguments[i]);
+  for (size_t i = 0; i < as.count; i++) {
+    PrintStatus(as.arguments[i]);
   }
 }
