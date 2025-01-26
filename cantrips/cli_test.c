@@ -11,26 +11,31 @@ static char description[] =
 "The Turbo Encabulator. All your encabulation needs solved, with NO side-fumbling.";
 
 static Option options[] = {
-    {
-        .flag = 'n',
-        .description = "set Encabulator name",
-        .value = { .type = TypeString }
-    },
-    {
-        .flag = 't',
-        .description = "set turbo level",
-        .value = { .type = TypeInt }
-    },
-    {
-        .flag = 'w',
-        .description = "set maximum widget variance tolerance",
-        .value = { .type = TypeDouble }
-    },
-    {
-        .flag = 'x',
-        .description = "explain the Turbo Encabulator",
-        .value = { .type = TypeBool }
-    },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool, .b = false },
+  },
+  {
+    .flag = 'n',
+    .description = "set Encabulator name",
+    .value = { .type = TypeString, .s = "" }
+  },
+  {
+    .flag = 't',
+    .description = "set turbo level",
+    .value = { .type = TypeInt }
+  },
+  {
+    .flag = 'w',
+    .description = "set maximum widget variance tolerance",
+    .value = { .type = TypeDouble }
+  },
+  {
+    .flag = 'x',
+    .description = "explain the Turbo Encabulator",
+    .value = { .type = TypeBool }
+  },
 };
 
 static CLI cli = {
@@ -42,8 +47,9 @@ static CLI cli = {
 
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
-
-  ShowHelp(stdout, &cli);
+  if (FindOptionValue(&cli.options, 'h')->b) {
+    ShowHelp(stdout, &cli, true);
+  }
 
   MustPrintf(stdout, "\nOptions parsed:\n");
   const Options* os = &(cli.options);

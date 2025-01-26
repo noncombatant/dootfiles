@@ -45,11 +45,11 @@ typedef struct CLI {
 } CLI;
 
 // Prints a formatted help message, generated from the contents of `cli`.
-void ShowHelp(FILE* output, const CLI* cli);
+void ShowHelp(FILE* output, const CLI* cli, bool show_defaults);
 
 // Prints a formatted help message, generated from the contents of `cli`, and
 // exits with status 0 (if `error` is false) or `EX_USAGE`.
-noreturn void ShowHelpAndExit(const CLI* cli, bool error);
+noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults);
 
 // Searches `options` for the `Option` with the matching `flag` and returns it,
 // or `NULL`.

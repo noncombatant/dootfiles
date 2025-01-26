@@ -4,6 +4,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <search.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,31 +17,39 @@
 // TODO: Rename ShowHelp to PrintHelp[AndExit] after migrating everything to
 // this library.
 
-// TODO: Add an option to show defaults.
-void ShowHelp(FILE* output, const CLI* cli) {
+void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
   MustPrintf(output, "%s\n\n%s\n\nOptions\n\n", cli->name, cli->description);
   for (size_t i = 0; i < cli->options.count; i++) {
     const Option* o = &(cli->options.options[i]);
-    char* t = "";
+    MustPrintf(output, "-%c", o->flag);
     switch (o->value.type) {
       case TypeBool:
         break;
       case TypeDouble:
-        t = " floating-point";
+        MustPrintf(output, " floating-point");
+        if (show_defaults) {
+          MustPrintf(output, " (default: %g)", o->value.d);
+        }
         break;
       case TypeInt:
-        t = " integer";
+        MustPrintf(output, " integer");
+        if (show_defaults) {
+          MustPrintf(output, " (default: %" PRId64 ")", o->value.i);
+        }
         break;
       case TypeString:
-        t = " string";
+        MustPrintf(output, " string");
+        if (show_defaults) {
+          MustPrintf(output, " (default: \"%s\")", o->value.s);
+        }
         break;
     }
-    MustPrintf(output, "-%c%s\n    %s\n", o->flag, t, o->description);
+    MustPrintf(output, "\n    %s\n", o->description);
   }
 }
 
-noreturn void ShowHelpAndExit(const CLI* cli, bool error) {
-  ShowHelp(error ? stderr : stdout, cli);
+noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
+  ShowHelp(error ? stderr : stdout, cli, show_defaults);
   exit(error ? EX_USAGE : 0);
 }
 
@@ -100,7 +109,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
 
     Option* o = FindOption(options, (char)flag);
     if (!o) {
-      ShowHelpAndExit(cli, true);
+      ShowHelpAndExit(cli, true, false);
     }
 
     Value* v = &(o->value);
@@ -112,7 +121,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         char* end;
         v->d = strtod(optarg, &end);
         if (*end != '\0') {
-          ShowHelpAndExit(cli, true);
+          ShowHelpAndExit(cli, true, false);
         }
         break;
       }
@@ -120,7 +129,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         char* end;
         v->i = strtoll(optarg, &end, 0);
         if (*end != '\0') {
-          ShowHelpAndExit(cli, true);
+          ShowHelpAndExit(cli, true, false);
         }
         break;
       }

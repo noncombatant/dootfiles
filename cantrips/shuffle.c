@@ -179,7 +179,7 @@ int main(int count, char** arguments) {
 
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(&cli.options, 'h')->b) {
-    ShowHelpAndExit(&cli, false);
+    ShowHelpAndExit(&cli, false, true);
   }
   Shuffler* shuffle =
       FindOptionValue(&cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
