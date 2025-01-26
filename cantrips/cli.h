@@ -44,11 +44,14 @@ typedef struct CLI {
   Options options;
 } CLI;
 
-// Prints a formatted help message, generated from the contents of `cli`.
+// Prints a formatted help message, generated from the contents of `cli`. If
+// `show_defaults` is true, prints the default values for the options given in
+// `cli`.
 void ShowHelp(FILE* output, const CLI* cli, bool show_defaults);
 
 // Prints a formatted help message, generated from the contents of `cli`, and
-// exits with status 0 (if `error` is false) or `EX_USAGE`.
+// exits with status 0 (if `error` is false) or `EX_USAGE`. If `show_defaults`
+// is true, prints the default values for the options given in `cli`.
 noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults);
 
 // Searches `options` for the `Option` with the matching `flag` and returns it,
@@ -59,7 +62,8 @@ Option* FindOption(const Options* options, char flag);
 // `Value`, or `NULL`.
 Value* FindOptionValue(const Options* options, char flag);
 
-// Parses the arguments and options according to the specification in `cli`, and
-// populates `cli` (which is caller-allocated). If parsing fails for any reason,
-// calls `ShowHelpAndExit` with `error` set.
+// Parses the arguments and options according to the specification in `cli`,
+// populates the `Options` in `cli`, and returns the remaining arguments. If
+// parsing fails for any reason, calls `ShowHelpAndExit` with `error` set and
+// `show_defaults` unset.
 Arguments ParseCLI(CLI* cli, int count, char** arguments);
