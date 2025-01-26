@@ -51,38 +51,13 @@ int main(int count, char** arguments) {
     ShowHelp(stdout, &cli, true);
   }
 
-  MustPrintf(stdout, "\nOptions parsed:\n");
-  const Options* os = &(cli.options);
-  for (size_t i = 0; i < os->count; i++) {
-    Option* o = &os->options[i];
-    switch (o->value.type) {
-      case TypeBool:
-        MustPrintf(stdout, "%zu\t-%c\tbool\t%s\n", i, o->flag,
-                   o->value.b ? "true" : "false");
-        break;
-      case TypeDouble:
-        MustPrintf(stdout, "%zu\t-%c\tdouble\t%g\n", i, o->flag, o->value.d);
-        break;
-      case TypeInt:
-        MustPrintf(stdout, "%zu\t-%c\tinteger\t%lld\n", i, o->flag, o->value.i);
-        break;
-      case TypeString:
-        MustPrintf(stdout, "%zu\t-%c\tstring\t'%s'\n", i, o->flag, o->value.s);
-        break;
-    }
-  }
+  PrintCLI(stdout, &cli, &as);
 
-  MustPrintf(stdout, "\nArguments:\n");
-  for (size_t i = 0; i < as.count; i++) {
-    MustPrintf(stdout, "%zu\t'%s'\n", i, as.arguments[i]);
-  }
-
-  const Value* explain = FindOptionValue(os, 'x');
-  if (explain->b) {
+  if (FindOptionValue(&cli.options, 'x')->b) {
     MustPrintf(stdout,
                "\nFor a number of years now, work has been proceeding in order "
                "to bring perfection to the crudely-conceived idea of a...\n");
   }
-  const Value* tolerance = FindOptionValue(os, 'w');
-  MustPrintf(stdout, "Widget variance tolerance: %g\n", tolerance->d);
+  MustPrintf(stdout, "Widget variance tolerance: %g\n",
+             FindOptionValue(&cli.options, 'w')->d);
 }

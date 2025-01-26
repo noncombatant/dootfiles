@@ -141,3 +141,31 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
   return (Arguments){.count = (size_t)(count - optind),
                      .arguments = arguments + optind};
 }
+
+void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments) {
+  MustPrintf(output, "\nOptions parsed:\n");
+  const Options* os = &cli->options;
+  for (size_t i = 0; i < os->count; i++) {
+    Option* o = &os->options[i];
+    switch (o->value.type) {
+      case TypeBool:
+        MustPrintf(output, "%zu\t-%c\tbool\t%s\n", i, o->flag,
+                   o->value.b ? "true" : "false");
+        break;
+      case TypeDouble:
+        MustPrintf(output, "%zu\t-%c\tdouble\t%g\n", i, o->flag, o->value.d);
+        break;
+      case TypeInt:
+        MustPrintf(output, "%zu\t-%c\tinteger\t%lld\n", i, o->flag, o->value.i);
+        break;
+      case TypeString:
+        MustPrintf(output, "%zu\t-%c\tstring\t'%s'\n", i, o->flag, o->value.s);
+        break;
+    }
+  }
+
+  MustPrintf(output, "\nArguments:\n");
+  for (size_t i = 0; i < arguments->count; i++) {
+    MustPrintf(output, "%zu\t'%s'\n", i, arguments->arguments[i]);
+  }
+}

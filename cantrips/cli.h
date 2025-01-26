@@ -67,3 +67,5 @@ Value* FindOptionValue(const Options* options, char flag);
 // parsing fails for any reason, calls `ShowHelpAndExit` with `error` set and
 // `show_defaults` unset.
 Arguments ParseCLI(CLI* cli, int count, char** arguments);
+
+void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments);
