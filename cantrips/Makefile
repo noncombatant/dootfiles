@@ -30,7 +30,7 @@ color: color.c utils.o
 list: list.c cli.o utils.o
 expand: expand.c utils.o
 fold: fold.c utils.o
-pathname: pathname.c utils.o
+pathname: pathname.c cli.o utils.o
 shuffle: shuffle.c cli.o utils.o
 walk: walk.c utils.o
 cli_test: cli_test.c cli.o utils.o

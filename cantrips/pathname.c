@@ -10,24 +10,45 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
-"pathname string [...]\n"
-"pathname -b string [...]\n"
-"pathname -d string [...]\n"
-"pathname -e string [...]\n"
-"pathname -h\n"
+static char description[] =
+"Print properties of pathnames.\n"
 "\n"
 "With no options, prints the lexically canonicalized form(s) of the given string(s).\n"
 "\n"
-"-b      canonicalize the given string(s) and print their basename(s)\n"
-"-d      canonicalize the given string(s) and print their dirname(s)\n"
-"-e      canonicalize the given string(s) and print their file extension(s), if any\n"
-"-h      print this help message\n"
-"\n"
-"Note that because it canonicalizes the strings first, this program may produce different results than basename(1) and dirname(1).\n";
+"Note that because it canonicalizes the strings first, this program may produce different results than basename(1) and dirname(1).";
+
+static Option options[] = {
+  {
+    .flag = 'b',
+    .description = "canonicalize the given string(s) and print their basename(s)",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'd',
+    .description = "canonicalize the given string(s) and print their dirname(s)",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'e',
+    .description = "canonicalize the given string(s) and print their file extension(s), if any",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool }
+  },
+};
+
+static CLI cli = {
+  .name = "pathname",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
 
 // TODO: Consider supporting printing all of -b, -d, -e, separated by $ORS.
@@ -239,41 +260,21 @@ int main(int count, char** arguments) {
   TestExtension();
 #endif
 
-  bool print_basename = false;
-  bool print_dirname = false;
-  bool print_extension = false;
-  opterr = 0;
-  while (true) {
-    const int o = getopt(count, arguments, "bdeh");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case 'b':
-        print_basename = true;
-        break;
-      case 'd':
-        print_dirname = true;
-        break;
-      case 'e':
-        print_extension = true;
-        break;
-      case 'h':
-        PrintHelp(false, help);
-      default:
-        PrintHelp(true, help);
-    }
-  }
-  count -= optind;
-  arguments += optind;
+  Arguments as = ParseCLI(&cli, count, arguments);
+  const bool print_basename = FindOptionValue(&cli.options, 'b')->b;
+  const bool print_dirname = FindOptionValue(&cli.options, 'd')->b;
+  const bool print_extension = FindOptionValue(&cli.options, 'e')->b;
   const bool print_canonical =
       !print_basename && !print_dirname && !print_extension;
-  if (count == 0 || print_basename + print_dirname + print_extension > 1) {
-    PrintHelp(true, help);
+  if (FindOptionValue(&cli.options, 'h')->b) {
+    ShowHelpAndExit(&cli, false, true);
+  }
+  if (as.count == 0 || print_basename + print_dirname + print_extension > 1) {
+    ShowHelpAndExit(&cli, true, false);
   }
 
-  for (int i = 0; i < count; i++) {
-    AUTO(char*, copy, strdup(arguments[i]), FreeChar);
+  for (size_t i = 0; i < as.count; i++) {
+    AUTO(char*, copy, strdup(as.arguments[i]), FreeChar);
     const Bytes p = PathnameFromString(copy);
     if (print_canonical) {
       MustPrintf(stdout, "%s\n", p.bytes);
