@@ -28,7 +28,7 @@ strip: $(TARGETS)
 	strip $(TARGETS)
 color: color.c utils.o
 list: list.c cli.o utils.o
-expand: expand.c utils.o
+expand: expand.c cli.o utils.o
 fold: fold.c utils.o
 pathname: pathname.c cli.o utils.o
 shuffle: shuffle.c cli.o utils.o

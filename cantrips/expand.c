@@ -15,20 +15,45 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
-"expand [options] program [arguments...]\n"
+static char description[] =
+"Turn records from the standard input into arguments to a command.\n"
 "\n"
-"-0      delimit input records with NUL instead of newline\n"
-"-a count\n"
-"        pass each run of `program` at most `count` arguments\n"
-"-h      print this help message\n"
-"-j count\n"
-"        create `count` concurrent processes to handle the input; default is the number of cores\n"
+"    expand [options] program [options and arguments...]\n"
 "\n"
-"To explicitly place the argument(s) in the argument list, use %a.\n";
+"To explicitly place the argument(s) in the argument list, use %a.";
+
+static Option options[] = {
+  {
+    .flag = '0',
+    .description = "delimit input records with NUL instead of newline",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'a',
+    .description = "pass each run of `program` at most this many arguments",
+    .value = { .type = TypeInt, .i = 100 }
+  },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'j',
+    .description = "number of concurrent processes to handle the input",
+    .value = { .type = TypeInt }
+  },
+};
+
+static CLI cli = {
+  .name = "expand",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
 
 typedef struct Job {
@@ -129,13 +154,13 @@ typedef enum FillStatus {
   Complete,
 } FillStatus;
 
-static FillStatus FillCommandLine(Job* job, int count, char** arguments) {
+static FillStatus FillCommandLine(Job* job, size_t count, char** arguments) {
   bool have_read = false;
   const size_t count_allocated = (size_t)count + max_argument_count + 1;
   job->arguments = calloc(count_allocated, sizeof(char*));
   size_t a = 0;
 
-  for (int i = 0; i < count; i++, arguments++) {
+  for (size_t i = 0; i < count; i++, arguments++) {
     if (StringEquals("%a", *arguments)) {
       const size_t r = ReadArguments(&job->arguments[a]);
       if (r == 0) {
@@ -160,7 +185,7 @@ static FillStatus FillCommandLine(Job* job, int count, char** arguments) {
   return Continue;
 }
 
-static void noreturn RunJobs(int count, char** arguments) {
+static void noreturn RunJobs(size_t count, char** arguments) {
   while (true) {
     for (size_t i = 0; i < max_job_count; i++) {
       if (jobs[i].pid) {
@@ -207,49 +232,29 @@ static void noreturn RunJobs(int count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
-  opterr = 0;
-  while (true) {
-    const int o = getopt(count, arguments, "0a:hj:");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case '0':
-        delimiter = '\0';
-        break;
-      case 'a':
-        max_argument_count = strtoul(optarg, NULL, 0);
-        break;
-      case 'h':
-        PrintHelp(false, help);
-      case 'j':
-        max_job_count = strtoul(optarg, NULL, 0);
-        break;
-      default:
-        PrintHelp(true, help);
-    }
+  long n = sysconf(_SC_NPROCESSORS_ONLN);
+  if (n < 0) {
+    Die(errno, "could not determine processor count");
   }
-  count -= optind;
-  arguments += optind;
+  FindOptionValue(&cli.options, 'j')->i = n;
 
-  if (count == 0) {
-    PrintHelp(true, help);
+  Arguments as = ParseCLI(&cli, count, arguments);
+  if (FindOptionValue(&cli.options, 'h')->b) {
+    ShowHelpAndExit(&cli, false, true);
+  } else if (as.count == 0) {
+    ShowHelpAndExit(&cli, true, true);
   }
 
-  long n = sysconf(_SC_ARG_MAX);
+  n = sysconf(_SC_ARG_MAX);
   if (n < 0) {
     Die(errno, "could not determine maximum command size");
   }
   max_command_size = (size_t)n;
-  max_argument_count = max_argument_count ? max_argument_count : 100;
-  if (max_job_count == 0) {
-    n = sysconf(_SC_NPROCESSORS_ONLN);
-    if (n < 0) {
-      Die(errno, "could not determine processor count");
-    }
-    max_job_count = (size_t)n;
+  if (FindOptionValue(&cli.options, '0')->b) {
+    delimiter = '\0';
   }
-
+  max_argument_count = (size_t)FindOptionValue(&cli.options, 'a')->i;
+  max_job_count = (size_t)FindOptionValue(&cli.options, 'j')->i;
   jobs = calloc(max_job_count, sizeof(Job));
-  RunJobs(count, arguments);
+  RunJobs(as.count, as.arguments);
 }
