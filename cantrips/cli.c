@@ -54,7 +54,6 @@ noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
 }
 
 static void BuildOptString(char* result, size_t size, const Options* options) {
-  // TODO: Should be able to get rid of `flag` and just use `i`?
   size_t flag = 0;
   for (size_t i = 0; i < options->count && flag < size; i++) {
     const Option* o = &(options->options[i]);
