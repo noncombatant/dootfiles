@@ -10,18 +10,30 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
-"fold [-w] [pathnames...]\n"
-"fold -h\n"
-"\n"
-"-h      print this help message\n"
-"-w width\n"
-"        maximum line width (default: 80)\n"
-"\n"
-"Width can be given in any base; refer to strtol(3).\n";
+static char description[] = "Fold lines of text to a maximum width.";
+
+static Option options[] = {
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'w',
+    .description = "maximum line width; can be given in any base (refer to `strtol`(3))",
+    .value = { .type = TypeInt, .i = 80 }
+  },
+};
+
+static CLI cli = {
+  .name = "fold",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
 
 static char* SkipSpaces(char* line) {
@@ -93,33 +105,10 @@ static void Fold(FILE* output, FILE* input, size_t width) {
 }
 
 int main(int count, char** arguments) {
-  opterr = 0;
-  size_t width = 80;
-  while (true) {
-    const int o = getopt(count, arguments, "hw:");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case 'h':
-        PrintHelp(false, help);
-      case 'w': {
-        char* end = NULL;
-        width = (size_t)strtol(optarg, &end, 0);
-        if (*end != '\0') {
-          PrintHelp(true, help);
-        }
-        break;
-      }
-      default:
-        PrintHelp(true, help);
-    }
-  }
-  count -= optind;
-  arguments += optind;
-
-  for (int i = 0; i < count; i++) {
-    AUTO(FILE*, input, fopen(arguments[i], "r"), CloseFile);
+  Arguments as = ParseCLI(&cli, count, arguments);
+  const size_t width = (size_t)FindOptionValue(&cli.options, 'w')->i;
+  for (size_t i = 0; i < as.count; i++) {
+    AUTO(FILE*, input, fopen(as.arguments[i], "r"), CloseFile);
     Fold(stdout, input, width);
   }
   if (count == 0) {
