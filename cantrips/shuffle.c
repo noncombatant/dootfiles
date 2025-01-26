@@ -23,23 +23,23 @@ static char description[] =
 "Shuffle lines of input, either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
 
 static Option options[] = {
-    {
-        .flag = 'h',
-        .description = "print help message",
-        .value = { .type = TypeBool }
-    },
-    {
-        .flag = 'm',
-        .description = "shuffle in memory (uses more memory but the shuffle is faster)",
-        .value = { .type = TypeBool }
-    },
-    // TODO: Also support -0
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = TypeBool }
+  },
+  {
+    .flag = 'm',
+    .description = "shuffle in memory (uses more memory but the shuffle is faster)",
+    .value = { .type = TypeBool }
+  },
+  // TODO: Also support -0
 };
 
 static CLI cli = {
-    .name = "shuffle",
-    .description = description,
-    .options = {.count = COUNT(options), .options = options},
+  .name = "shuffle",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
 };
 // clang-format on
 
