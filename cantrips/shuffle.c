@@ -26,12 +26,12 @@ static Option options[] = {
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'm',
     .description = "shuffle in memory (uses more memory but the shuffle is faster)",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   // TODO: Also support -0
 };

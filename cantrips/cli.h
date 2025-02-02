@@ -7,25 +7,27 @@
 #include <stdio.h>
 #include <stdnoreturn.h>
 
-typedef enum Type {
-  TypeBool,
-  TypeDouble,
-  TypeInt,
-  TypeString,
-} Type;
+typedef enum OptionType {
+  OptionTypeBool,
+  OptionTypeDouble,
+  OptionTypeInt,
+  OptionTypeSize,
+  OptionTypeString,
+} OptionType;
 
-typedef struct Value {
-  Type type;
+typedef struct OptionValue {
+  OptionType type;
   bool b;
   double d;
   int64_t i;
+  size_t z;
   char* s;
-} Value;
+} OptionValue;
 
 typedef struct Option {
   char flag;
   const char* description;
-  Value value;
+  OptionValue value;
 } Option;
 
 typedef struct Options {
@@ -59,8 +61,8 @@ noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults);
 Option* FindOption(const Options* options, char flag);
 
 // Searches `options` for the `Option` with the matching `flag` and returns its
-// `Value`, or `NULL`.
-Value* FindOptionValue(const Options* options, char flag);
+// `OptionValue`, or `NULL`.
+OptionValue* FindOptionValue(const Options* options, char flag);
 
 // Parses the arguments and options according to the specification in `cli`,
 // populates the `Options` in `cli`, and returns the remaining arguments. If

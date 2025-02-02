@@ -20,12 +20,12 @@ static Option options[] = {
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'w',
     .description = "maximum line width; can be given in any base (refer to `strtol`(3))",
-    .value = { .type = TypeInt, .i = 80 }
+    .value = { .type = OptionTypeInt, .i = 80 }
   },
 };
 

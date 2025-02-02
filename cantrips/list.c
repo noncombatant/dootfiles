@@ -26,22 +26,22 @@ static Option options[] = {
   {
     .flag = 'A',
     .description = "print the status of hidden files, too",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'g',
     .description = "print times in GMT (default: local)",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'm',
     .description = "shuffle in memory (uses more memory but the shuffle is faster)",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
 };
 

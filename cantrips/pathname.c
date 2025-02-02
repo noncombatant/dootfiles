@@ -25,22 +25,22 @@ static Option options[] = {
   {
     .flag = 'b',
     .description = "canonicalize the given string(s) and print their basename(s)",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'd',
     .description = "canonicalize the given string(s) and print their dirname(s)",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'e',
     .description = "canonicalize the given string(s) and print their file extension(s), if any",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
 };
 

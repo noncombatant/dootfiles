@@ -30,22 +30,22 @@ static Option options[] = {
   {
     .flag = '0',
     .description = "delimit input records with NUL instead of newline",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'a',
     .description = "pass each run of `program` at most this many arguments",
-    .value = { .type = TypeInt, .i = 100 }
+    .value = { .type = OptionTypeInt, .i = 100 }
   },
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'j',
     .description = "number of concurrent processes to handle the input",
-    .value = { .type = TypeInt }
+    .value = { .type = OptionTypeInt }
   },
 };
 

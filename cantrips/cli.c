@@ -23,21 +23,27 @@ void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
     const Option* o = &(cli->options.options[i]);
     MustPrintf(output, "-%c", o->flag);
     switch (o->value.type) {
-      case TypeBool:
+      case OptionTypeBool:
         break;
-      case TypeDouble:
+      case OptionTypeDouble:
         MustPrintf(output, " floating-point");
         if (show_defaults) {
           MustPrintf(output, " (default: %g)", o->value.d);
         }
         break;
-      case TypeInt:
+      case OptionTypeInt:
         MustPrintf(output, " integer");
         if (show_defaults) {
           MustPrintf(output, " (default: %" PRId64 ")", o->value.i);
         }
         break;
-      case TypeString:
+      case OptionTypeSize:
+        MustPrintf(output, " size");
+        if (show_defaults) {
+          MustPrintf(output, " (default: %zu)", o->value.z);
+        }
+        break;
+      case OptionTypeString:
         MustPrintf(output, " string");
         if (show_defaults) {
           MustPrintf(output, " (default: \"%s\")", o->value.s);
@@ -59,7 +65,7 @@ static void BuildOptString(char* result, size_t size, const Options* options) {
     const Option* o = &(options->options[i]);
     result[flag] = o->flag;
     flag++;
-    if (o->value.type != TypeBool) {
+    if (o->value.type != OptionTypeBool) {
       result[flag] = ':';
       flag++;
     }
@@ -84,7 +90,7 @@ Option* FindOption(const Options* options, char flag) {
   return lfind(&find, options->options, &count, sizeof(Option), CompareOption);
 }
 
-Value* FindOptionValue(const Options* options, char flag) {
+OptionValue* FindOptionValue(const Options* options, char flag) {
   Option* o = FindOption(options, flag);
   return o ? &o->value : NULL;
 }
@@ -111,12 +117,12 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
       ShowHelpAndExit(cli, true, false);
     }
 
-    Value* v = &(o->value);
+    OptionValue* v = &(o->value);
     switch (v->type) {
-      case TypeBool:
+      case OptionTypeBool:
         v->b = true;
         break;
-      case TypeDouble: {
+      case OptionTypeDouble: {
         char* end;
         v->d = strtod(optarg, &end);
         if (*end != '\0') {
@@ -124,7 +130,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         }
         break;
       }
-      case TypeInt: {
+      case OptionTypeInt: {
         char* end;
         v->i = strtoll(optarg, &end, 0);
         if (*end != '\0') {
@@ -132,7 +138,21 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         }
         break;
       }
-      case TypeString:
+      case OptionTypeSize: {
+        char* end;
+        if (sizeof(size_t) == sizeof(unsigned long long)) {
+          v->z = strtoull(optarg, &end, 0);
+        } else {
+          static_assert(sizeof(size_t) == sizeof(unsigned long),
+                        "don't know how to parse size_t");
+          v->z = strtoul(optarg, &end, 0);
+        }
+        if (*end != '\0') {
+          ShowHelpAndExit(cli, true, false);
+        }
+        break;
+      }
+      case OptionTypeString:
         v->s = strdup(optarg);
         break;
     }
@@ -148,17 +168,20 @@ void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments) {
   for (size_t i = 0; i < os->count; i++) {
     Option* o = &os->options[i];
     switch (o->value.type) {
-      case TypeBool:
+      case OptionTypeBool:
         MustPrintf(output, "%zu\t-%c\tbool\t%s\n", i, o->flag,
                    o->value.b ? "true" : "false");
         break;
-      case TypeDouble:
+      case OptionTypeDouble:
         MustPrintf(output, "%zu\t-%c\tdouble\t%g\n", i, o->flag, o->value.d);
         break;
-      case TypeInt:
+      case OptionTypeInt:
         MustPrintf(output, "%zu\t-%c\tinteger\t%lld\n", i, o->flag, o->value.i);
         break;
-      case TypeString:
+      case OptionTypeSize:
+        MustPrintf(output, "%zu\t-%c\tsize\t%zu\n", i, o->flag, o->value.z);
+        break;
+      case OptionTypeString:
         MustPrintf(output, "%zu\t-%c\tstring\t'%s'\n", i, o->flag, o->value.s);
         break;
     }

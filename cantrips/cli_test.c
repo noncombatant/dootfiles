@@ -14,27 +14,27 @@ static Option options[] = {
   {
     .flag = 'h',
     .description = "print help message",
-    .value = { .type = TypeBool, .b = false },
+    .value = { .type = OptionTypeBool, .b = false },
   },
   {
     .flag = 'n',
     .description = "set Encabulator name",
-    .value = { .type = TypeString, .s = "" }
+    .value = { .type = OptionTypeString, .s = "" }
   },
   {
     .flag = 't',
     .description = "set turbo level",
-    .value = { .type = TypeInt }
+    .value = { .type = OptionTypeInt }
   },
   {
     .flag = 'w',
     .description = "set maximum widget variance tolerance",
-    .value = { .type = TypeDouble }
+    .value = { .type = OptionTypeDouble }
   },
   {
     .flag = 'x',
     .description = "explain the Turbo Encabulator",
-    .value = { .type = TypeBool }
+    .value = { .type = OptionTypeBool }
   },
 };
 
