@@ -20,12 +20,13 @@ else
 	CFLAGS += -O0 -g -DTEST -fsanitize=address -fsanitize=undefined -fsanitize-trap=all
 endif
 
-TARGETS = cli_test color expand fold list pathname shuffle walk
+TARGETS = cli_test clocks color expand fold list pathname shuffle walk
 .PHONY: all clean strip
 
 all: $(TARGETS)
 strip: $(TARGETS)
 	strip $(TARGETS)
+clocks: clocks.c utils.o
 color: color.c utils.o
 list: list.c cli.o utils.o
 expand: expand.c cli.o utils.o

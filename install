@@ -33,7 +33,7 @@ install_c() {
   make clean
   make RELEASE=1 all
   make strip
-  mv color expand fold list pathname shuffle walk "$HOME/bin"
+  mv clocks color expand fold list pathname shuffle walk "$HOME/bin"
   make clean
   cd ../
 }

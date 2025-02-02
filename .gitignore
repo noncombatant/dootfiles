@@ -2,6 +2,7 @@
 *.dSYM
 *.swp
 cli_test
+clocks
 color
 expand
 fold
