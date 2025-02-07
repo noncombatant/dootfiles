@@ -35,7 +35,7 @@ static Option options[] = {
   {
     .flag = 'a',
     .description = "pass each run of `program` at most this many arguments",
-    .value = { .type = OptionTypeInt, .i = 100 }
+    .value = { .type = OptionTypeSize, .z = 100 }
   },
   {
     .flag = 'h',
@@ -45,7 +45,7 @@ static Option options[] = {
   {
     .flag = 'j',
     .description = "number of concurrent processes to handle the input",
-    .value = { .type = OptionTypeInt }
+    .value = { .type = OptionTypeSize }
   },
 };
 
@@ -236,7 +236,7 @@ int main(int count, char** arguments) {
   if (n < 0) {
     Die(errno, "could not determine processor count");
   }
-  FindOptionValue(&cli.options, 'j')->i = n;
+  FindOptionValue(&cli.options, 'j')->z = (size_t)n;
 
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(&cli.options, 'h')->b) {
@@ -253,8 +253,8 @@ int main(int count, char** arguments) {
   if (FindOptionValue(&cli.options, '0')->b) {
     delimiter = '\0';
   }
-  max_argument_count = (size_t)FindOptionValue(&cli.options, 'a')->i;
-  max_job_count = (size_t)FindOptionValue(&cli.options, 'j')->i;
+  max_argument_count = FindOptionValue(&cli.options, 'a')->z;
+  max_job_count = FindOptionValue(&cli.options, 'j')->z;
   jobs = calloc(max_job_count, sizeof(Job));
   RunJobs(as.count, as.arguments);
 }

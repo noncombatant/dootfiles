@@ -25,7 +25,7 @@ static Option options[] = {
   {
     .flag = 'w',
     .description = "maximum line width; can be given in any base (refer to `strtol`(3))",
-    .value = { .type = OptionTypeInt, .i = 80 }
+    .value = { .type = OptionTypeSize, .z = 80 }
   },
 };
 
@@ -106,7 +106,7 @@ static void Fold(FILE* output, FILE* input, size_t width) {
 
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
-  const size_t width = (size_t)FindOptionValue(&cli.options, 'w')->i;
+  const size_t width = FindOptionValue(&cli.options, 'w')->z;
   for (size_t i = 0; i < as.count; i++) {
     AUTO(FILE*, input, fopen(as.arguments[i], "r"), CloseFile);
     Fold(stdout, input, width);
