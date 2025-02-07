@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdnoreturn.h>
+#include <time.h>
 
 static_assert(CHAR_BIT == 8, "we assume 8-bit chars");
 static_assert(sizeof(char) == sizeof(int8_t),
@@ -91,5 +92,12 @@ typedef struct Regex {
 Regex CompileRegex(const char* pattern, int flags);
 void FreeRegex(Regex* r);
 void PrintRegexError(int error, const regex_t* regex);
+
+typedef struct DateTime {
+  bool has_value;
+  struct tm value;
+} DateTime;
+
+DateTime ParseDateTime(const char* string);
 
 #endif
