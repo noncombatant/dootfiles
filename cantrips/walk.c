@@ -17,31 +17,14 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static char help[] =
-"walk [options...] [pathnames...]\n"
+static char description[] =
+"Walk directory trees and print pathnames matching search terms."
 "\n"
-"-0      delimit output records with NUL instead of newline\n"
-"-A      walk hidden files too\n"
-"-a date-time\n"
-"        match files modified after `date-time`\n"
-"-b date-time\n"
-"        match files modified before `date-time`\n"
-"-d depth\n"
-"        descend at most `depth` directory levels below the argument(s)\n"
-"-h      print this help message\n"
-"-m pattern\n"
-"        match files whose pathnames match `pattern`\n"
-"-S size\n"
-"        match files larger than `size`\n"
-"-s size\n"
-"        match files smaller than `size`\n"
-"-t types\n"
-"        match files of the given file `types`\n"
-"-u      search up the directory hierarchy rather than down\n"
-"-x      do not cross a device boundary when walking\n"
+"walk [options...] [pathnames...]"
 "\n"
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n"
 "\n"
@@ -50,7 +33,83 @@ static char help[] =
 "File types is a string containing 1 or more of 'd'irectory, 'f'file, or 's'ymbolic link characters.\n"
 "\n"
 "Sizes can be given in any base; refer to strtoll(3).\n";
+
+static Option options[] = {
+  {
+    .flag = '0',
+    .description = "delimit output records with NUL instead of newline",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'A',
+    .description = "walk hidden files too",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'a',
+    .description = "match files modified after",
+    .value = { .type = OptionTypeString } // TODO: OptionTypeDateTime
+  },
+  {
+    .flag = 'b',
+    .description = "match files modified before",
+    .value = { .type = OptionTypeString } // TODO: OptionTypeDateTime
+  },
+  {
+    .flag = 'd',
+    .description = "descend at most this many directory levels below the argument(s)",
+    .value = { .type = OptionTypeInt }
+  },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'm',
+    .description = "match files whose pathnames match",
+    .value = { .type = OptionTypeString } // TODO: OptionTypeRegex
+  },
+  {
+    .flag = 'S',
+    .description = "match files larger than this size",
+    .value = { .type = OptionTypeInt }
+  },
+  {
+    .flag = 's',
+    .description = "match files smaller than this size",
+    .value = { .type = OptionTypeInt }
+  },
+  {
+    .flag = 't',
+    .description = "match files of the given file types",
+    .value = { .type = OptionTypeString }
+  },
+  {
+    .flag = 'u',
+    .description = "search up the directory hierarchy rather than down",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'x',
+    .description = "do not cross a device boundary when walking",
+    .value = { .type = OptionTypeBool }
+  },
+};
+
+static CLI cli = {
+  .name = "walk",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
+
+#define OVB(flag) FindOptionValue(&cli.options, (flag))->b
+#define OVDT(flag) FindOptionValue(&cli.options, (flag))->dt
+#define OVRE(flag) FindOptionValue(&cli.options, (flag))->r
+#define OVS(flag) FindOptionValue(&cli.options, (flag))->s
+#define OVZ(flag) FindOptionValue(&cli.options, (flag))->z
+#define OVI(flag) FindOptionValue(&cli.options, (flag))->i
 
 static char ORS = '\n';
 
@@ -139,43 +198,6 @@ static Result PrintIfMatch(const char* pathname,
   return ResultContinue;
 }
 
-static time_t ParseDateTime(const char* string) {
-  struct tm date_time = {0};
-  if (strptime(string, "%Y-%m-%d %H:%M:%S", &date_time)) {
-    return mktime(&date_time);
-  }
-
-  if (strptime(string, "%Y-%m-%d", &date_time)) {
-    return mktime(&date_time);
-  }
-
-  const time_t t = time(NULL);
-  date_time = *localtime(&t);
-  if (strptime(string, "%H:%M:%S", &date_time)) {
-    return mktime(&date_time);
-  }
-  PrintHelp(true, help);
-}
-
-static void ParseRE(const char* string, regex_t* pattern) {
-  const int e = regcomp(pattern, string, REG_EXTENDED | REG_ICASE | REG_NOSUB);
-  if (e != 0) {
-    char message[512] = "";
-    (void)regerror(e, pattern, message, sizeof(message));
-    MustPrintf(stderr, "could not compile RE: %s\n", message);
-    PrintHelp(true, help);
-  }
-}
-
-static long long ParseInt(const char* string) {
-  char* end;
-  long long n = strtoll(string, &end, 0);
-  if (*end != '\0') {
-    PrintHelp(true, help);
-  }
-  return n;
-}
-
 static bool IsDotOrDotDot(const char* basename) {
   return StringEquals(".", basename) || StringEquals("..", basename);
 }
@@ -262,73 +284,56 @@ static int PopulateDevice(Predicate* p, const char* pathname) {
 }
 
 int main(int count, char** arguments) {
-  Predicate p = {0};
-  bool up = false;
-  opterr = 0;
-  while (true) {
-    const int o = getopt(count, arguments, "0Aa:b:d:hm:S:s:t:ux");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case '0':
-        ORS = '\0';
-        break;
-      case 'A':
-        p.walk_all = true;
-        break;
-      case 'a':
-        p.after = ParseDateTime(optarg);
-        p.has_after = true;
-        break;
-      case 'b':
-        p.before = ParseDateTime(optarg);
-        p.has_before = true;
-        break;
-      case 'd':
-        p.depth = ParseInt(optarg);
-        p.has_depth = true;
-        break;
-      case 'h':
-        PrintHelp(false, help);
-      case 'm':
-        ParseRE(optarg, &p.pattern);
-        p.has_pattern = true;
-        break;
-      case 'S':
-        p.larger = ParseInt(optarg);
-        p.has_larger_than = true;
-        break;
-      case 's':
-        p.smaller = ParseInt(optarg);
-        p.has_smaller_than = true;
-        break;
-      case 't':
-        p.has_type = true;
-        if (strchr(optarg, 'f')) {
-          p.type |= TypeFile;
-        }
-        if (strchr(optarg, 'd')) {
-          p.type |= TypeDirectory;
-        }
-        if (strchr(optarg, 's')) {
-          p.type |= TypeSymbolicLink;
-        }
-        break;
-      case 'u':
-        up = true;
-        break;
-      case 'x':
-        p.has_no_cross_device = true;
-        break;
-      default:
-        PrintHelp(true, help);
-    }
+  Arguments as = ParseCLI(&cli, count, arguments);
+  if (OVB('h')) {
+    ShowHelpAndExit(&cli, false, true);
   }
-  count -= optind;
-  arguments += optind;
 
-  if (count == 0) {
+  // TODO: Fold `p` into `cli`.
+  Predicate p = {0};
+  ORS = OVB('0') ? '\0' : '\n';
+  p.walk_all = OVB('A');
+  bool up = OVB('u');
+  if (OVB('a')) {
+    p.after = OVDT('a');
+    p.has_after = true;
+  }
+  if (OVB('b')) {
+    p.before = OVDT('b');
+    p.has_before = true;
+  }
+  if (OVB('d')) {
+    p.depth = OVI('d');
+    p.has_depth = true;
+  }
+  if (OVB('m')) {
+    p.pattern = OVRE('m');
+    p.has_pattern = true;
+  }
+  if (OVB('S')) {
+    p.larger = OVI('S');
+    p.has_larger_than = true;
+  }
+  if (OVB('s')) {
+    p.smaller = OVI('s');
+    p.has_smaller_than = true;
+  }
+  if (OVB('t')) {
+    const char* s = OVS('t');
+    if (strchr(s, 'f')) {
+      p.type |= TypeFile;
+    }
+    if (strchr(s, 'd')) {
+      p.type |= TypeDirectory;
+    }
+    if (strchr(s, 's')) {
+      p.type |= TypeSymbolicLink;
+    }
+    p.has_type = true;
+  }
+  p.has_no_cross_device = OVB('x');
+
+  if (as.count == 0) {
     if (up) {
       char cwd[PATH_MAX + 1] = "";
       getcwd(cwd, sizeof(cwd));
@@ -347,16 +352,16 @@ int main(int count, char** arguments) {
       Walk(".", &p, 0);
     }
   }
-  for (int i = 0; i < count; i++) {
-    const int e = PopulateDevice(&p, arguments[i]);
+  for (size_t i = 0; i < as.count; i++) {
+    const int e = PopulateDevice(&p, as.arguments[i]);
     if (e) {
       MustPrintf(stderr, "./: %s\n", strerror(e));
       continue;
     }
     if (up) {
-      WalkUp(arguments[i], &p, 0);
+      WalkUp(as.arguments[i], &p, 0);
     } else {
-      Walk(arguments[i], &p, 0);
+      Walk(as.arguments[i], &p, 0);
     }
   }
 }

@@ -33,7 +33,7 @@ expand: expand.c cli.o utils.o
 fold: fold.c cli.o utils.o
 pathname: pathname.c cli.o utils.o
 shuffle: shuffle.c cli.o utils.o
-walk: walk.c utils.o
+walk: walk.c cli.o utils.o
 cli_test: cli_test.c cli.o utils.o
 clean:
 	-rm -rf $(TARGETS) *.dSYM *.o
