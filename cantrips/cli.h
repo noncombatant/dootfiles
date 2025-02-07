@@ -22,12 +22,14 @@ typedef enum OptionType {
 typedef struct OptionValue {
   OptionType type;
   bool b;
-  time_t dt;
-  double d;
-  int64_t i;
-  regex_t r;
-  size_t z;
-  char* s;
+  union {
+    time_t dt;
+    double d;
+    int64_t i;
+    regex_t r;
+    size_t z;
+    char* s;
+  };
 } OptionValue;
 
 typedef struct Option {
