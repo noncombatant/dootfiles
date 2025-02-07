@@ -25,6 +25,9 @@ void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
     switch (o->value.type) {
       case OptionTypeBool:
         break;
+      case OptionTypeDateTime:
+        MustPrintf(output, " date-time");
+        break;
       case OptionTypeDouble:
         MustPrintf(output, " floating-point");
         if (show_defaults) {
@@ -36,6 +39,9 @@ void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
         if (show_defaults) {
           MustPrintf(output, " (default: %" PRId64 ")", o->value.i);
         }
+        break;
+      case OptionTypeRegex:
+        MustPrintf(output, "regular-expression");
         break;
       case OptionTypeSize:
         MustPrintf(output, " size");
@@ -122,6 +128,15 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
       case OptionTypeBool:
         v->b = true;
         break;
+      case OptionTypeDateTime: {
+        DateTime dt = ParseDateTime(optarg);
+        if (!dt.has_value) {
+          ShowHelpAndExit(cli, true, false);
+        }
+        v->dt = mktime(&dt.value);
+        v->b = true;
+        break;
+      }
       case OptionTypeDouble: {
         char* end;
         v->d = strtod(optarg, &end);
@@ -137,6 +152,16 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         if (*end != '\0') {
           ShowHelpAndExit(cli, true, false);
         }
+        v->b = true;
+        break;
+      }
+      case OptionTypeRegex: {
+        Regex r = CompileRegex(optarg, REG_EXTENDED | REG_ICASE);
+        if (r.error) {
+          PrintRegexError(r.error, &r.regex);
+          exit(EXIT_FAILURE);
+        }
+        v->r = r.regex;  // Yep; copy.
         v->b = true;
         break;
       }
@@ -176,11 +201,19 @@ void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments) {
         MustPrintf(output, "%zu\t-%c\tbool\t%s\n", i, o->flag,
                    o->value.b ? "true" : "false");
         break;
+      case OptionTypeDateTime:
+        MustPrintf(output, "%zu\t-%c\tdate-time\t%ld\n", i, o->flag,
+                   o->value.dt);
+        break;
       case OptionTypeDouble:
         MustPrintf(output, "%zu\t-%c\tdouble\t%g\n", i, o->flag, o->value.d);
         break;
       case OptionTypeInt:
         MustPrintf(output, "%zu\t-%c\tinteger\t%lld\n", i, o->flag, o->value.i);
+        break;
+      case OptionTypeRegex:
+        MustPrintf(output, "%zu\t-%c\tregular-expression\t%p\n", i, o->flag,
+                   (void*)&o->value.r);
         break;
       case OptionTypeSize:
         MustPrintf(output, "%zu\t-%c\tsize\t%zu\n", i, o->flag, o->value.z);

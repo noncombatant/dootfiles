@@ -1,16 +1,20 @@
 // Copyright 2024 Chris Palmer, https://noncombatant.org/
 // SPDX-License-Identifier: MIT
 
+#include <regex.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdnoreturn.h>
+#include <time.h>
 
 typedef enum OptionType {
   OptionTypeBool,
+  OptionTypeDateTime,
   OptionTypeDouble,
   OptionTypeInt,
+  OptionTypeRegex,
   OptionTypeSize,
   OptionTypeString,
 } OptionType;
@@ -18,8 +22,10 @@ typedef enum OptionType {
 typedef struct OptionValue {
   OptionType type;
   bool b;
+  time_t dt;
   double d;
   int64_t i;
+  regex_t r;
   size_t z;
   char* s;
 } OptionValue;
