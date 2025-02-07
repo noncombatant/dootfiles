@@ -12,17 +12,39 @@
 #include <sysexits.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "utils.h"
 
 // clang-format off
-static const char help[] =
+static char description[] = "Fold lines of text to a maximum width."
+"\n"
 "color [options] pattern color [pattern color [...]]\n"
 "\n"
-"-0      delimit input records with NUL instead of newline\n"
-"-h      print this help message\n"
-"-x      print help and extended color set\n"
-"\n"
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n";
+
+static Option options[] = {
+  {
+    .flag = '0',
+    .description = "delimit input records with NUL instead of newline",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'h',
+    .description = "print help message",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'x',
+    .description = "print help and extended color set",
+    .value = { .type = OptionTypeBool }
+  },
+};
+
+static CLI cli = {
+  .name = "color",
+  .description = description,
+  .options = {.count = COUNT(options), .options = options},
+};
 // clang-format on
 
 typedef struct Color {
@@ -424,7 +446,7 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
     p->regex = CompileRegex(arguments[i], REG_EXTENDED | REG_ICASE);
     if (p->regex.error) {
       PrintRegexError(p->regex.error, &(p->regex.regex));
-      PrintHelp(true, help);
+      exit(EXIT_FAILURE);
     }
     p->color.name = arguments[i + 1];
     p->color.escape = FindEscape(p->color.name);
@@ -435,33 +457,20 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
 int main(int count, char** arguments) {
   opterr = 0;
   char delimiter = '\n';
-  while (true) {
-    const int o = getopt(count, arguments, "0hx");
-    if (o == -1) {
-      break;
-    }
-    switch (o) {
-      case '0':
-        delimiter = '\0';
-        break;
-      case 'h':
-      case 'x':
-        fputs(help, stdout);
-        fputs("\n", stdout);
-        PrintColors(o == 'x');
-        return 0;
-      default:
-        PrintHelp(true, help);
-    }
+  Arguments as = ParseCLI(&cli, count, arguments);
+  if (FindOptionValue(&cli.options, '0')->b) {
+    delimiter = '\0';
   }
-  count -= optind;
-  arguments += optind;
-
-  if (!count || count % 2) {
-    PrintHelp(true, help);
+  if (FindOptionValue(&cli.options, 'h')->b ||
+      FindOptionValue(&cli.options, 'x')->b) {
+    ShowHelp(stdout, &cli, true);
+    PrintColors(FindOptionValue(&cli.options, 'x')->b);
+    exit(EXIT_SUCCESS);
+  }
+  if (!as.count || as.count % 2) {
+    ShowHelpAndExit(&cli, true, true);
   }
 
-  AUTO(Patterns, patterns, BuildPatterns((size_t)count, arguments),
-       FreePatterns);
+  AUTO(Patterns, patterns, BuildPatterns(as.count, as.arguments), FreePatterns);
   Colorize(patterns, delimiter);
 }

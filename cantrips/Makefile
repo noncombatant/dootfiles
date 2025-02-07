@@ -27,7 +27,7 @@ all: $(TARGETS)
 strip: $(TARGETS)
 	strip $(TARGETS)
 clocks: clocks.c utils.o
-color: color.c utils.o
+color: color.c cli.o utils.o
 list: list.c cli.o utils.o
 expand: expand.c cli.o utils.o
 fold: fold.c cli.o utils.o
