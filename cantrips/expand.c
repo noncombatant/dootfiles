@@ -240,9 +240,9 @@ int main(int count, char** arguments) {
 
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(&cli.options, 'h')->b) {
-    ShowHelpAndExit(&cli, false, true);
+    PrintHelpAndExit(&cli, false, true);
   } else if (as.count == 0) {
-    ShowHelpAndExit(&cli, true, true);
+    PrintHelpAndExit(&cli, true, true);
   }
 
   n = sysconf(_SC_ARG_MAX);

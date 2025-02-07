@@ -463,12 +463,12 @@ int main(int count, char** arguments) {
   }
   if (FindOptionValue(&cli.options, 'h')->b ||
       FindOptionValue(&cli.options, 'x')->b) {
-    ShowHelp(stdout, &cli, true);
+    PrintHelp(stdout, &cli, true);
     PrintColors(FindOptionValue(&cli.options, 'x')->b);
     exit(EXIT_SUCCESS);
   }
   if (!as.count || as.count % 2) {
-    ShowHelpAndExit(&cli, true, true);
+    PrintHelpAndExit(&cli, true, true);
   }
 
   AUTO(Patterns, patterns, BuildPatterns(as.count, as.arguments), FreePatterns);

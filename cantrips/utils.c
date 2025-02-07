@@ -12,11 +12,6 @@
 
 #include "utils.h"
 
-void noreturn PrintHelp(bool error, const char* help) {
-  fputs(help, error ? stderr : stdout);
-  exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
-}
-
 size_t CountUTF8(const char* s, size_t count) {
   size_t c = 0;
   for (size_t i = 0; i < count && s[i] != '\0'; i++) {

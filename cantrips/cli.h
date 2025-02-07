@@ -57,12 +57,12 @@ typedef struct CLI {
 // Prints a formatted help message, generated from the contents of `cli`. If
 // `show_defaults` is true, prints the default values for the options given in
 // `cli`.
-void ShowHelp(FILE* output, const CLI* cli, bool show_defaults);
+void PrintHelp(FILE* output, const CLI* cli, bool show_defaults);
 
 // Prints a formatted help message, generated from the contents of `cli`, and
 // exits with status 0 (if `error` is false) or `EX_USAGE`. If `show_defaults`
 // is true, prints the default values for the options given in `cli`.
-noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults);
+noreturn void PrintHelpAndExit(const CLI* cli, bool error, bool show_defaults);
 
 // Searches `options` for the `Option` with the matching `flag` and returns it,
 // or `NULL`.

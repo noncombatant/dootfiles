@@ -14,10 +14,7 @@
 #include "cli.h"
 #include "utils.h"
 
-// TODO: Rename ShowHelp to PrintHelp[AndExit] after migrating everything to
-// this library.
-
-void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
+void PrintHelp(FILE* output, const CLI* cli, bool show_defaults) {
   MustPrintf(output, "%s\n\n%s\n\nOptions\n\n", cli->name, cli->description);
   for (size_t i = 0; i < cli->options.count; i++) {
     const Option* o = &(cli->options.options[i]);
@@ -60,8 +57,8 @@ void ShowHelp(FILE* output, const CLI* cli, bool show_defaults) {
   }
 }
 
-noreturn void ShowHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
-  ShowHelp(error ? stderr : stdout, cli, show_defaults);
+noreturn void PrintHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
+  PrintHelp(error ? stderr : stdout, cli, show_defaults);
   exit(error ? EX_USAGE : 0);
 }
 
@@ -120,7 +117,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
 
     Option* o = FindOption(options, (char)flag);
     if (!o) {
-      ShowHelpAndExit(cli, true, false);
+      PrintHelpAndExit(cli, true, false);
     }
 
     OptionValue* v = &(o->value);
@@ -131,7 +128,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
       case OptionTypeDateTime: {
         DateTime dt = ParseDateTime(optarg);
         if (!dt.has_value) {
-          ShowHelpAndExit(cli, true, false);
+          PrintHelpAndExit(cli, true, false);
         }
         v->dt = mktime(&dt.value);
         v->b = true;
@@ -141,7 +138,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         char* end;
         v->d = strtod(optarg, &end);
         if (*end != '\0') {
-          ShowHelpAndExit(cli, true, false);
+          PrintHelpAndExit(cli, true, false);
         }
         v->b = true;
         break;
@@ -150,7 +147,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         char* end;
         v->i = strtoll(optarg, &end, 0);
         if (*end != '\0') {
-          ShowHelpAndExit(cli, true, false);
+          PrintHelpAndExit(cli, true, false);
         }
         v->b = true;
         break;
@@ -175,7 +172,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
           v->z = strtoul(optarg, &end, 0);
         }
         if (*end != '\0') {
-          ShowHelpAndExit(cli, true, false);
+          PrintHelpAndExit(cli, true, false);
         }
         v->b = true;
         break;

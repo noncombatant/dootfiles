@@ -267,10 +267,10 @@ int main(int count, char** arguments) {
   const bool print_canonical =
       !print_basename && !print_dirname && !print_extension;
   if (FindOptionValue(&cli.options, 'h')->b) {
-    ShowHelpAndExit(&cli, false, true);
+    PrintHelpAndExit(&cli, false, true);
   }
   if (as.count == 0 || print_basename + print_dirname + print_extension > 1) {
-    ShowHelpAndExit(&cli, true, false);
+    PrintHelpAndExit(&cli, true, false);
   }
 
   for (size_t i = 0; i < as.count; i++) {

@@ -122,7 +122,7 @@ static void PrintStatus(const char* pathname) {
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(&cli.options, 'h')->b) {
-    ShowHelpAndExit(&cli, false, true);
+    PrintHelpAndExit(&cli, false, true);
   }
   if (as.count == 0) {
     AUTO(DIR*, cwd, opendir("."), CloseDir);

@@ -286,7 +286,7 @@ static int PopulateDevice(Predicate* p, const char* pathname) {
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
   if (OVB('h')) {
-    ShowHelpAndExit(&cli, false, true);
+    PrintHelpAndExit(&cli, false, true);
   }
 
   // TODO: Fold `p` into `cli`.

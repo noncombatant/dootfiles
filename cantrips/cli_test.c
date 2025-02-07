@@ -48,7 +48,7 @@ static CLI cli = {
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(&cli.options, 'h')->b) {
-    ShowHelp(stdout, &cli, true);
+    PrintHelp(stdout, &cli, true);
   }
 
   PrintCLI(stdout, &cli, &as);
