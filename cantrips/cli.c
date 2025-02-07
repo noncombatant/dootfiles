@@ -128,6 +128,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         if (*end != '\0') {
           ShowHelpAndExit(cli, true, false);
         }
+        v->b = true;
         break;
       }
       case OptionTypeInt: {
@@ -136,6 +137,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         if (*end != '\0') {
           ShowHelpAndExit(cli, true, false);
         }
+        v->b = true;
         break;
       }
       case OptionTypeSize: {
@@ -150,10 +152,12 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         if (*end != '\0') {
           ShowHelpAndExit(cli, true, false);
         }
+        v->b = true;
         break;
       }
       case OptionTypeString:
         v->s = strdup(optarg);
+        v->b = true;
         break;
     }
   }

@@ -68,6 +68,11 @@ OptionValue* FindOptionValue(const Options* options, char flag);
 // populates the `Options` in `cli`, and returns the remaining arguments. If
 // parsing fails for any reason, calls `ShowHelpAndExit` with `error` set and
 // `show_defaults` unset.
+//
+// As it parses the command line, `ParseCLI` will set `OptionValue.b` for each
+// `Option`, even if that option’s `OptionType` is not `OptionTypeBool`. This
+// allows callers to distinguish default values from values found on the command
+// line.
 Arguments ParseCLI(CLI* cli, int count, char** arguments);
 
 void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments);
