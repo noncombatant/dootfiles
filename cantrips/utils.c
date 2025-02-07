@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE
 #include <errno.h>
 #include <stdarg.h>
 #include <stdint.h>
