@@ -47,24 +47,33 @@ static CLI cli = {
 };
 // clang-format on
 
-static uint64_t Random() {
-  uint64_t r;
+// NOTE: This function is not thread-safe and is not `fork`-safe!
+static uint64_t CachingRandom() {
+  // macOS' `getentropy` won't accept more than 256 bytes.
+  static uint64_t r[256 / sizeof(uint64_t)];
+  static size_t i = COUNT(r);
+
+  if (i == COUNT(r)) {
 #if defined(__MACH__)
-  if (getentropy(&r, sizeof(r))) {
-    Die(errno, "getentropy");
-  }
+    if (getentropy(&r[0], sizeof(r))) {
+      Die(errno, "getentropy");
+    }
 #elif defined(__linux)
-  if (sizeof(r) != (size_t)getrandom(&r, sizeof(r), GRND_NONBLOCK)) {
-    Die(errno, "getrandom");
-  }
+    if (sizeof(r) != (size_t)getrandom(&r[0], sizeof(r), GRND_NONBLOCK)) {
+      Die(errno, "getrandom");
+    }
 #else
 #error unsupported platform
 #endif
-  return r;
+    i = 0;
+  }
+  return r[i++];
 }
 
 // Returns `lo` ≤ `n` ≤ `hi`. Returns 0 and sets `errno` to `EDOM` if `lo` ≥
 // `hi`.
+//
+// NOTE: This function is not thread-safe and is not `fork`-safe!
 static uint64_t RandomInRange(uint64_t lo, uint64_t hi) {
   if (lo >= hi) {
     errno = EDOM;
@@ -79,7 +88,7 @@ static uint64_t RandomInRange(uint64_t lo, uint64_t hi) {
     // Get a random number, find and then mask away the high-order bits that
     // make it > `hi`, and then check. Checking and retrying is the only way
     // (that I know of) to avoid introducing bias.
-    uint64_t r = Random();
+    uint64_t r = CachingRandom();
     r = r & hi_mask;
     if (r <= hi) {
       return lo + r;
@@ -109,7 +118,8 @@ static void ShuffleStream(FILE* input,
     if (!record) {
       return;
     }
-    MustPrintf(stdout, "%016" PRIx64 "%s%s%s", Random(), ors, record, ofs);
+    MustPrintf(stdout, "%016" PRIx64 "%s%s%s", CachingRandom(), ors, record,
+               ofs);
   }
 }
 
