@@ -388,10 +388,10 @@ static FindResult FindFirstMatch(const char* input, Patterns patterns) {
   for (size_t i = 0; i < patterns.count; i++) {
     const Regex* r = &(patterns.patterns[i].regex);
     regmatch_t match;
-    const int e = regexec(&(r->regex), input, 1, &match, 0);
+    const int e = regexec(&(r->value), input, 1, &match, 0);
     if (e) {
       if (e != REG_NOMATCH) {
-        PrintRegexError(e, &(r->regex));
+        PrintRegexError(e, &(r->value));
       }
       continue;
     } else if (!found || match.rm_so < result.match.rm_so) {
@@ -444,7 +444,7 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
     Pattern* p = &patterns[i / 2];
     p->regex = CompileRegex(arguments[i], REG_EXTENDED | REG_ICASE);
     if (p->regex.error) {
-      PrintRegexError(p->regex.error, &(p->regex.regex));
+      PrintRegexError(p->regex.error, &(p->regex.value));
       exit(EXIT_FAILURE);
     }
     p->color.name = arguments[i + 1];

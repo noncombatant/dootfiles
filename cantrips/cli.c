@@ -146,10 +146,10 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
       case OptionTypeRegex: {
         Regex r = CompileRegex(optarg, REG_EXTENDED | REG_ICASE);
         if (r.error) {
-          PrintRegexError(r.error, &r.regex);
+          PrintRegexError(r.error, &r.value);
           exit(EXIT_FAILURE);
         }
-        v->r = r.regex;  // Yep; copy.
+        v->r = r.value;  // Yep; copy.
         v->b = true;
         break;
       }

@@ -125,19 +125,19 @@ typedef struct Test {
 
 static Bytes PathnameFromString(char* string) {
   char* canonical = LexicallyCanonicalizePathname(string);
-  return (Bytes){.count = strlen(canonical), .bytes = canonical};
+  return (Bytes){.count = strlen(canonical), .values = canonical};
 }
 
 // Returns the index in `b.bytes` where the basename begins.
 static size_t Basename(Bytes b) {
-  const size_t i = LastIndex(b.bytes, b.count, path_separator);
+  const size_t i = LastIndex(b.values, b.count, path_separator);
   return i == not_found ? 0 : i + 1;
 }
 
 // Returns the length of `b.bytes`’s dirname (which will be 0, if `b.bytes` is a
 // basename).
 static size_t Dirname(Bytes b) {
-  const size_t i = LastIndex(b.bytes, b.count, path_separator);
+  const size_t i = LastIndex(b.values, b.count, path_separator);
   return i == not_found ? 0 : i;
 }
 
@@ -146,9 +146,9 @@ static size_t Dirname(Bytes b) {
 static size_t Extension(Bytes b) {
   const size_t basename = Basename(b);
   if (basename == not_found) {
-    return LastIndex(b.bytes, b.count, '.');
+    return LastIndex(b.values, b.count, '.');
   }
-  const size_t dot = LastIndex(&b.bytes[basename], b.count - basename, '.');
+  const size_t dot = LastIndex(&b.values[basename], b.count - basename, '.');
   if (dot == not_found) {
     return dot;
   }
@@ -194,7 +194,7 @@ static void TestBasename() {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
     const Bytes bytes = PathnameFromString(copy);
     const size_t b = Basename(bytes);
-    const char* basename = &bytes.bytes[b];
+    const char* basename = &bytes.values[b];
     if (!StringEquals(basename, tests[i].want)) {
       MustPrintf(stderr, "Basename '%s': wanted '%s', got '%s'\n",
                  tests[i].pathname, tests[i].want, basename);
@@ -219,9 +219,9 @@ static void TestDirname() {
     const Bytes bytes = PathnameFromString(copy);
     const size_t d = Dirname(bytes);
     if (d) {
-      bytes.bytes[d] = '\0';
+      bytes.values[d] = '\0';
     }
-    const char* basename = d ? bytes.bytes : ".";
+    const char* basename = d ? bytes.values : ".";
     if (!StringEquals(basename, tests[i].want)) {
       MustPrintf(stderr, "Dirname '%s': wanted '%s', got '%s'\n",
                  tests[i].pathname, tests[i].want, basename);
@@ -245,7 +245,7 @@ static void TestExtension() {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
     const Bytes bytes = PathnameFromString(copy);
     const size_t e = Extension(bytes);
-    const char* extension = e == not_found ? "" : &bytes.bytes[e];
+    const char* extension = e == not_found ? "" : &bytes.values[e];
     if (!StringEquals(extension, tests[i].want)) {
       MustPrintf(stderr, "Extension '%s': wanted '%s', got '%s'\n",
                  tests[i].pathname, tests[i].want, extension);
@@ -279,22 +279,22 @@ int main(int count, char** arguments) {
     AUTO(char*, copy, strdup(as.values[i]), FreeChar);
     const Bytes p = PathnameFromString(copy);
     if (print_canonical) {
-      MustPrintf(stdout, "%s\n", p.bytes);
+      MustPrintf(stdout, "%s\n", p.values);
     } else if (print_basename) {
       const size_t b = Basename(p);
-      MustPrintf(stdout, "%s\n", &p.bytes[b]);
+      MustPrintf(stdout, "%s\n", &p.values[b]);
     } else if (print_dirname) {
       const size_t d = Dirname(p);
       if (d) {
-        p.bytes[d] = '\0';
-        MustPrintf(stdout, "%s\n", p.bytes);
+        p.values[d] = '\0';
+        MustPrintf(stdout, "%s\n", p.values);
       } else {
         MustPrintf(stdout, ".\n");
       }
     } else if (print_extension) {
       const size_t e = Extension(p);
       if (e != not_found) {
-        MustPrintf(stdout, "%s\n", &p.bytes[e]);
+        MustPrintf(stdout, "%s\n", &p.values[e]);
       }
     }
   }

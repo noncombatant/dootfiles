@@ -55,7 +55,7 @@ void MustCloseProcess(FILE** p);
 
 typedef struct Bytes {
   size_t count;
-  char* bytes;
+  char* values;
 } Bytes;
 
 extern const size_t not_found;
@@ -84,7 +84,7 @@ Die(int error, const char* format, ...);
 
 typedef struct Regex {
   int error;
-  regex_t regex;
+  regex_t value;
 } Regex;
 
 Regex CompileRegex(const char* pattern, int flags);

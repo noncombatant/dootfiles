@@ -142,13 +142,13 @@ void noreturn Die(int error, const char* format, ...) {
 
 Regex CompileRegex(const char* pattern, int flags) {
   Regex status = {0};
-  status.error = regcomp(&status.regex, pattern, flags);
+  status.error = regcomp(&status.value, pattern, flags);
   return status;
 }
 
 void FreeRegex(Regex* r) {
   if (r && r->error == 0) {
-    regfree(&r->regex);
+    regfree(&r->value);
   }
 }
 
