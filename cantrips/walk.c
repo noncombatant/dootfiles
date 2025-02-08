@@ -48,12 +48,12 @@ static Option options[] = {
   {
     .flag = 'a',
     .description = "match files modified after",
-    .value = { .type = OptionTypeString } // TODO: OptionTypeDateTime
+    .value = { .type = OptionTypeDateTime }
   },
   {
     .flag = 'b',
     .description = "match files modified before",
-    .value = { .type = OptionTypeString } // TODO: OptionTypeDateTime
+    .value = { .type = OptionTypeDateTime }
   },
   {
     .flag = 'd',
@@ -68,7 +68,7 @@ static Option options[] = {
   {
     .flag = 'm',
     .description = "match files whose pathnames match",
-    .value = { .type = OptionTypeString } // TODO: OptionTypeRegex
+    .value = { .type = OptionTypeRegex }
   },
   {
     .flag = 'S',
