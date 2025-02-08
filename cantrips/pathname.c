@@ -128,20 +128,20 @@ static Bytes PathnameFromString(char* string) {
   return (Bytes){.count = strlen(canonical), .values = canonical};
 }
 
-// Returns the index in `b.bytes` where the basename begins.
+// Returns the index in `b.values` where the basename begins.
 static size_t Basename(Bytes b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
   return i == not_found ? 0 : i + 1;
 }
 
-// Returns the length of `b.bytes`’s dirname (which will be 0, if `b.bytes` is a
-// basename).
+// Returns the length of `b.values`’s dirname (which will be 0, if `b.values` is
+// a basename).
 static size_t Dirname(Bytes b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
   return i == not_found ? 0 : i;
 }
 
-// Returns the index in the basename of `b.bytes` of the last '.', or
+// Returns the index in the basename of `b.values` of the last '.', or
 // `not_found`.
 static size_t Extension(Bytes b) {
   const size_t basename = Basename(b);
