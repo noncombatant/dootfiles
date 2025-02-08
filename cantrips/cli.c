@@ -118,7 +118,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
         break;
       case OptionTypeDateTime: {
         DateTime dt = ParseDateTime(optarg);
-        if (!dt.has_value) {
+        if (!dt.valid) {
           PrintHelpAndExit(cli, true, false);
         }
         v->dt = mktime(&dt.value);

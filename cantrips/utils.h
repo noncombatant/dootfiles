@@ -92,7 +92,7 @@ void FreeRegex(Regex* r);
 void PrintRegexError(int error, const regex_t* regex);
 
 typedef struct DateTime {
-  bool has_value;
+  bool valid;
   struct tm value;
 } DateTime;
 

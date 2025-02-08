@@ -161,19 +161,19 @@ void PrintRegexError(int error, const regex_t* regex) {
 DateTime ParseDateTime(const char* string) {
   DateTime dt = {0};
   if (strptime(string, "%Y-%m-%d %H:%M:%S", &dt.value)) {
-    dt.has_value = true;
+    dt.valid = true;
     return dt;
   }
 
   if (strptime(string, "%Y-%m-%d", &dt.value)) {
-    dt.has_value = true;
+    dt.valid = true;
     return dt;
   }
 
   const time_t t = time(NULL);
   dt.value = *localtime(&t);
   if (strptime(string, "%H:%M:%S", &dt.value)) {
-    dt.has_value = true;
+    dt.valid = true;
     return dt;
   }
   return (DateTime){0};
