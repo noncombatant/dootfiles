@@ -165,13 +165,27 @@ static void TestRandomInRangeBias() {
   // enough that significant variance would indicate a problem.
 #define VALUES 10
   int counts[VALUES] = {0};
-  const int repetitions = VALUES * 1000000;
+  const int r = 1000000;
+  const int repetitions = VALUES * r;
+  const int64_t start = GetEpochNanoseconds();
   for (int i = 0; i < repetitions; i++) {
     const uint64_t n = RandomInRange(0, 9);
     counts[n]++;
   }
+  const int64_t end = GetEpochNanoseconds();
+  MustPrintf(stdout,
+             "%d random values in %" PRId64 " ns = %" PRId64 " ns per\n",
+             repetitions, end - start, (end - start) / repetitions);
+  const double arbitrary_tolerance = 0.003;
   for (size_t i = 0; i < VALUES; i++) {
-    MustPrintf(stdout, "%d: %d\n", i, counts[i]);
+    const int a = abs(r - counts[i]);
+    const double d = (double)a / (double)r;
+    MustPrintf(stdout, "%1d  %9d  %.6f %%\n", i, counts[i], d);
+    if (d > arbitrary_tolerance) {
+      MustPrintf(stderr, "FAILED: bias exceeded tolerance %g\n",
+                 arbitrary_tolerance);
+      exit(EXIT_FAILURE);
+    }
   }
 #undef VALUES
 }
