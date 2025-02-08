@@ -5,7 +5,6 @@
 #define _XOPEN_SOURCE
 #include <assert.h>
 #include <errno.h>
-#include <search.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -67,21 +66,14 @@ static size_t max_job_count;
 static char delimiter = '\n';
 static Job* jobs;
 
-static int CompareJobs(const void* job1, const void* job2) {
-  const Job* j1 = job1;
-  const Job* j2 = job2;
-  if (j1->pid < j2->pid) {
-    return -1;
-  } else if (j1->pid > j2->pid) {
-    return 1;
-  }
-  return 0;
-}
-
 static Job* FindJob(pid_t pid) {
-  const Job j = {.pid = pid};
-  size_t count = max_job_count;
-  return lfind(&j, jobs, &count, sizeof(*jobs), CompareJobs);
+  for (size_t i = 0; i < max_job_count; i++) {
+    Job* j = &jobs[i];
+    if (j->pid == pid) {
+      return j;
+    }
+  }
+  return NULL;
 }
 
 static void ReleaseJob(Job* j) {
