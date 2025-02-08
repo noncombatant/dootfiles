@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <errno.h>
 #include <inttypes.h>
-#include <search.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sysexits.h>
@@ -76,21 +75,14 @@ static void BuildOptString(char* result, size_t size, const Options* options) {
   result[flag] = '\0';
 }
 
-static int CompareOption(const void* a, const void* b) {
-  const Option* aa = a;
-  const Option* bb = b;
-  if (aa->flag < bb->flag) {
-    return -1;
-  } else if (aa->flag > bb->flag) {
-    return 1;
-  }
-  return 0;
-}
-
 Option* FindOption(const Options* options, char flag) {
-  Option find = {.flag = flag};
-  size_t count = options->count;
-  return lfind(&find, options->options, &count, sizeof(Option), CompareOption);
+  for (size_t i = 0; i < options->count; i++) {
+    Option* o = &options->options[i];
+    if (o->flag == flag) {
+      return o;
+    }
+  }
+  return NULL;
 }
 
 OptionValue* FindOptionValue(const Options* options, char flag) {
