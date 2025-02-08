@@ -24,8 +24,11 @@ TARGETS = cli_test clocks color expand fold list pathname shuffle walk
 .PHONY: all clean strip
 
 all: $(TARGETS)
+clean:
+	-rm -rf $(TARGETS) *.dSYM *.o
 strip: $(TARGETS)
 	strip $(TARGETS)
+
 clocks: clocks.c utils.o
 color: color.c cli.o utils.o
 list: list.c cli.o utils.o
@@ -35,5 +38,3 @@ pathname: pathname.c cli.o utils.o
 shuffle: shuffle.c cli.o utils.o
 walk: walk.c cli.o utils.o
 cli_test: cli_test.c cli.o utils.o
-clean:
-	-rm -rf $(TARGETS) *.dSYM *.o
