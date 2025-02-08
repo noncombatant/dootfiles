@@ -22,9 +22,9 @@
 
 // clang-format off
 static char description[] =
-"Walk directory trees and print pathnames matching search terms."
+"walk directory trees and print pathnames matching search terms\n"
 "\n"
-"walk [options...] [pathnames...]"
+"    walk [options...] [pathnames...]\n"
 "\n"
 "Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n"
 "\n"
@@ -32,7 +32,7 @@ static char description[] =
 "\n"
 "File types is a string containing 1 or more of 'd'irectory, 'f'file, or 's'ymbolic link characters.\n"
 "\n"
-"Sizes can be given in any base; refer to strtoll(3).\n";
+"Sizes can be given in any base; refer to strtoll(3).";
 
 static Option options[] = {
   {

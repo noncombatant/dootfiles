@@ -15,7 +15,9 @@
 
 // clang-format off
 static char description[] =
-"Print properties of pathnames.\n"
+"print properties of pathnames\n"
+"\n"
+"    pathname [options...] [pathnames...]\n"
 "\n"
 "With no options, prints the lexically canonicalized form(s) of the given string(s).\n"
 "\n"

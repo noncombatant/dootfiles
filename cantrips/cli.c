@@ -14,7 +14,7 @@
 #include "utils.h"
 
 void PrintHelp(FILE* output, const CLI* cli, bool show_defaults) {
-  MustPrintf(output, "%s\n\n%s\n\nOptions\n\n", cli->name, cli->description);
+  MustPrintf(output, "%s — %s\n\nOptions\n\n", cli->name, cli->description);
   for (size_t i = 0; i < cli->options.count; i++) {
     const Option* o = &(cli->options.options[i]);
     MustPrintf(output, "-%c", o->flag);

@@ -20,7 +20,11 @@
 
 // clang-format off
 static char description[] =
-"Shuffle lines of input, either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
+"shuffle lines of input\n"
+"\n"
+"    shuffle [options...] [pathnames...]\n"
+"\n"
+"You can shuffle either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
 
 static Option options[] = {
   {

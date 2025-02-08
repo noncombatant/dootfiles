@@ -20,9 +20,9 @@
 
 // clang-format off
 static char description[] =
-"Turn records from the standard input into arguments to a command.\n"
+"turn records from the standard input into arguments to a command\n"
 "\n"
-"    expand [options] program [options and arguments...]\n"
+"    expand [options...] program -- [options and arguments...]\n"
 "\n"
 "To explicitly place the argument(s) in the argument list, use %a.";
 

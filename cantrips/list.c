@@ -20,7 +20,9 @@
 #include "utils.h"
 
 // clang-format off
-static char description[] = "Print names and properties of files.";
+static char description[] = "print names and properties of files\n"
+"\n"
+"    list [options...] [pathnames...]";
 
 static Option options[] = {
   {

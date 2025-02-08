@@ -14,7 +14,9 @@
 #include "utils.h"
 
 // clang-format off
-static char description[] = "Fold lines of text to a maximum width.";
+static char description[] = "fold lines of text to a maximum width\n"
+"\n"
+"    fold [options...] [pathnames...]";
 
 static Option options[] = {
   {
@@ -107,6 +109,9 @@ static void Fold(FILE* output, FILE* input, size_t width) {
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
   const size_t width = FindOptionValue(&cli.options, 'w')->z;
+  if (FindOptionValue(&cli.options, 'h')->b) {
+    PrintHelpAndExit(&cli, false, true);
+  }
   for (size_t i = 0; i < as.count; i++) {
     AUTO(FILE*, input, fopen(as.arguments[i], "r"), CloseFile);
     Fold(stdout, input, width);

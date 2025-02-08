@@ -8,6 +8,8 @@
 
 // clang-format off
 static char description[] =
+"print properties of the Turbo Encabulator\n"
+"\n"
 "The Turbo Encabulator. All your encabulation needs solved, with NO side-fumbling.";
 
 static Option options[] = {
