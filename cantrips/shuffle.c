@@ -27,6 +27,11 @@ static char description[] =
 "You can shuffle either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
 
 static Option options[] = {
+    {
+    .flag = '0',
+    .description = "delimit input records with NUL instead of newline",
+    .value = { .type = OptionTypeBool }
+  },
   {
     .flag = 'h',
     .description = "print help message",
@@ -37,7 +42,6 @@ static Option options[] = {
     .description = "shuffle in memory (uses more memory but the shuffle is faster)",
     .value = { .type = OptionTypeBool }
   },
-  // TODO: Also support -0
 };
 
 static CLI cli = {
@@ -214,11 +218,15 @@ int main(int count, char** arguments) {
       FindOptionValue(cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
 
   const char* IFS = getenv("IFS");
-  const char ifs = IFS ? IFS[0] : '\n';
+  char ifs = IFS ? IFS[0] : '\n';
   const char* OFS = getenv("OFS");
   const char* ofs = OFS ? OFS : "\n";
   const char* ORS = getenv("ORS");
   const char* ors = ORS ? ORS : "\t";
+
+  if (FindOptionValue(cli.options, '0')->b) {
+    ifs = '\0';
+  }
 
   if (as.count == 0) {
     shuffle(stdin, ifs, ofs, ors);
