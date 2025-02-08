@@ -289,7 +289,9 @@ int main(int count, char** arguments) {
     PrintHelpAndExit(&cli, false, true);
   }
 
-  // TODO: Fold `p` into `cli`.
+  // Since finding options and values in `cli` takes linear time, and since we'd
+  // be looking them up for every pathname we try to match, we instead copy the
+  // options into the `Predicate` `struct` for constant-time lookup.
   Predicate p = {0};
   ORS = OVB('0') ? '\0' : '\n';
   p.walk_all = OVB('A');
