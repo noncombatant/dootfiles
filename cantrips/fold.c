@@ -34,7 +34,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "fold",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -108,12 +108,12 @@ static void Fold(FILE* output, FILE* input, size_t width) {
 
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
-  const size_t width = FindOptionValue(&cli.options, 'w')->z;
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  const size_t width = FindOptionValue(cli.options, 'w')->z;
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   }
   for (size_t i = 0; i < as.count; i++) {
-    AUTO(FILE*, input, fopen(as.arguments[i], "r"), CloseFile);
+    AUTO(FILE*, input, fopen(as.values[i], "r"), CloseFile);
     Fold(stdout, input, width);
   }
   if (count == 0) {

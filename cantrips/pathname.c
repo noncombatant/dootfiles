@@ -49,7 +49,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "pathname",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -263,12 +263,12 @@ int main(int count, char** arguments) {
 #endif
 
   Arguments as = ParseCLI(&cli, count, arguments);
-  const bool print_basename = FindOptionValue(&cli.options, 'b')->b;
-  const bool print_dirname = FindOptionValue(&cli.options, 'd')->b;
-  const bool print_extension = FindOptionValue(&cli.options, 'e')->b;
+  const bool print_basename = FindOptionValue(cli.options, 'b')->b;
+  const bool print_dirname = FindOptionValue(cli.options, 'd')->b;
+  const bool print_extension = FindOptionValue(cli.options, 'e')->b;
   const bool print_canonical =
       !print_basename && !print_dirname && !print_extension;
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   }
   if (as.count == 0 || print_basename + print_dirname + print_extension > 1) {
@@ -276,7 +276,7 @@ int main(int count, char** arguments) {
   }
 
   for (size_t i = 0; i < as.count; i++) {
-    AUTO(char*, copy, strdup(as.arguments[i]), FreeChar);
+    AUTO(char*, copy, strdup(as.values[i]), FreeChar);
     const Bytes p = PathnameFromString(copy);
     if (print_canonical) {
       MustPrintf(stdout, "%s\n", p.bytes);

@@ -50,7 +50,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "list",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -123,7 +123,7 @@ static void PrintStatus(const char* pathname) {
 
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   }
   if (as.count == 0) {
@@ -133,12 +133,12 @@ int main(int count, char** arguments) {
       if (!e) {
         break;
       }
-      if (FindOptionValue(&cli.options, 'A')->b || e->d_name[0] != '.') {
+      if (FindOptionValue(cli.options, 'A')->b || e->d_name[0] != '.') {
         PrintStatus(e->d_name);
       }
     }
   }
   for (size_t i = 0; i < as.count; i++) {
-    PrintStatus(as.arguments[i]);
+    PrintStatus(as.values[i]);
   }
 }

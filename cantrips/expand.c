@@ -52,7 +52,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "expand",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -236,10 +236,10 @@ int main(int count, char** arguments) {
   if (n < 0) {
     Die(errno, "could not determine processor count");
   }
-  FindOptionValue(&cli.options, 'j')->z = (size_t)n;
+  FindOptionValue(cli.options, 'j')->z = (size_t)n;
 
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   } else if (as.count == 0) {
     PrintHelpAndExit(&cli, true, true);
@@ -250,11 +250,11 @@ int main(int count, char** arguments) {
     Die(errno, "could not determine maximum command size");
   }
   max_command_size = (size_t)n;
-  if (FindOptionValue(&cli.options, '0')->b) {
+  if (FindOptionValue(cli.options, '0')->b) {
     delimiter = '\0';
   }
-  max_argument_count = FindOptionValue(&cli.options, 'a')->z;
-  max_job_count = FindOptionValue(&cli.options, 'j')->z;
+  max_argument_count = FindOptionValue(cli.options, 'a')->z;
+  max_job_count = FindOptionValue(cli.options, 'j')->z;
   jobs = calloc(max_job_count, sizeof(Job));
-  RunJobs(as.count, as.arguments);
+  RunJobs(as.count, as.values);
 }

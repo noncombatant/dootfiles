@@ -100,16 +100,16 @@ static Option options[] = {
 static CLI cli = {
   .name = "walk",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
-#define OVB(flag) FindOptionValue(&cli.options, (flag))->b
-#define OVDT(flag) FindOptionValue(&cli.options, (flag))->dt
-#define OVRE(flag) FindOptionValue(&cli.options, (flag))->r
-#define OVS(flag) FindOptionValue(&cli.options, (flag))->s
-#define OVZ(flag) FindOptionValue(&cli.options, (flag))->z
-#define OVI(flag) FindOptionValue(&cli.options, (flag))->i
+#define OVB(flag) FindOptionValue(cli.options, (flag))->b
+#define OVDT(flag) FindOptionValue(cli.options, (flag))->dt
+#define OVRE(flag) FindOptionValue(cli.options, (flag))->r
+#define OVS(flag) FindOptionValue(cli.options, (flag))->s
+#define OVZ(flag) FindOptionValue(cli.options, (flag))->z
+#define OVI(flag) FindOptionValue(cli.options, (flag))->i
 
 static char ORS = '\n';
 
@@ -353,15 +353,15 @@ int main(int count, char** arguments) {
     }
   }
   for (size_t i = 0; i < as.count; i++) {
-    const int e = PopulateDevice(&p, as.arguments[i]);
+    const int e = PopulateDevice(&p, as.values[i]);
     if (e) {
       MustPrintf(stderr, "./: %s\n", strerror(e));
       continue;
     }
     if (up) {
-      WalkUp(as.arguments[i], &p, 0);
+      WalkUp(as.values[i], &p, 0);
     } else {
-      Walk(as.arguments[i], &p, 0);
+      Walk(as.values[i], &p, 0);
     }
   }
 }

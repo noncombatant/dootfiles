@@ -42,7 +42,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "color",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -457,19 +457,19 @@ int main(int count, char** arguments) {
   opterr = 0;
   char delimiter = '\n';
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(&cli.options, '0')->b) {
+  if (FindOptionValue(cli.options, '0')->b) {
     delimiter = '\0';
   }
-  if (FindOptionValue(&cli.options, 'h')->b ||
-      FindOptionValue(&cli.options, 'x')->b) {
+  if (FindOptionValue(cli.options, 'h')->b ||
+      FindOptionValue(cli.options, 'x')->b) {
     PrintHelp(stdout, &cli, true);
-    PrintColors(FindOptionValue(&cli.options, 'x')->b);
+    PrintColors(FindOptionValue(cli.options, 'x')->b);
     exit(EXIT_SUCCESS);
   }
   if (!as.count || as.count % 2) {
     PrintHelpAndExit(&cli, true, true);
   }
 
-  AUTO(Patterns, patterns, BuildPatterns(as.count, as.arguments), FreePatterns);
+  AUTO(Patterns, patterns, BuildPatterns(as.count, as.values), FreePatterns);
   Colorize(patterns, delimiter);
 }

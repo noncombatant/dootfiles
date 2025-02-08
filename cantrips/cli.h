@@ -40,12 +40,12 @@ typedef struct Option {
 
 typedef struct Options {
   size_t count;
-  Option* options;
+  Option* values;
 } Options;
 
 typedef struct Arguments {
   size_t count;
-  char** arguments;
+  char** values;
 } Arguments;
 
 typedef struct CLI {
@@ -66,11 +66,11 @@ noreturn void PrintHelpAndExit(const CLI* cli, bool error, bool show_defaults);
 
 // Searches `options` for the `Option` with the matching `flag` and returns it,
 // or `NULL`.
-Option* FindOption(const Options* options, char flag);
+Option* FindOption(Options options, char flag);
 
 // Searches `options` for the `Option` with the matching `flag` and returns its
 // `OptionValue`, or `NULL`.
-OptionValue* FindOptionValue(const Options* options, char flag);
+OptionValue* FindOptionValue(Options options, char flag);
 
 // Parses the arguments and options according to the specification in `cli`,
 // populates the `Options` in `cli`, and returns the remaining arguments. If
@@ -83,4 +83,5 @@ OptionValue* FindOptionValue(const Options* options, char flag);
 // line.
 Arguments ParseCLI(CLI* cli, int count, char** arguments);
 
+// Prints the contents of `cli` and `arguments`.
 void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments);

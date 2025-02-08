@@ -43,23 +43,23 @@ static Option options[] = {
 static CLI cli = {
     .name = "turbo",
     .description = description,
-    .options = {.count = COUNT(options), .options = options},
+    .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
 int main(int count, char** arguments) {
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelp(stdout, &cli, true);
   }
 
   PrintCLI(stdout, &cli, &as);
 
-  if (FindOptionValue(&cli.options, 'x')->b) {
+  if (FindOptionValue(cli.options, 'x')->b) {
     MustPrintf(stdout,
                "\nFor a number of years now, work has been proceeding in order "
                "to bring perfection to the crudely-conceived idea of a...\n");
   }
   MustPrintf(stdout, "Widget variance tolerance: %g\n",
-             FindOptionValue(&cli.options, 'w')->d);
+             FindOptionValue(cli.options, 'w')->d);
 }

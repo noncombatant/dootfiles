@@ -16,7 +16,7 @@
 void PrintHelp(FILE* output, const CLI* cli, bool show_defaults) {
   MustPrintf(output, "%s — %s\n\nOptions\n\n", cli->name, cli->description);
   for (size_t i = 0; i < cli->options.count; i++) {
-    const Option* o = &(cli->options.options[i]);
+    const Option* o = &(cli->options.values[i]);
     MustPrintf(output, "-%c", o->flag);
     switch (o->value.type) {
       case OptionTypeBool:
@@ -61,10 +61,10 @@ noreturn void PrintHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
   exit(error ? EX_USAGE : 0);
 }
 
-static void BuildOptString(char* result, size_t size, const Options* options) {
+static void BuildOptString(char* result, size_t size, Options options) {
   size_t flag = 0;
-  for (size_t i = 0; i < options->count && flag < size; i++) {
-    const Option* o = &(options->options[i]);
+  for (size_t i = 0; i < options.count && flag < size; i++) {
+    const Option* o = &(options.values[i]);
     result[flag] = o->flag;
     flag++;
     if (o->value.type != OptionTypeBool) {
@@ -75,9 +75,9 @@ static void BuildOptString(char* result, size_t size, const Options* options) {
   result[flag] = '\0';
 }
 
-Option* FindOption(const Options* options, char flag) {
-  for (size_t i = 0; i < options->count; i++) {
-    Option* o = &options->options[i];
+Option* FindOption(Options options, char flag) {
+  for (size_t i = 0; i < options.count; i++) {
+    Option* o = &options.values[i];
     if (o->flag == flag) {
       return o;
     }
@@ -85,7 +85,7 @@ Option* FindOption(const Options* options, char flag) {
   return NULL;
 }
 
-OptionValue* FindOptionValue(const Options* options, char flag) {
+OptionValue* FindOptionValue(Options options, char flag) {
   Option* o = FindOption(options, flag);
   return o ? &o->value : NULL;
 }
@@ -97,8 +97,7 @@ OptionValue* FindOptionValue(const Options* options, char flag) {
 Arguments ParseCLI(CLI* cli, int count, char** arguments) {
   char optstring[OPTSTRING_LENGTH];
   assert(cli->options.count * 2 < sizeof(optstring));
-  Options* options = &cli->options;
-  BuildOptString(optstring, sizeof(optstring), options);
+  BuildOptString(optstring, sizeof(optstring), cli->options);
 
   opterr = 0;
   for (int i = 1; i < count; i++) {
@@ -107,7 +106,7 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
       break;
     }
 
-    Option* o = FindOption(options, (char)flag);
+    Option* o = FindOption(cli->options, (char)flag);
     if (!o) {
       PrintHelpAndExit(cli, true, false);
     }
@@ -177,14 +176,14 @@ Arguments ParseCLI(CLI* cli, int count, char** arguments) {
   }
 
   return (Arguments){.count = (size_t)(count - optind),
-                     .arguments = arguments + optind};
+                     .values = arguments + optind};
 }
 
 void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments) {
   MustPrintf(output, "\nOptions parsed:\n");
   const Options* os = &cli->options;
   for (size_t i = 0; i < os->count; i++) {
-    Option* o = &os->options[i];
+    Option* o = &os->values[i];
     switch (o->value.type) {
       case OptionTypeBool:
         MustPrintf(output, "%zu\t-%c\tbool\t%s\n", i, o->flag,
@@ -215,6 +214,6 @@ void PrintCLI(FILE* output, const CLI* cli, const Arguments* arguments) {
 
   MustPrintf(output, "\nArguments:\n");
   for (size_t i = 0; i < arguments->count; i++) {
-    MustPrintf(output, "%zu\t'%s'\n", i, arguments->arguments[i]);
+    MustPrintf(output, "%zu\t'%s'\n", i, arguments->values[i]);
   }
 }

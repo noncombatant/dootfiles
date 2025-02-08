@@ -43,7 +43,7 @@ static Option options[] = {
 static CLI cli = {
   .name = "shuffle",
   .description = description,
-  .options = {.count = COUNT(options), .options = options},
+  .options = {.count = COUNT(options), .values = options},
 };
 // clang-format on
 
@@ -163,16 +163,17 @@ static void ShuffleInMemory(FILE* input, char ifs, const char*, const char*) {
 static void TestRandomInRangeBias() {
   // We should get roughly the same # of each value. `repetitions` is high
   // enough that significant variance would indicate a problem.
-#define values 10
-  int counts[values] = {0};
-  const int repetitions = values * 1000000;
+#define VALUES 10
+  int counts[VALUES] = {0};
+  const int repetitions = VALUES * 1000000;
   for (int i = 0; i < repetitions; i++) {
     const uint64_t n = RandomInRange(0, 9);
     counts[n]++;
   }
-  for (size_t i = 0; i < values; i++) {
+  for (size_t i = 0; i < VALUES; i++) {
     MustPrintf(stdout, "%d: %d\n", i, counts[i]);
   }
+#undef VALUES
 }
 #endif
 
@@ -182,11 +183,11 @@ int main(int count, char** arguments) {
 #endif
 
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(&cli.options, 'h')->b) {
+  if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   }
   Shuffler* shuffle =
-      FindOptionValue(&cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
+      FindOptionValue(cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
 
   const char* IFS = getenv("IFS");
   const char ifs = IFS ? IFS[0] : '\n';
@@ -199,9 +200,9 @@ int main(int count, char** arguments) {
     shuffle(stdin, ifs, ofs, ors);
   }
   for (size_t i = 0; i < as.count; i++) {
-    AUTO(FILE*, input, fopen(as.arguments[i], "rb"), CloseFile);
+    AUTO(FILE*, input, fopen(as.values[i], "rb"), CloseFile);
     if (!input) {
-      Warn(errno, "%s", as.arguments[i]);
+      Warn(errno, "%s", as.values[i]);
       continue;
     }
     shuffle(input, ifs, ofs, ors);
