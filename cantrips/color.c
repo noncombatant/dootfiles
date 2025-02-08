@@ -4,7 +4,6 @@
 #define _DEFAULT_SOURCE
 #define _XOPEN_SOURCE
 #include <regex.h>
-#include <search.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,11 +15,11 @@
 #include "utils.h"
 
 // clang-format off
-static char description[] = "Fold lines of text to a maximum width."
+static char description[] = "fold lines of text to a maximum width\n"
 "\n"
-"color [options] pattern color [pattern color [...]]\n"
+"    color [options] pattern color [pattern color [...]]\n"
 "\n"
-"Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).\n";
+"Patterns are case-insensitive POSIX extended regular expressions; refer to re_format(7).";
 
 static Option options[] = {
   {
@@ -52,7 +51,7 @@ typedef struct Color {
   const char* escape;
 } Color;
 
-static Color colors[] = {
+static Color basic_colors[] = {
     {"black", "\x1b\x5b\x33\x30\x6d"}, {"red", "\x1b\x5b\x33\x31\x6d"},
     {"green", "\x1b\x5b\x33\x32\x6d"}, {"yellow", "\x1b\x5b\x33\x33\x6d"},
     {"blue", "\x1b\x5b\x33\x34\x6d"},  {"magenta", "\x1b\x5b\x33\x35\x6d"},
@@ -320,20 +319,20 @@ static Color extended_colors[] = {
 
 static char normal[] = "\x1b\x28\x42\x1b\x5b\x6d";
 
-static int CompareColorName(const void* a, const void* b) {
-  const Color* aa = a;
-  const Color* bb = b;
-  return strcmp(aa->name, bb->name);
+static Color* FindColor(Color* colors, size_t count, const char* name) {
+  for (size_t i = 0; i < count; i++) {
+    Color* c = &colors[i];
+    if (StringEquals(name, c->name)) {
+      return c;
+    }
+  }
+  return NULL;
 }
 
 static const char* FindEscape(const char* name) {
-  const Color key = {.name = name};
-  size_t count = COUNT(colors);
-  Color* escape = lfind(&key, colors, &count, sizeof(Color), CompareColorName);
+  Color* escape = FindColor(basic_colors, COUNT(basic_colors), name);
   if (!escape) {
-    count = COUNT(extended_colors);
-    escape =
-        lfind(&key, extended_colors, &count, sizeof(Color), CompareColorName);
+    escape = FindColor(extended_colors, COUNT(extended_colors), name);
   }
   if (!escape) {
     MustPrintf(stderr, "No such color: '%s'\n", name);
@@ -362,10 +361,10 @@ static void FreePatterns(Patterns* p) {
 }
 
 static void PrintColors(bool extended) {
-  fputs("The available colors are:\n", stdout);
-  for (size_t i = 0; i < COUNT(colors); i++) {
-    MustPrintf(stdout, "%s%s%s%s", colors[i].escape, colors[i].name, normal,
-               i < COUNT(colors) - 1 ? " " : "");
+  fputs("\nThe available colors are:\n", stdout);
+  for (size_t i = 0; i < COUNT(basic_colors); i++) {
+    MustPrintf(stdout, "%s%s%s%s", basic_colors[i].escape, basic_colors[i].name,
+               normal, i < COUNT(basic_colors) - 1 ? " " : "");
   }
   MustPrintf(stdout, "\n");
   if (extended) {
