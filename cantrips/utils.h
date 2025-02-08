@@ -98,4 +98,6 @@ typedef struct DateTime {
 
 DateTime ParseDateTime(const char* string);
 
+int64_t GetEpochNanoseconds(void);
+
 #endif

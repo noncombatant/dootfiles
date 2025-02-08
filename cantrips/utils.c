@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "utils.h"
@@ -177,4 +178,12 @@ DateTime ParseDateTime(const char* string) {
     return dt;
   }
   return (DateTime){0};
+}
+
+int64_t GetEpochNanoseconds(void) {
+  struct timespec time;
+  if (clock_gettime(CLOCK_REALTIME, &time)) {
+    return 0;
+  }
+  return (time.tv_sec * 1000000000LL) + time.tv_nsec;
 }
