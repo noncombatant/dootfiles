@@ -1,7 +1,13 @@
 // Copyright 2024 Chris Palmer, https://noncombatant.org/
 // SPDX-License-Identifier: MIT
 
+#if defined(__linux)
+// On Linux, this is necessary for `CLOCK_*` to be defined. On macOS, its
+// presence makes some clocks undefined. Since our goal is The Most Clocks,
+// include it conditionally.
 #define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <errno.h>
 #include <stdio.h>
 #include <time.h>
