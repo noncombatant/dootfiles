@@ -124,13 +124,13 @@ typedef struct Test {
   char* want;
 } Test;
 
-static Bytes PathnameFromString(char* string) {
+static Chars PathnameFromString(char* string) {
   char* canonical = LexicallyCanonicalizePathname(string);
-  return (Bytes){.count = strlen(canonical), .values = canonical};
+  return (Chars){.count = strlen(canonical), .values = canonical};
 }
 
 // Returns the index in `b.values` where the basename begins.
-static size_t Basename(Bytes b) {
+static size_t Basename(Chars b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
   if (i == not_found) {
     return 0;
@@ -143,7 +143,7 @@ static size_t Basename(Bytes b) {
 
 // Returns the length of `b.values`’s dirname (which will be 0, if `b.values` is
 // a basename).
-static size_t Dirname(Bytes b) {
+static size_t Dirname(Chars b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
   if (i == not_found) {
     return 0;
@@ -156,7 +156,7 @@ static size_t Dirname(Bytes b) {
 
 // Returns the index in the basename of `b.values` of the last '.', or
 // `not_found`.
-static size_t Extension(Bytes b) {
+static size_t Extension(Chars b) {
   const size_t basename = Basename(b);
   const size_t dot = LastIndex(&b.values[basename], b.count - basename, '.');
   if (dot == not_found || (basename == 0 && dot == 0)) {
@@ -203,7 +203,7 @@ static void TestBasename() {
   };
   for (size_t i = 0; i < COUNT(tests); i++) {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
-    const Bytes bytes = PathnameFromString(copy);
+    const Chars bytes = PathnameFromString(copy);
     const size_t b = Basename(bytes);
     const char* basename = &bytes.values[b];
     if (!StringEquals(basename, tests[i].want)) {
@@ -228,7 +228,7 @@ static void TestDirname() {
   };
   for (size_t i = 0; i < COUNT(tests); i++) {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
-    const Bytes bytes = PathnameFromString(copy);
+    const Chars bytes = PathnameFromString(copy);
     const size_t d = Dirname(bytes);
     if (d) {
       bytes.values[d] = '\0';
@@ -255,7 +255,7 @@ static void TestExtension() {
   };
   for (size_t i = 0; i < COUNT(tests); i++) {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
-    const Bytes bytes = PathnameFromString(copy);
+    const Chars bytes = PathnameFromString(copy);
     const size_t e = Extension(bytes);
     const char* extension = e == not_found ? "" : &bytes.values[e];
     if (!StringEquals(extension, tests[i].want)) {
@@ -306,7 +306,7 @@ int main(int count, char** arguments) {
 
   for (size_t i = 0; i < as.count; i++) {
     AUTO(char*, copy, strdup(as.values[i]), FreeChar);
-    const Bytes p = PathnameFromString(copy);
+    const Chars p = PathnameFromString(copy);
     if (print_canonical) {
       PrintWithLabel(multiple ? "canonical" : NULL, p.values);
     }

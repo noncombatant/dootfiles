@@ -53,10 +53,10 @@ void MustCloseDir(DIR** p);
 void MustCloseFile(FILE** p);
 void MustCloseProcess(FILE** p);
 
-typedef struct Bytes {
+typedef struct Chars {
   size_t count;
   char* values;
-} Bytes;
+} Chars;
 
 extern const size_t not_found;
 
