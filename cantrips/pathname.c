@@ -145,7 +145,13 @@ static size_t Basename(Bytes b) {
 // a basename).
 static size_t Dirname(Bytes b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
-  return i == not_found ? 0 : i;
+  if (i == not_found) {
+    return 0;
+  }
+  if (i == 0 && b.values[i] == '/') {
+    return 1;
+  }
+  return i;
 }
 
 // Returns the index in the basename of `b.values` of the last '.', or
@@ -212,11 +218,11 @@ static void TestDirname() {
   Test tests[] = {
       {"/goat/bloat/../../../../../etc/passwd", "/etc"},
       {"goat/blorp/././///yow", "goat/blorp"},
-      {"/goat/blorp/../../../../../", "."},
+      {"/goat/blorp/../../../../../", "/"},
       {"", "."},
       {"/leg/foot///////////", "/leg"},
       {".", "."},
-      {"/", "."},  // TODO: Should maybe/probably be "/"
+      {"/", "/"},
       {"./", "."},
       {"../goat/../", "."},
   };
