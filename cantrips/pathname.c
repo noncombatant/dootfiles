@@ -132,7 +132,13 @@ static Bytes PathnameFromString(char* string) {
 // Returns the index in `b.values` where the basename begins.
 static size_t Basename(Bytes b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
-  return i == not_found ? 0 : i + 1;
+  if (i == not_found) {
+    return 0;
+  }
+  if (i == 0 && b.values[i] == '/') {
+    return 0;
+  }
+  return i + 1;
 }
 
 // Returns the length of `b.values`’s dirname (which will be 0, if `b.values` is
@@ -146,12 +152,9 @@ static size_t Dirname(Bytes b) {
 // `not_found`.
 static size_t Extension(Bytes b) {
   const size_t basename = Basename(b);
-  if (basename == not_found) {
-    return LastIndex(b.values, b.count, '.');
-  }
   const size_t dot = LastIndex(&b.values[basename], b.count - basename, '.');
-  if (dot == not_found) {
-    return dot;
+  if (dot == not_found || (basename == 0 && dot == 0)) {
+    return not_found;
   }
   return basename + dot;
 }
@@ -198,8 +201,9 @@ static void TestBasename() {
     const size_t b = Basename(bytes);
     const char* basename = &bytes.values[b];
     if (!StringEquals(basename, tests[i].want)) {
-      MustPrintf(stderr, "Basename '%s': wanted '%s', got '%s'\n",
-                 tests[i].pathname, tests[i].want, basename);
+      MustPrintf(stderr,
+                 "Basename '%s' (canonical: '%s'): wanted '%s', got '%s'\n",
+                 tests[i].pathname, bytes.values, tests[i].want, basename);
     }
   }
 }
@@ -249,8 +253,9 @@ static void TestExtension() {
     const size_t e = Extension(bytes);
     const char* extension = e == not_found ? "" : &bytes.values[e];
     if (!StringEquals(extension, tests[i].want)) {
-      MustPrintf(stderr, "Extension '%s': wanted '%s', got '%s'\n",
-                 tests[i].pathname, tests[i].want, extension);
+      MustPrintf(stderr,
+                 "Extension '%s' (canonical: '%s'): wanted '%s', got '%s'\n",
+                 tests[i].pathname, bytes.values, tests[i].want, extension);
     }
   }
 }

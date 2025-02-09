@@ -70,8 +70,9 @@ const size_t not_found = SIZE_MAX;
 
 size_t LastIndex(const char* s, size_t length, char c) {
   for (size_t i = length; i > 0; i--) {
-    if (s[i] == c) {
-      return i;
+    const size_t j = i - 1;
+    if (s[j] == c) {
+      return j;
     }
   }
   return not_found;
