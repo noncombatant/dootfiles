@@ -90,6 +90,20 @@ OptionValue* FindOptionValue(Options options, char flag) {
   return o ? &o->value : NULL;
 }
 
+char* OFS = "\t";
+char* ORS = "\n";
+
+void SetSeparators(void) {
+  char* ofs = getenv("OFS");
+  if (ofs) {
+    OFS = ofs;
+  }
+  char* ors = getenv("ORS");
+  if (ors) {
+    ORS = ors;
+  }
+}
+
 // Maximum of e.g. 127 Boolean options or 63 argument-taking options. Not even
 // `ls` has that many, so this should suffice.
 #define OPTSTRING_LENGTH 128

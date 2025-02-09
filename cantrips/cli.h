@@ -72,6 +72,15 @@ Option* FindOption(Options options, char flag);
 // `OptionValue`, or `NULL`.
 OptionValue* FindOptionValue(Options options, char flag);
 
+// Output field separator.
+extern char* OFS;
+// Output record separator.
+extern char* ORS;
+
+// Sets globals `OFS`  and `ORS` to the values passed in the environment
+// variables `OFS` and `ORS` if present, or to reasonable default values.
+void SetSeparators(void);
+
 // Parses the arguments and options according to the specification in `cli`,
 // populates the `Options` in `cli`, and returns the remaining arguments. If
 // parsing fails for any reason, calls `ShowHelpAndExit` with `error` set and
