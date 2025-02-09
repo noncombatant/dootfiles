@@ -19,24 +19,27 @@ static char description[] =
 "\n"
 "    pathname [options...] [pathnames...]\n"
 "\n"
-"With no options, prints the lexically canonicalized form(s) of the given string(s).\n"
-"\n"
 "Note that because it canonicalizes the strings first, this program may produce different results than basename(1) and dirname(1).";
 
 static Option options[] = {
   {
     .flag = 'b',
-    .description = "canonicalize the given string(s) and print their basename(s)",
+    .description = "canonicalize the given pathnames and print their basenames",
+    .value = { .type = OptionTypeBool }
+  },
+  {
+    .flag = 'c',
+    .description = "canonicalize the given pathnames and print them",
     .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'd',
-    .description = "canonicalize the given string(s) and print their dirname(s)",
+    .description = "canonicalize the given pathnames and print their dirnames",
     .value = { .type = OptionTypeBool }
   },
   {
     .flag = 'e',
-    .description = "canonicalize the given string(s) and print their file extension(s), if any",
+    .description = "canonicalize the given pathnames and print their file extensions, if any",
     .value = { .type = OptionTypeBool }
   },
   {
@@ -189,6 +192,7 @@ static void TestBasename() {
       {"/", "/"},
       {"./", "."},
       {"../goat/../", ".."},
+      {"/etc/passwd", "passwd"},
   };
   for (size_t i = 0; i < COUNT(tests); i++) {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
@@ -254,6 +258,14 @@ static void TestExtension() {
 }
 #endif
 
+static void PrintWithLabel(const char* label, const char* string) {
+  if (label) {
+    MustPrintf(stdout, "%-12s%s\n", label, string);
+  } else {
+    MustPrintf(stdout, "%s\n", string);
+  }
+}
+
 int main(int count, char** arguments) {
 #if defined(TEST)
   TestLexicallyCanonicalizePathname();
@@ -263,38 +275,51 @@ int main(int count, char** arguments) {
 #endif
 
   Arguments as = ParseCLI(&cli, count, arguments);
-  const bool print_basename = FindOptionValue(cli.options, 'b')->b;
-  const bool print_dirname = FindOptionValue(cli.options, 'd')->b;
-  const bool print_extension = FindOptionValue(cli.options, 'e')->b;
-  const bool print_canonical =
-      !print_basename && !print_dirname && !print_extension;
   if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);
   }
-  if (as.count == 0 || print_basename + print_dirname + print_extension > 1) {
-    PrintHelpAndExit(&cli, true, false);
+  if (as.count == 0) {
+    PrintHelpAndExit(&cli, true, true);
   }
+
+  const bool print_basename = FindOptionValue(cli.options, 'b')->b;
+  const bool print_canonical = FindOptionValue(cli.options, 'c')->b;
+  const bool print_dirname = FindOptionValue(cli.options, 'd')->b;
+  const bool print_extension = FindOptionValue(cli.options, 'e')->b;
+  const int total =
+      (int)print_basename + print_canonical + print_dirname + print_extension;
+  if (total == 0) {
+    PrintHelpAndExit(&cli, true, true);
+  }
+  const bool multiple = total > 1;
 
   for (size_t i = 0; i < as.count; i++) {
     AUTO(char*, copy, strdup(as.values[i]), FreeChar);
     const Bytes p = PathnameFromString(copy);
     if (print_canonical) {
-      MustPrintf(stdout, "%s\n", p.values);
-    } else if (print_basename) {
-      const size_t b = Basename(p);
-      MustPrintf(stdout, "%s\n", &p.values[b]);
-    } else if (print_dirname) {
+      PrintWithLabel(multiple ? "canonical" : NULL, p.values);
+    }
+    if (print_dirname) {
       const size_t d = Dirname(p);
       if (d) {
+        const char previous = p.values[d];
         p.values[d] = '\0';
-        MustPrintf(stdout, "%s\n", p.values);
+        PrintWithLabel(multiple ? "dirname" : NULL, p.values);
+        p.values[d] = previous;
       } else {
-        MustPrintf(stdout, ".\n");
+        PrintWithLabel(multiple ? "dirname" : NULL, ".");
       }
-    } else if (print_extension) {
+    }
+    if (print_basename) {
+      const size_t b = Basename(p);
+      PrintWithLabel(multiple ? "basename" : NULL, &p.values[b]);
+    }
+    if (print_extension) {
       const size_t e = Extension(p);
       if (e != not_found) {
-        MustPrintf(stdout, "%s\n", &p.values[e]);
+        PrintWithLabel(multiple ? "extension" : NULL, &p.values[e]);
+      } else {
+        PrintWithLabel(multiple ? "extension" : NULL, "");
       }
     }
   }
