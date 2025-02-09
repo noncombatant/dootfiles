@@ -56,8 +56,6 @@ static CLI cli = {
 };
 // clang-format on
 
-// TODO: Consider supporting printing all of -b, -d, -e, separated by $ORS.
-
 static const char path_separator = '/';
 
 static bool is_separator(char c) {
