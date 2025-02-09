@@ -15,7 +15,7 @@
 #include "utils.h"
 
 // clang-format off
-static char description[] = "fold lines of text to a maximum width\n"
+static char description[] = "print matching records of input in colors\n"
 "\n"
 "    color [options] pattern color [pattern color [...]]\n"
 "\n"
@@ -404,19 +404,19 @@ static FindResult FindFirstMatch(const char* input, Patterns patterns) {
 }
 
 static void Colorize(Patterns patterns, char delimiter) {
-  AUTO(char*, line, NULL, FreeChar);
+  AUTO(char*, record, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
-    ssize_t length = getdelim(&line, &capacity, delimiter, stdin);
+    ssize_t length = getdelim(&record, &capacity, delimiter, stdin);
     if (length < 0) {
       return;
     }
-    if (length && line[length - 1] == delimiter) {
-      line[length - 1] = '\0';
+    if (length && record[length - 1] == delimiter) {
+      record[length - 1] = '\0';
       length--;
     }
 
-    char* ln = line;
+    char* ln = record;
     while (length) {
       FindResult result = FindFirstMatch(ln, patterns);
       const regmatch_t* match = &result.match;

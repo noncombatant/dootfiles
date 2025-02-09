@@ -20,11 +20,11 @@
 
 // clang-format off
 static char description[] =
-"shuffle lines of input\n"
+"shuffle records of input\n"
 "\n"
 "    shuffle [options...] [pathnames...]\n"
 "\n"
-"You can shuffle either by prefixing lines of a stream with a random number to be sorted with `sort`, or in memory.";
+"You can shuffle either by prefixing records of a stream with a random number to be sorted with `sort`, or in memory.";
 
 static Option options[] = {
     {
@@ -101,14 +101,14 @@ static uint64_t RandomInRange(uint64_t lo, uint64_t hi) {
 }
 
 static char* Read(FILE* input, char ifs) {
-  static char* line = NULL;
+  static char* record = NULL;
   static size_t capacity = 0;
-  ssize_t r = getdelim(&line, &capacity, ifs, input);
+  ssize_t r = getdelim(&record, &capacity, ifs, input);
   if (r == -1) {
     return NULL;
   }
-  line[r - 1] = '\0';
-  return line;
+  record[r - 1] = '\0';
+  return record;
 }
 
 typedef void Shuffler(FILE* input, char ifs, const char* ofs, const char* ors);

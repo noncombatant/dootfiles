@@ -97,7 +97,7 @@ static void ReleaseJobs() {
 }
 
 static size_t ReadArguments(char** arguments) {
-  static char* line = NULL;
+  static char* record = NULL;
   static size_t capacity = 0;
   static size_t length = 0;
 
@@ -107,10 +107,10 @@ static size_t ReadArguments(char** arguments) {
   const size_t conservative_limit = max_command_size / 2;
 
   while (true) {
-    if (line && length) {
+    if (record && length) {
       if (count < max_argument_count &&
           conservative_limit - bytes_used > length) {
-        *a = strndup(line, length);
+        *a = strndup(record, length);
         length = 0;
         a++;
         count++;
@@ -120,7 +120,7 @@ static size_t ReadArguments(char** arguments) {
           MustPrintf(
               stderr,
               "record '%s' too long to fit into command size limit (%zu)\n",
-              line, conservative_limit);
+              record, conservative_limit);
           // TODO BUG?: Do we need to reset `bytes_used` here, to avoid infinite
           // loop?
         } else {
@@ -129,13 +129,13 @@ static size_t ReadArguments(char** arguments) {
       }
     }
 
-    const ssize_t n = getdelim(&line, &capacity, delimiter, stdin);
+    const ssize_t n = getdelim(&record, &capacity, delimiter, stdin);
     if (n < 0) {
       return count;
     }
     length = (size_t)n;
-    if (length && line[length - 1] == delimiter) {
-      line[length - 1] = '\0';
+    if (length && record[length - 1] == delimiter) {
+      record[length - 1] = '\0';
       length--;
     }
   }
