@@ -114,14 +114,15 @@ static void PrintStatus(const char* pathname) {
     printed_header = true;
   }
   MustPrintf(stdout,
-             "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s%s\n",
+             "%04d-%02d-%02d %02d:%02d  %12lld  %-12s  %-12s  %-10s  %s%s%s",
              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
              t->tm_min, (long long)status.st_size, u ? u->pw_name : u_buffer,
              g ? g->gr_name : g_buffer, mode, pathname,
-             target[0] == '\0' ? "" : target);
+             target[0] == '\0' ? "" : target, ORS);
 }
 
 int main(int count, char** arguments) {
+  SetSeparators();
   Arguments as = ParseCLI(&cli, count, arguments);
   if (FindOptionValue(cli.options, 'h')->b) {
     PrintHelpAndExit(&cli, false, true);

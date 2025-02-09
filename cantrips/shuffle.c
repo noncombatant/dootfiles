@@ -100,10 +100,10 @@ static uint64_t RandomInRange(uint64_t lo, uint64_t hi) {
   }
 }
 
-static char* Read(FILE* input, char ifs) {
+static char* Read(FILE* input, char fs) {
   static char* record = NULL;
   static size_t capacity = 0;
-  ssize_t r = getdelim(&record, &capacity, ifs, input);
+  ssize_t r = getdelim(&record, &capacity, fs, input);
   if (r == -1) {
     return NULL;
   }
@@ -111,19 +111,16 @@ static char* Read(FILE* input, char ifs) {
   return record;
 }
 
-typedef void Shuffler(FILE* input, char ifs, const char* ofs, const char* ors);
+typedef void Shuffler(FILE* input, char fs);
 
-static void ShuffleStream(FILE* input,
-                          char ifs,
-                          const char* ofs,
-                          const char* ors) {
+static void ShuffleStream(FILE* input, char fs) {
   while (true) {
-    const char* record = Read(input, ifs);
+    const char* record = Read(input, fs);
     if (!record) {
       return;
     }
-    MustPrintf(stdout, "%016" PRIx64 "%s%s%s", CachingRandom(), ors, record,
-               ofs);
+    MustPrintf(stdout, "%016" PRIx64 "%s%s%s", CachingRandom(), OFS, record,
+               ORS);
   }
 }
 
@@ -148,10 +145,10 @@ static void Append(Records* r, char* new) {
   r->count++;
 }
 
-static void ShuffleInMemory(FILE* input, char ifs, const char*, const char*) {
+static void ShuffleInMemory(FILE* input, char fs) {
   Records records = {0};
   while (true) {
-    char* record = Read(input, ifs);
+    char* record = Read(input, fs);
     if (!record) {
       break;
     }
@@ -169,7 +166,7 @@ static void ShuffleInMemory(FILE* input, char ifs, const char*, const char*) {
   }
 
   for (size_t i = 0; i < records.count; i++) {
-    MustPrintf(stdout, "%s\n", records.data[i]);
+    MustPrintf(stdout, "%s%s", records.data[i], ORS);
   }
 }
 
@@ -217,19 +214,11 @@ int main(int count, char** arguments) {
   Shuffler* shuffle =
       FindOptionValue(cli.options, 'm')->b ? ShuffleInMemory : ShuffleStream;
 
-  const char* IFS = getenv("IFS");
-  char ifs = IFS ? IFS[0] : '\n';
-  const char* OFS = getenv("OFS");
-  const char* ofs = OFS ? OFS : "\n";
-  const char* ORS = getenv("ORS");
-  const char* ors = ORS ? ORS : "\t";
-
-  if (FindOptionValue(cli.options, '0')->b) {
-    ifs = '\0';
-  }
+  char fs = FindOptionValue(cli.options, '0')->b ? '\0' : '\n';
+  SetSeparators();
 
   if (as.count == 0) {
-    shuffle(stdin, ifs, ofs, ors);
+    shuffle(stdin, fs);
   }
   for (size_t i = 0; i < as.count; i++) {
     AUTO(FILE*, input, fopen(as.values[i], "rb"), CloseFile);
@@ -237,6 +226,6 @@ int main(int count, char** arguments) {
       Warn(errno, "%s", as.values[i]);
       continue;
     }
-    shuffle(input, ifs, ofs, ors);
+    shuffle(input, fs);
   }
 }

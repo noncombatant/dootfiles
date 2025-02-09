@@ -403,15 +403,15 @@ static FindResult FindFirstMatch(const char* input, Patterns patterns) {
   return result;
 }
 
-static void Colorize(Patterns patterns, char delimiter) {
+static void Colorize(Patterns patterns, char fs) {
   AUTO(char*, record, NULL, FreeChar);
   size_t capacity = 0;
   while (true) {
-    ssize_t length = getdelim(&record, &capacity, delimiter, stdin);
+    ssize_t length = getdelim(&record, &capacity, fs, stdin);
     if (length < 0) {
       return;
     }
-    if (length && record[length - 1] == delimiter) {
+    if (length && record[length - 1] == fs) {
       record[length - 1] = '\0';
       length--;
     }
@@ -454,12 +454,7 @@ static Patterns BuildPatterns(size_t count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
-  opterr = 0;
-  char delimiter = '\n';
   Arguments as = ParseCLI(&cli, count, arguments);
-  if (FindOptionValue(cli.options, '0')->b) {
-    delimiter = '\0';
-  }
   if (FindOptionValue(cli.options, 'h')->b ||
       FindOptionValue(cli.options, 'x')->b) {
     PrintHelp(stdout, &cli, true);
@@ -471,5 +466,6 @@ int main(int count, char** arguments) {
   }
 
   AUTO(Patterns, patterns, BuildPatterns(as.count, as.values), FreePatterns);
-  Colorize(patterns, delimiter);
+  const char fs = FindOptionValue(cli.options, '0')->b ? '\0' : '\n';
+  Colorize(patterns, fs);
 }

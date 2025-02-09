@@ -29,7 +29,7 @@ clean:
 strip: $(TARGETS)
 	strip $(TARGETS)
 
-clocks: clocks.c utils.o
+clocks: clocks.c cli.o utils.o
 color: color.c cli.o utils.o
 list: list.c cli.o utils.o
 expand: expand.c cli.o utils.o

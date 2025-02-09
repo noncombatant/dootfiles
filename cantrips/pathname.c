@@ -269,9 +269,9 @@ static void TestExtension() {
 
 static void PrintWithLabel(const char* label, const char* string) {
   if (label) {
-    MustPrintf(stdout, "%-12s%s\n", label, string);
+    MustPrintf(stdout, "%-12s%s%s", label, string, ORS);
   } else {
-    MustPrintf(stdout, "%s\n", string);
+    MustPrintf(stdout, "%s%s", string, ORS);
   }
 }
 
@@ -301,6 +301,8 @@ int main(int count, char** arguments) {
     PrintHelpAndExit(&cli, true, true);
   }
   const bool multiple = total > 1;
+
+  SetSeparators();
 
   for (size_t i = 0; i < as.count; i++) {
     AUTO(char*, copy, strdup(as.values[i]), FreeChar);

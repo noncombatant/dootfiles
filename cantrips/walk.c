@@ -111,7 +111,7 @@ static CLI cli = {
 #define OVZ(flag) FindOptionValue(cli.options, (flag))->z
 #define OVI(flag) FindOptionValue(cli.options, (flag))->i
 
-static char ORS = '\n';
+static char ors = '\n';
 
 typedef enum Type {
   TypeNone = 0,
@@ -194,7 +194,7 @@ static Result PrintIfMatch(const char* pathname,
     }
   }
 
-  MustPrintf(stdout, "%s%c", pathname, ORS);
+  MustPrintf(stdout, "%s%c", pathname, ors);
   return ResultContinue;
 }
 
@@ -293,7 +293,7 @@ int main(int count, char** arguments) {
   // be looking them up for every pathname we try to match, we instead copy the
   // options into the `Predicate` `struct` for constant-time lookup.
   Predicate p = {0};
-  ORS = OVB('0') ? '\0' : '\n';
+  ors = OVB('0') ? '\0' : '\n';
   p.walk_all = OVB('A');
   bool up = OVB('u');
   if (OVB('a')) {

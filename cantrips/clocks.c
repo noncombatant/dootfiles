@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "cli.h"
 #include "utils.h"
 
 static clockid_t clocks[] = {
@@ -105,6 +106,7 @@ static char* clock_names[] = {
 };
 
 int main() {
+  SetSeparators();
   for (size_t i = 0; i < COUNT(clocks); i++) {
     struct timespec t = {0};
     const clockid_t c = clocks[i];
@@ -113,6 +115,6 @@ int main() {
       Warn(errno, "%s", n);
       continue;
     }
-    MustPrintf(stdout, "%12ld.%09ld\t%s\n", t.tv_sec, t.tv_nsec, n);
+    MustPrintf(stdout, "%12ld.%09ld%s%s%s", t.tv_sec, t.tv_nsec, OFS, n, ORS);
   }
 }
