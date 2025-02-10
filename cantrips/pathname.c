@@ -132,7 +132,7 @@ static Chars PathnameFromString(char* string) {
 // Returns the index in `b.values` where the basename begins.
 static size_t Basename(Chars b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
-  if (i == not_found) {
+  if (i == SIZE_MAX) {
     return 0;
   }
   if (i == 0 && b.values[i] == '/') {
@@ -145,7 +145,7 @@ static size_t Basename(Chars b) {
 // a basename).
 static size_t Dirname(Chars b) {
   const size_t i = LastIndex(b.values, b.count, path_separator);
-  if (i == not_found) {
+  if (i == SIZE_MAX) {
     return 0;
   }
   if (i == 0 && b.values[i] == '/') {
@@ -155,12 +155,12 @@ static size_t Dirname(Chars b) {
 }
 
 // Returns the index in the basename of `b.values` of the last '.', or
-// `not_found`.
+// `SIZE_MAX`.
 static size_t Extension(Chars b) {
   const size_t basename = Basename(b);
   const size_t dot = LastIndex(&b.values[basename], b.count - basename, '.');
-  if (dot == not_found || (basename == 0 && dot == 0)) {
-    return not_found;
+  if (dot == SIZE_MAX || (basename == 0 && dot == 0)) {
+    return SIZE_MAX;
   }
   return basename + dot;
 }
@@ -257,7 +257,7 @@ static void TestExtension() {
     AUTO(char*, copy, strdup(tests[i].pathname), FreeChar);
     const Chars bytes = PathnameFromString(copy);
     const size_t e = Extension(bytes);
-    const char* extension = e == not_found ? "" : &bytes.values[e];
+    const char* extension = e == SIZE_MAX ? "" : &bytes.values[e];
     if (!StringEquals(extension, tests[i].want)) {
       MustPrintf(stderr,
                  "Extension '%s' (canonical: '%s'): wanted '%s', got '%s'\n",
@@ -327,7 +327,7 @@ int main(int count, char** arguments) {
     }
     if (print_extension) {
       const size_t e = Extension(p);
-      if (e != not_found) {
+      if (e != SIZE_MAX) {
         PrintWithLabel(multiple ? "extension" : NULL, &p.values[e]);
       } else {
         PrintWithLabel(multiple ? "extension" : NULL, "");

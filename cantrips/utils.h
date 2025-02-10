@@ -83,11 +83,8 @@ typedef struct Chars {
   char* values;
 } Chars;
 
-// A sentinel indicating search failure.
-extern const size_t not_found;
-
 // Returns the position of the last instance of `c` in the string `s`, of
-// `length` bytes, or `not_found`.
+// `length` bytes, or `SIZE_MAX` to indicate not found.
 size_t LastIndex(const char* s, size_t length, char c);
 
 // Formats the string specified by `format` into `result` (see `vsnprintf`),

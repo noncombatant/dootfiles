@@ -66,8 +66,6 @@ void MustCloseProcess(FILE** p) {
   }
 }
 
-const size_t not_found = SIZE_MAX;
-
 size_t LastIndex(const char* s, size_t length, char c) {
   for (size_t i = length; i > 0; i--) {
     const size_t j = i - 1;
@@ -75,7 +73,7 @@ size_t LastIndex(const char* s, size_t length, char c) {
       return j;
     }
   }
-  return not_found;
+  return SIZE_MAX;
 }
 
 __attribute__((__format__(__printf__, 3, 0))) static size_t
