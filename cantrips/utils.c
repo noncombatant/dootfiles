@@ -89,9 +89,10 @@ VFormat(char* result, size_t size, const char* format, va_list arguments) {
 }
 
 __attribute__((__format__(__printf__, 2, 0))) static void
-VMustPrintf(FILE* f, const char* format, va_list arguments) {
-  const int count = vfprintf(f, format, arguments);
+VMustPrintf(FILE* output, const char* format, va_list arguments) {
+  const int count = vfprintf(output, format, arguments);
   if (count < 0) {
+    // We probably shouldn't attempt `Die` here, because stdio may be wrecked.
     abort();
   }
 }
@@ -109,15 +110,15 @@ void MustFormat(char* result, size_t size, const char* format, ...) {
   va_start(arguments, format);
   const size_t count = VFormat(result, size, format, arguments);
   va_end(arguments);
-  if (count == SIZE_MAX) {
-    MustPrintf(stderr, "buffer too small (%zu chars) or invalid format", size);
+  if (count >= size || count == SIZE_MAX) {
+    Die(0, "buffer too small (%zu chars) or invalid format", size);
   }
 }
 
-void MustPrintf(FILE* f, const char* format, ...) {
+void MustPrintf(FILE* output, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  VMustPrintf(f, format, arguments);
+  VMustPrintf(output, format, arguments);
   va_end(arguments);
 }
 
