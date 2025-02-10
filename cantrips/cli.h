@@ -9,6 +9,7 @@
 #include <stdnoreturn.h>
 #include <time.h>
 
+// Describes the type of an `OptionValue` object.
 typedef enum OptionType {
   OptionTypeBool,
   OptionTypeDateTime,
@@ -19,6 +20,7 @@ typedef enum OptionType {
   OptionTypeString,
 } OptionType;
 
+// The resulting value from parsing a command line option.
 typedef struct OptionValue {
   OptionType type;
   bool b;
@@ -32,22 +34,28 @@ typedef struct OptionValue {
   };
 } OptionValue;
 
+// Describes a command line option. The `description` will be used in
+// `PrintHelp`.
 typedef struct Option {
   char flag;
   const char* description;
   OptionValue value;
 } Option;
 
+// A vector of `Option`s.
 typedef struct Options {
   size_t count;
   Option* values;
 } Options;
 
+// A vector of C strings.
 typedef struct Arguments {
   size_t count;
   char** values;
 } Arguments;
 
+// The documentation (see `PrintHelp`) and option specification for a command
+// line interface.
 typedef struct CLI {
   const char* name;
   const char* description;
@@ -74,6 +82,7 @@ OptionValue* FindOptionValue(Options options, char flag);
 
 // Output field separator.
 extern char* OFS;
+
 // Output record separator.
 extern char* ORS;
 
@@ -83,7 +92,7 @@ void SetSeparators(void);
 
 // Parses the arguments and options according to the specification in `cli`,
 // populates the `Options` in `cli`, and returns the remaining arguments. If
-// parsing fails for any reason, calls `ShowHelpAndExit` with `error` set and
+// parsing fails for any reason, calls `PrintHelpAndExit` with `error` set and
 // `show_defaults` unset.
 //
 // As it parses the command line, `ParseCLI` will set `OptionValue.b` for each
