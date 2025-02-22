@@ -27,10 +27,10 @@ gd() {
   go doc -all "$@" | less
 }
 
-findc() {
+findcode() {
   local z
   [[ ! -t 1 ]] && z="-0"
-  walk -t f -m '\.(c|h|cc|cpp|hpp|S|asm)$' $z
+  walk -t f -m '(makefile|\.mk|\.c|\.h|\.cc|\.cpp|\.hpp|\.S|\.asm|\.ld|\.go|\.py|\.rs|\.toml)$' $z
 }
 
 xgrep() {
@@ -38,27 +38,7 @@ xgrep() {
 }
 
 cs() {
-  findc | xgrep "$@"
-}
-
-findrs() {
-  local z
-  [[ ! -t 1 ]] && z="-0"
-  walk -t f -m '\.rs$' $z
-}
-
-rs() {
-  findrs | xgrep "$@"
-}
-
-findgo() {
-  local z
-  [[ ! -t 1 ]] && z="-0"
-  walk -t f -m '\.go$' $z
-}
-
-gs() {
-  findgo | xgrep "$@"
+  findcode | xgrep "$@"
 }
 
 findtext() {
