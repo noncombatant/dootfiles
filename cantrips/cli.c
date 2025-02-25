@@ -63,8 +63,8 @@ noreturn void PrintHelpAndExit(const CLI* cli, bool error, bool show_defaults) {
 
 static void BuildOptString(char* result, size_t size, Options options) {
   size_t flag = 0;
-  for (size_t i = 0; i < options.count && flag < size; i++) {
-    const Option* o = &(options.values[i]);
+  for (size_t i = 0; i < options.count && flag < size - 1; i++) {
+    const Option* o = &options.values[i];
     result[flag] = o->flag;
     flag++;
     if (o->value.type != OptionTypeBool) {
